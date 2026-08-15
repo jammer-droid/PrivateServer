@@ -1,5 +1,7 @@
+using PrivateServer.GameClient.Gameplay.Model;
 using PrivateServer.GameClient.Gameplay.Protocol.V2;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace PrivateServer.GameClient.Gameplay.Presentation;
@@ -12,7 +14,8 @@ internal readonly record struct GameplayResultPresentation(
 
     internal static GameplayResultPresentation From(
         RoundResult result,
-        uint? recipientPlayerId)
+        uint? recipientPlayerId,
+        IReadOnlyList<LeaderboardEntry>? finalLeaderboard = null)
     {
         ArgumentNullException.ThrowIfNull(result);
 
@@ -33,8 +36,8 @@ internal readonly record struct GameplayResultPresentation(
         {
             details.Append($"Winning growth: {result.WinningGrowthPoint}\n");
             details.Append(result.WinnerPlayerIds.Count == 1
-                ? "Winner: player "
-                : "Co-winners: players ");
+                ? "Winner: "
+                : "Co-winners: ");
             int displayedWinnerCount = Math.Min(
                 result.WinnerPlayerIds.Count,
                 MaximumDisplayedWinnerIds);
@@ -44,7 +47,8 @@ internal readonly record struct GameplayResultPresentation(
                 {
                     details.Append(", ");
                 }
-                details.Append(result.WinnerPlayerIds[index]);
+                uint winnerPlayerId = result.WinnerPlayerIds[index];
+                details.Append(ResolveWinnerLabel(finalLeaderboard, winnerPlayerId));
             }
             int hiddenWinnerCount =
                 result.WinnerPlayerIds.Count - displayedWinnerCount;
@@ -73,6 +77,24 @@ internal readonly record struct GameplayResultPresentation(
         }
 
         return new GameplayResultPresentation(title, details.ToString());
+    }
+
+    private static string ResolveWinnerLabel(
+        IReadOnlyList<LeaderboardEntry>? finalLeaderboard,
+        uint playerId)
+    {
+        if (finalLeaderboard is not null)
+        {
+            for (int index = 0; index < finalLeaderboard.Count; ++index)
+            {
+                LeaderboardEntry entry = finalLeaderboard[index];
+                if (entry.PlayerId == playerId && !string.IsNullOrEmpty(entry.DisplayName))
+                {
+                    return entry.DisplayName;
+                }
+            }
+        }
+        return $"player {playerId}";
     }
 
     internal static bool IsRecipientWinner(

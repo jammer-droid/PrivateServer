@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PrivateServer.GameClient.Gameplay.Model;
 using PrivateServer.GameClient.Gameplay.Presentation;
 using PrivateServer.GameClient.Gameplay.Protocol.V2;
 
@@ -40,7 +41,24 @@ public sealed class GameplayResultPresentationTests
             recipientPlayerId: 5);
 
         Assert.AreEqual("CO-WINNERS", presentation.Title);
-        StringAssert.Contains(presentation.Details, "Co-winners: players 7, 11");
+        StringAssert.Contains(presentation.Details, "Co-winners: player 7, player 11");
+    }
+
+    [TestMethod]
+    public void DisplaysWinnerNamesFromTheFinalLeaderboard()
+    {
+        GameplayResultPresentation presentation = GameplayResultPresentation.From(
+            new RoundResult(100, 3, 12, 8, new uint[] { 7, 11 }),
+            recipientPlayerId: 5,
+            new LeaderboardEntry[]
+            {
+                new LeaderboardEntry(1, 7, 12, 100, "Alice"),
+                new LeaderboardEntry(2, 11, 12, 100, "Bob"),
+            });
+
+        StringAssert.Contains(presentation.Details, "Co-winners: Alice, Bob");
+        Assert.IsFalse(presentation.Details.Contains("player 7"));
+        Assert.IsFalse(presentation.Details.Contains("player 11"));
     }
 
     [TestMethod]
@@ -63,7 +81,7 @@ public sealed class GameplayResultPresentationTests
             recipientPlayerId: 11);
 
         Assert.AreEqual("CO-VICTORY", presentation.Title);
-        StringAssert.Contains(presentation.Details, "Co-winners: players 7, 11");
+        StringAssert.Contains(presentation.Details, "Co-winners: player 7, player 11");
     }
 
     [TestMethod]
@@ -90,7 +108,7 @@ public sealed class GameplayResultPresentationTests
 
         StringAssert.Contains(
             presentation.Details,
-            "Co-winners: players 1, 2, 3, 4, 5, 6, 7, 8, +2 more");
-        Assert.IsFalse(presentation.Details.Contains(", 9"));
+            "Co-winners: player 1, player 2, player 3, player 4, player 5, player 6, player 7, player 8, +2 more");
+        Assert.IsFalse(presentation.Details.Contains("player 9"));
     }
 }

@@ -150,6 +150,17 @@ public sealed class RemoteGameplaySessionTests
         Assert.IsNull(session.LatestRoundResultRecipientPlayerId);
         Assert.AreEqual(RemoteGameplaySessionState.Disconnecting, session.State);
         Assert.AreEqual(1, transport.DisconnectCallCount);
+
+        transport.Enqueue(RemoteGameplayTransportEvent.Disconnected(
+            new RemoteGameplayTransportStatus(NetworkRuntimeErrorCode.Success, 0),
+            NetworkRuntimeDisconnectReason.LocalRequested));
+        session.DrainFrame(1.2);
+
+        Assert.AreEqual(RemoteGameplaySessionState.Idle, session.State);
+        Assert.IsNull(session.LatestWorldOverview);
+        Assert.AreEqual(1, session.BuildLeaderboard().Count);
+        Assert.AreEqual(20u, session.BuildLeaderboard()[0].PlayerId);
+        Assert.AreEqual("Player20", session.BuildLeaderboard()[0].DisplayName);
     }
 
     [TestMethod]

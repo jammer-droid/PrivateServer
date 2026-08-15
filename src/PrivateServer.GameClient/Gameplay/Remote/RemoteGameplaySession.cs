@@ -40,6 +40,8 @@ internal sealed class RemoteGameplaySession : IDisposable
     private readonly RemoteEntityStateGroupAssembler remoteEntityStateAssembler = new();
     private readonly List<ClientStaticObstacle> staticObstacles = new();
     private readonly List<RemoteGameplayRemovalNotice> frameRemovalNotices = new();
+    private IReadOnlyList<LeaderboardEntry> roundResultLeaderboard =
+        Array.Empty<LeaderboardEntry>();
     private bool disposed;
     private uint transportGeneration;
     private double? lastDrainTimeSeconds;
@@ -155,6 +157,7 @@ internal sealed class RemoteGameplaySession : IDisposable
 
         LatestRoundResult = null;
         LatestRoundResultRecipientPlayerId = null;
+        roundResultLeaderboard = Array.Empty<LeaderboardEntry>();
         ResetGenerationLocalState();
         Mode = mode;
         requestedDisplayName = displayName;
@@ -382,6 +385,16 @@ internal sealed class RemoteGameplaySession : IDisposable
     }
 
     internal IReadOnlyList<LeaderboardEntry> BuildLeaderboard()
+    {
+        if (LatestRoundResult is not null)
+        {
+            return roundResultLeaderboard;
+        }
+
+        return BuildActiveLeaderboard();
+    }
+
+    private IReadOnlyList<LeaderboardEntry> BuildActiveLeaderboard()
     {
         if (LatestWorldOverview is not null)
         {
@@ -1185,6 +1198,7 @@ internal sealed class RemoteGameplaySession : IDisposable
         }
         if (packet is RoundResultV2 roundResult)
         {
+            CaptureRoundResultLeaderboard();
             LatestRoundResultRecipientPlayerId = ReadyConfiguration?.PlayerId;
             LatestRoundResult = roundResult;
             _ = Disconnect();
@@ -1217,6 +1231,7 @@ internal sealed class RemoteGameplaySession : IDisposable
         }
         if (packet is RoundResultV2 roundResult)
         {
+            CaptureRoundResultLeaderboard();
             LatestRoundResultRecipientPlayerId = null;
             LatestRoundResult = roundResult;
             _ = Disconnect();
@@ -1398,6 +1413,23 @@ internal sealed class RemoteGameplaySession : IDisposable
         remoteReplicas = null;
         LastReplicaAnomaly = null;
         lastDrainTimeSeconds = null;
+    }
+
+    private void CaptureRoundResultLeaderboard()
+    {
+        IReadOnlyList<LeaderboardEntry> activeLeaderboard = BuildActiveLeaderboard();
+        if (activeLeaderboard.Count == 0)
+        {
+            roundResultLeaderboard = Array.Empty<LeaderboardEntry>();
+            return;
+        }
+
+        List<LeaderboardEntry> snapshot = new List<LeaderboardEntry>(activeLeaderboard.Count);
+        for (int index = 0; index < activeLeaderboard.Count; ++index)
+        {
+            snapshot.Add(activeLeaderboard[index]);
+        }
+        roundResultLeaderboard = snapshot.AsReadOnly();
     }
 
     private void ApplyGameplayScore(ScoreState score)

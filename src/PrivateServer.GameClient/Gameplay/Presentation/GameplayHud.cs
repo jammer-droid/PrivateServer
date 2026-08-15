@@ -107,12 +107,14 @@ public partial class GameplayHud : CanvasLayer
         minimap.Apply(session.LatestWorldOverview, ready?.PlayerId);
         ApplyRoundResult(
             session.LatestRoundResult,
-            session.LatestRoundResultRecipientPlayerId);
+            session.LatestRoundResultRecipientPlayerId,
+            leaderboard);
     }
 
     private void ApplyRoundResult(
         RoundResultV2? result,
-        uint? recipientPlayerId)
+        uint? recipientPlayerId,
+        IReadOnlyList<LeaderboardEntry> leaderboard)
     {
         resultPanel.Visible = result is not null;
         if (result is null)
@@ -121,7 +123,7 @@ public partial class GameplayHud : CanvasLayer
         }
 
         GameplayResultPresentation presentation =
-            GameplayResultPresentation.From(result, recipientPlayerId);
+            GameplayResultPresentation.From(result, recipientPlayerId, leaderboard);
         resultTitleLabel.Text = presentation.Title;
         resultDetailsLabel.Text =
             $"{presentation.Details}\n\nPress R to return to Channel Select";
