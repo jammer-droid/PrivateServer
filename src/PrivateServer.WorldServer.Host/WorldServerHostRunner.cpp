@@ -51,6 +51,7 @@ namespace psnr::world::host
                 psnr::core::NrPacketType{static_cast<std::uint16_t>(protocol::C2SPacketType::MovementInput)},
                 psnr::core::NrPacketType{static_cast<std::uint16_t>(protocol::C2SPacketType::WorldTimeSyncRequest)},
                 psnr::core::NrPacketType{static_cast<std::uint16_t>(protocol::C2SPacketType::ControlStateCommand)},
+                psnr::core::NrPacketType{static_cast<std::uint16_t>(protocol::C2SPacketType::ObserveWorldRequest)},
         };
     } // namespace
 

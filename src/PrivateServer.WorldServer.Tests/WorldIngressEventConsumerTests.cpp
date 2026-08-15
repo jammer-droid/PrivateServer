@@ -1087,6 +1087,107 @@ namespace psnr::world::tests
                   WorldIngressEventHandleResult::JoinBaselineSubmitted);
     }
 
+    TEST(WorldIngressEventConsumerTests, RecoversEmptyEndedRoundBeforeObserverBaseline)
+    {
+        constexpr psnr::core::NrSessionKey PlayerSessionKey = 10;
+        constexpr psnr::core::NrSessionKey ObserverSessionKey = 20;
+        constexpr WorldGrowthConfig PlayerGrowthConfig{10.0f, 0.25f, 1.0f, 0.01f};
+        constexpr WorldPlayerBodyConfig PlayerBodyConfig{PlayerGrowthConfig, 16};
+        const WorldIngressEventConsumerConfig gameplayConfig{
+            WorldJoinConfig{
+                20,
+                1,
+                2,
+                -100.0f,
+                -100.0f,
+                100.0f,
+                100.0f,
+                1,
+                0.5f,
+                5.0f,
+                0.0f,
+                0.0f,
+                PlayerBodyConfig,
+                7,
+            },
+            1,
+            WorldSpatialConfig{100.0f, 300.0f, 320.0f},
+            WorldReplicationConfig{1},
+            WorldGameplayConfig{
+                1,
+                5,
+                1,
+                60,
+                2,
+                0.5f,
+                1,
+                0.000032f,
+                WorldBoostCostConfig{PlayerGrowthConfig, 4.0f},
+                1.0f,
+                0.25f,
+            },
+        };
+        std::unique_ptr<WorldOutboundDoubleBuffer> outboundBuffer =
+            CreateOutboundBuffer(WorldOutboundBatchCapacity{32, 32, 4096});
+        ASSERT_NE(outboundBuffer, nullptr);
+        WorldSessionRegistry sessionRegistry;
+        WorldEntityManager entityManager;
+        WorldMovementCommandStore commandStore;
+        psnr::runtime::NrServer server;
+        psnr::runtime::NrGateway gateway;
+        WorldIngressEventConsumer consumer(sessionRegistry, entityManager, commandStore, server, gateway,
+                                           WorldOutboundMode::DoubleBuffered, outboundBuffer.get(), gameplayConfig, 100,
+                                           99, applicationEventSink);
+        ASSERT_EQ(outboundBuffer->BeginWriteBatch(100, 100, 100), WorldOutboundDoubleBufferExchangeResult::Exchanged);
+        consumer.BeginOutboundTick(100);
+
+        ASSERT_EQ(consumer.Handle(MakeAcceptedEvent(PlayerSessionKey)),
+                  WorldIngressEventHandleResult::SessionRegistered);
+        std::array<std::byte, protocol::v2::JoinWorldRequest::Wire::MinimumPayloadBytes> joinPayload;
+        ASSERT_EQ(protocol::v2::JoinWorldRequest::Encode(protocol::v2::JoinWorldRequest{}, joinPayload),
+                  protocol::WorldProtocolError::Success);
+        ASSERT_EQ(consumer.Handle(MakePacketEvent(PlayerSessionKey, protocol::C2SPacketType::JoinWorldRequest,
+                                                  joinPayload.data(), static_cast<std::uint32_t>(joinPayload.size()))),
+                  WorldIngressEventHandleResult::JoinBaselineSubmitted);
+        ASSERT_EQ(outboundBuffer->SealWrite(100), WorldOutboundDoubleBufferExchangeResult::Exchanged);
+        FakeOutboundGateway gatewaySink;
+        WorldOutboundPublisher outboundPublisher{*outboundBuffer};
+        ASSERT_EQ(outboundPublisher.PublishNext(gatewaySink, std::chrono::milliseconds{0}).stopReason,
+                  WorldOutboundPublishStopReason::Published);
+
+        ASSERT_EQ(outboundBuffer->BeginWriteBatch(102, 101, 102), WorldOutboundDoubleBufferExchangeResult::Exchanged);
+        consumer.BeginOutboundTick(102);
+        consumer.UpdateTickContext(101, 100);
+        ASSERT_EQ(consumer.ProcessGameplayTick(101, WorldPhysicsStepResult{}, sessionRegistry.JoinedSessions()),
+                  WorldGameplayTickRecordResult::Recorded);
+        ASSERT_TRUE(consumer.RecordDurableTickOutbound(101, 102, sessionRegistry.JoinedSessions()));
+        ASSERT_EQ(consumer.GameplayState().RoundState().phase, WorldRoundPhase::Running);
+
+        FakeToWorldEvent closedEvent;
+        closedEvent.kind = psnr::runtime::NrToWorldEventKind::SessionClosed;
+        closedEvent.sessionKey = PlayerSessionKey;
+        closedEvent.endReason = psnr::runtime::NrSessionEndReason::RemoteClosed;
+        ASSERT_EQ(consumer.Handle(closedEvent), WorldIngressEventHandleResult::SessionRemoved);
+        ASSERT_EQ(consumer.GameplayState().PlayerCount(), 0u);
+
+        consumer.UpdateTickContext(102, 101);
+        ASSERT_EQ(consumer.ProcessGameplayTick(102, WorldPhysicsStepResult{}, sessionRegistry.JoinedSessions()),
+                  WorldGameplayTickRecordResult::Recorded);
+        ASSERT_EQ(consumer.GameplayState().RoundState(), (WorldRoundRuntimeState{1, WorldRoundPhase::Ended, 102, 0}));
+
+        ASSERT_EQ(consumer.Handle(MakeAcceptedEvent(ObserverSessionKey)),
+                  WorldIngressEventHandleResult::SessionRegistered);
+        std::array<std::byte, protocol::v1::ObserveWorldRequest::Wire::PayloadBytes> observePayload;
+        ASSERT_EQ(protocol::v1::ObserveWorldRequest::Encode(protocol::v1::ObserveWorldRequest{}, observePayload),
+                  protocol::WorldProtocolError::Success);
+        EXPECT_EQ(
+            consumer.Handle(MakePacketEvent(ObserverSessionKey, protocol::C2SPacketType::ObserveWorldRequest,
+                                            observePayload.data(), static_cast<std::uint32_t>(observePayload.size()))),
+            WorldIngressEventHandleResult::ObserverBaselineSubmitted);
+        EXPECT_FALSE(consumer.OutboundBatchFailed());
+        EXPECT_EQ(consumer.GameplayState().RoundState(), (WorldRoundRuntimeState{2, WorldRoundPhase::Waiting, 0, 0}));
+    }
+
     TEST(WorldIngressEventConsumerTests, PublishesControlledDeathBeforeRespawnSpawnAndRebind)
     {
         constexpr psnr::core::NrSessionKey RuntimeSessionKey = 10;

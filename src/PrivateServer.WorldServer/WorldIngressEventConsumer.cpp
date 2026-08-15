@@ -1073,6 +1073,10 @@ namespace psnr::world
     WorldIngressEventHandleResult WorldIngressEventConsumer::HandleJoin(const WorldSessionKey sessionKey,
                                                                         const psnr::runtime::NrByteView payload)
     {
+        if (!ResetEndedRoundIfEmpty())
+        {
+            return WorldIngressEventHandleResult::WorldStateCleanupFailed;
+        }
         if (gameplayEnabled_ && gameplayState_.RoundState().phase == WorldRoundPhase::Ended)
         {
             return WorldIngressEventHandleResult::JoinRejected;
@@ -1277,6 +1281,10 @@ namespace psnr::world
         if (session.role != WorldSessionRole::Connected)
         {
             return WorldIngressEventHandleResult::ObserverRejected;
+        }
+        if (!ResetEndedRoundIfEmpty())
+        {
+            return WorldIngressEventHandleResult::WorldStateCleanupFailed;
         }
 
         const protocol::v1::ObserverReady ready{
