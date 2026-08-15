@@ -47,6 +47,8 @@ internal sealed class RemoteGameplaySession : IDisposable
     private RemoteReplicaStore? remoteReplicas;
     private string requestedDisplayName = string.Empty;
     private uint expectedChannelId;
+    private double? observerReadyReceivedAtSeconds;
+    private bool localDisconnectRequested;
 
     internal RemoteGameplaySession(
         int maxEventsPerFrame = DefaultMaxEventsPerFrame,
@@ -93,6 +95,8 @@ internal sealed class RemoteGameplaySession : IDisposable
         controlledPrediction is not null;
     internal RemoteGameplaySessionFault? LastFault { get; private set; }
     internal WorldReady? ReadyConfiguration { get; private set; }
+    internal ObserverReady? ObserverReadyConfiguration { get; private set; }
+    internal RemoteGameplaySessionMode Mode { get; private set; }
     internal uint ChannelId { get; private set; }
     internal string DisplayName { get; private set; } = string.Empty;
     internal bool IsControlledSpawnPending { get; private set; }
@@ -126,7 +130,8 @@ internal sealed class RemoteGameplaySession : IDisposable
     internal RemoteGameplaySessionOperationResult Connect(
         NetworkRuntimeIpv4Endpoint endpoint,
         string displayName = "",
-        uint expectedChannelId = 0)
+        uint expectedChannelId = 0,
+        RemoteGameplaySessionMode mode = RemoteGameplaySessionMode.Player)
     {
         if (disposed)
         {
@@ -140,7 +145,8 @@ internal sealed class RemoteGameplaySession : IDisposable
                 RemoteGameplaySessionOperationError.InvalidState,
                 null);
         }
-        if (!PlayerDisplayNameRules.IsValid(displayName))
+        if (mode == RemoteGameplaySessionMode.Player &&
+            !PlayerDisplayNameRules.IsValid(displayName))
         {
             return new RemoteGameplaySessionOperationResult(
                 RemoteGameplaySessionOperationError.InvalidArgument,
@@ -150,6 +156,7 @@ internal sealed class RemoteGameplaySession : IDisposable
         LatestRoundResult = null;
         LatestRoundResultRecipientPlayerId = null;
         ResetGenerationLocalState();
+        Mode = mode;
         requestedDisplayName = displayName;
         this.expectedChannelId = expectedChannelId;
         LastFault = null;
@@ -216,6 +223,7 @@ internal sealed class RemoteGameplaySession : IDisposable
                 status);
         }
 
+        localDisconnectRequested = true;
         State = RemoteGameplaySessionState.Disconnecting;
         return new RemoteGameplaySessionOperationResult(
             RemoteGameplaySessionOperationError.None,
@@ -265,6 +273,7 @@ internal sealed class RemoteGameplaySession : IDisposable
         }
 
         if (State == RemoteGameplaySessionState.Active &&
+            Mode == RemoteGameplaySessionMode.Player &&
             timeSyncTracker.IsPeriodicProbeDue(nowSeconds, timeSyncIntervalSeconds))
         {
             BeginAndSendTimeSyncProbe(nowSeconds);
@@ -281,6 +290,24 @@ internal sealed class RemoteGameplaySession : IDisposable
         double nowSeconds,
         out uint estimatedServerTick)
     {
+        if (Mode == RemoteGameplaySessionMode.Observer)
+        {
+            WorldTimeSyncError observerError = EstimateObserverTimeline(
+                nowSeconds,
+                out double observerTimeline);
+            if (observerError != WorldTimeSyncError.None)
+            {
+                estimatedServerTick = 0;
+                return observerError;
+            }
+            if (observerTimeline > uint.MaxValue)
+            {
+                estimatedServerTick = 0;
+                return WorldTimeSyncError.TickOverflow;
+            }
+            estimatedServerTick = checked((uint)Math.Floor(observerTimeline));
+            return WorldTimeSyncError.None;
+        }
         if (ReadyConfiguration is null)
         {
             estimatedServerTick = 0;
@@ -297,6 +324,10 @@ internal sealed class RemoteGameplaySession : IDisposable
         double nowSeconds,
         out double estimatedServerTimeline)
     {
+        if (Mode == RemoteGameplaySessionMode.Observer)
+        {
+            return EstimateObserverTimeline(nowSeconds, out estimatedServerTimeline);
+        }
         if (ReadyConfiguration is null)
         {
             estimatedServerTimeline = 0.0;
@@ -392,7 +423,9 @@ internal sealed class RemoteGameplaySession : IDisposable
         out RoundPresentationState presentation)
     {
         presentation = default;
-        if (ReadyConfiguration is null ||
+        uint tickRateHz = ReadyConfiguration?.TickRateHz ??
+            ObserverReadyConfiguration?.TickRateHz ?? 0;
+        if (tickRateHz == 0 ||
             EstimateServerTimeline(
                 nowSeconds,
                 out double estimatedServerTimeline) != WorldTimeSyncError.None)
@@ -402,7 +435,7 @@ internal sealed class RemoteGameplaySession : IDisposable
 
         return gameplayState.ProjectRound(
             estimatedServerTimeline,
-            ReadyConfiguration.TickRateHz,
+            tickRateHz,
             out presentation) == AuthoritativeGameplayStateError.None;
     }
 
@@ -644,8 +677,11 @@ internal sealed class RemoteGameplaySession : IDisposable
     {
         if (transportEvent.Kind == RemoteGameplayTransportEventKind.TransportDisconnected)
         {
+            bool wasLocalDisconnectRequested = localDisconnectRequested;
             ResetGenerationLocalState();
-            if (LastFault is null && LatestRoundResult is null)
+            if (!wasLocalDisconnectRequested &&
+                LastFault is null &&
+                LatestRoundResult is null)
             {
                 string reason = transportEvent.DisconnectReason?.ToString() ?? "Unknown";
                 string status = transportEvent.TransportStatus.HasValue
@@ -701,7 +737,10 @@ internal sealed class RemoteGameplaySession : IDisposable
             return;
         }
 
-        if (!SendPacket(new JoinWorldRequestV2(requestedDisplayName)))
+        bool sent = Mode == RemoteGameplaySessionMode.Observer
+            ? SendPacket(new ObserveWorldRequest())
+            : SendPacket(new JoinWorldRequestV2(requestedDisplayName));
+        if (!sent)
         {
             return;
         }
@@ -785,6 +824,27 @@ internal sealed class RemoteGameplaySession : IDisposable
 
     private void ProcessBaselinePacket(ServerGameplayPacket packet, double nowSeconds)
     {
+        if (Mode == RemoteGameplaySessionMode.Observer)
+        {
+            if (packet is RoundState observerRound)
+            {
+                ApplyGameplayRound(observerRound);
+                return;
+            }
+            if (packet is ObserverReady observerReady)
+            {
+                ProcessObserverReady(observerReady, nowSeconds);
+                return;
+            }
+
+            Fault(
+                RemoteGameplaySessionFaultKind.PacketOrdering,
+                packet.PacketType,
+                $"{packet.GetType().Name} arrived during observer admission.",
+                requestDisconnect: true);
+            return;
+        }
+
         switch (packet)
         {
             case EntitySpawnV2 spawn:
@@ -897,6 +957,34 @@ internal sealed class RemoteGameplaySession : IDisposable
         State = RemoteGameplaySessionState.AwaitingFirstTimeSync;
     }
 
+    private void ProcessObserverReady(ObserverReady ready, double nowSeconds)
+    {
+        if (Mode != RemoteGameplaySessionMode.Observer ||
+            ObserverReadyConfiguration is not null)
+        {
+            Fault(
+                RemoteGameplaySessionFaultKind.PacketOrdering,
+                ready.PacketType,
+                "ObserverReady requires one pending observer admission.",
+                requestDisconnect: true);
+            return;
+        }
+        if (expectedChannelId != 0 && ready.ChannelId != expectedChannelId)
+        {
+            Fault(
+                RemoteGameplaySessionFaultKind.GameplayState,
+                ready.PacketType,
+                $"ObserverReady channel mismatch. expected={expectedChannelId} actual={ready.ChannelId}.",
+                requestDisconnect: true);
+            return;
+        }
+
+        ObserverReadyConfiguration = ready;
+        observerReadyReceivedAtSeconds = nowSeconds;
+        ChannelId = ready.ChannelId;
+        State = RemoteGameplaySessionState.Active;
+    }
+
     private void ProcessWorldReadyV2(WorldReadyV2 ready, double nowSeconds)
     {
         if (expectedChannelId != 0 && ready.ChannelId != expectedChannelId)
@@ -952,6 +1040,11 @@ internal sealed class RemoteGameplaySession : IDisposable
 
     private void ProcessActivePacket(ServerGameplayPacket packet, double nowSeconds)
     {
+        if (Mode == RemoteGameplaySessionMode.Observer)
+        {
+            ProcessObserverActivePacket(packet);
+            return;
+        }
         if (packet is WorldTimeSyncResponse response)
         {
             AcceptTimeSyncResponse(response, nowSeconds);
@@ -1105,6 +1198,62 @@ internal sealed class RemoteGameplaySession : IDisposable
             requestDisconnect: true);
     }
 
+    private void ProcessObserverActivePacket(ServerGameplayPacket packet)
+    {
+        if (packet is WorldOverviewSnapshotV3 overviewChunk)
+        {
+            ChunkGroupAcceptResult overviewResult =
+                worldOverviewAssembler.Accept(overviewChunk, out WorldOverviewState? committedOverview);
+            if (overviewResult == ChunkGroupAcceptResult.Committed)
+            {
+                LatestWorldOverview = committedOverview;
+            }
+            return;
+        }
+        if (packet is RoundState round)
+        {
+            ApplyGameplayRound(round);
+            return;
+        }
+        if (packet is RoundResultV2 roundResult)
+        {
+            LatestRoundResultRecipientPlayerId = null;
+            LatestRoundResult = roundResult;
+            _ = Disconnect();
+            return;
+        }
+
+        Fault(
+            RemoteGameplaySessionFaultKind.PacketOrdering,
+            packet.PacketType,
+            $"{packet.GetType().Name} is not valid for an observer session.",
+            requestDisconnect: true);
+    }
+
+    private WorldTimeSyncError EstimateObserverTimeline(
+        double nowSeconds,
+        out double estimatedServerTimeline)
+    {
+        estimatedServerTimeline = 0.0;
+        if (ObserverReadyConfiguration is null ||
+            !observerReadyReceivedAtSeconds.HasValue)
+        {
+            return WorldTimeSyncError.NoValidSample;
+        }
+        if (!double.IsFinite(nowSeconds) ||
+            nowSeconds < observerReadyReceivedAtSeconds.Value)
+        {
+            return WorldTimeSyncError.InvalidTime;
+        }
+
+        estimatedServerTimeline = ObserverReadyConfiguration.CurrentServerTick +
+            ((nowSeconds - observerReadyReceivedAtSeconds.Value) *
+                ObserverReadyConfiguration.TickRateHz);
+        return double.IsFinite(estimatedServerTimeline)
+            ? WorldTimeSyncError.None
+            : WorldTimeSyncError.TickOverflow;
+    }
+
     private bool BeginAndSendTimeSyncProbe(double nowSeconds)
     {
         WorldTimeSyncError syncError = timeSyncTracker.BeginProbe(
@@ -1226,10 +1375,14 @@ internal sealed class RemoteGameplaySession : IDisposable
         playerIdentitySpawns.Clear();
         gameplayState.Clear();
         ReadyConfiguration = null;
+        ObserverReadyConfiguration = null;
+        Mode = RemoteGameplaySessionMode.Player;
         ChannelId = 0;
         DisplayName = string.Empty;
         requestedDisplayName = string.Empty;
         expectedChannelId = 0;
+        observerReadyReceivedAtSeconds = null;
+        localDisconnectRequested = false;
         timeSyncTracker.Reset();
         movementScheduler.Reset();
         controlStateTracker.Reset();

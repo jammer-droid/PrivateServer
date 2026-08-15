@@ -39,6 +39,7 @@ public partial class RemoteGameplayScene : Node2D
     private GameplayHud hud = null!;
     private DeveloperOverlay developerOverlay = null!;
     private ArenaPresentation arenaPresentation = null!;
+    private WorldOverviewPresentation worldOverviewPresentation = null!;
     private GameplayEffects effects = null!;
     private GameplayAudio audio = null!;
     private Node2D worldEntities = null!;
@@ -79,6 +80,7 @@ public partial class RemoteGameplayScene : Node2D
         camera = GetNode<Camera2D>("%GameplayCamera");
         camera.Enabled = true;
         arenaPresentation = GetNode<ArenaPresentation>("%ArenaPresentation");
+        worldOverviewPresentation = GetNode<WorldOverviewPresentation>("%WorldOverviewPresentation");
         worldEntities = GetNode<Node2D>("%WorldEntities");
         effects = GetNode<GameplayEffects>("%GameplayEffects");
         hud = GetNode<GameplayHud>("%GameplayHud");
@@ -89,6 +91,7 @@ public partial class RemoteGameplayScene : Node2D
         flow = new GameplayFlow();
         session = new RemoteGameplaySession();
         navigationUi.ChannelSelected += SelectChannel;
+        navigationUi.ObserveRequested += BeginObserve;
         navigationUi.ConnectRequested += BeginConnect;
         navigationUi.ReturnToChannelSelectRequested += ReturnToChannelSelect;
         navigationUi.ExitRequested += ExitApplication;
@@ -225,11 +228,51 @@ public partial class RemoteGameplayScene : Node2D
         ApplyFlowPresentation();
     }
 
+    private void BeginObserve(int index)
+    {
+        if (index < 0 ||
+            index >= channelDirectory.Channels.Count ||
+            session.State != RemoteGameplaySessionState.Idle ||
+            !flow.TryBeginObservation())
+        {
+            return;
+        }
+
+        channel = channelDirectory.Channels[index];
+        hud.ConfigureChannel(channel);
+        developerOverlay.ConfigureChannel(channel);
+        if (!channel.TryCreateEndpoint(out NetworkRuntimeIpv4Endpoint endpoint))
+        {
+            return;
+        }
+
+        RemoteGameplaySessionOperationResult result = session.Connect(
+            endpoint,
+            expectedChannelId: channel.Id,
+            mode: RemoteGameplaySessionMode.Observer);
+        if (!result.Succeeded)
+        {
+            GD.PushError($"World observer connect request failed: {result.Error}.");
+            flow.TryApply(GameplayFlowObservation.FromSession(session));
+        }
+        ApplyFlowPresentation();
+    }
+
     private void ReturnToChannelSelect()
     {
         if (!flow.TryReturnToChannelSelect())
         {
             return;
+        }
+        if (flow.State == GameplayFlowState.ReturningToChannelSelect &&
+            session.State != RemoteGameplaySessionState.Disconnecting)
+        {
+            RemoteGameplaySessionOperationResult result = session.Disconnect();
+            if (!result.Succeeded &&
+                result.Error != RemoteGameplaySessionOperationError.InvalidState)
+            {
+                GD.PushError($"World session disconnect request failed: {result.Error}.");
+            }
         }
         channel = default;
         navigationUi.ResetPlayerSetup();
@@ -253,6 +296,7 @@ public partial class RemoteGameplayScene : Node2D
         GameplayFlowState state = flow.State;
         hud.Visible =
             state == GameplayFlowState.Playing ||
+            state == GameplayFlowState.Observing ||
             state == GameplayFlowState.SpawnPending ||
             state == GameplayFlowState.Result;
         navigationUi.Apply(
@@ -279,10 +323,22 @@ public partial class RemoteGameplayScene : Node2D
     private void ApplyPresentation(double nowSeconds)
     {
         WorldReady? ready = session.ReadyConfiguration;
-        ApplyArena(ready);
+        ApplyArena(ready, session.ObserverReadyConfiguration);
         ApplyActiveArea(session.LatestWorldOverview);
         ApplyControlled(ready);
-        ApplyRemoteReplicas(nowSeconds);
+        bool isObserver = session.Mode == RemoteGameplaySessionMode.Observer;
+        worldOverviewPresentation.Apply(
+            session.LatestWorldOverview,
+            PixelsPerUnit,
+            isObserver);
+        if (isObserver)
+        {
+            ClearRemoteReplicas();
+        }
+        else
+        {
+            ApplyRemoteReplicas(nowSeconds);
+        }
     }
 
     private List<RemovalPresentationCue> CaptureRemovalCues(
@@ -425,12 +481,33 @@ public partial class RemoteGameplayScene : Node2D
         arenaPresentation.ApplyActiveArea(overview, PixelsPerUnit);
     }
 
-    private void ApplyArena(WorldReady? ready)
+    private void ApplyArena(WorldReady? ready, ObserverReady? observerReady)
     {
-        arenaPresentation.ApplyArena(ready, PixelsPerUnit);
+        bool isObserver = session.Mode == RemoteGameplaySessionMode.Observer;
+        if (isObserver)
+        {
+            arenaPresentation.ApplyArena(observerReady, PixelsPerUnit);
+        }
+        else
+        {
+            arenaPresentation.ApplyArena(ready, PixelsPerUnit);
+        }
         if (controlledNode is null && arenaPresentation.ArenaRect.HasValue)
         {
-            camera.Position = arenaPresentation.ArenaRect.Value.GetCenter();
+            Rect2 arena = arenaPresentation.ArenaRect.Value;
+            camera.Position = arena.GetCenter();
+            if (isObserver)
+            {
+                Vector2 viewportSize = GetViewportRect().Size;
+                float fitZoom = Mathf.Min(
+                    viewportSize.X / arena.Size.X,
+                    viewportSize.Y / arena.Size.Y) * 0.92f;
+                camera.Zoom = Vector2.One * Mathf.Max(0.05f, fitZoom);
+            }
+            else
+            {
+                camera.Zoom = Vector2.One;
+            }
         }
     }
 
@@ -611,6 +688,20 @@ public partial class RemoteGameplayScene : Node2D
         {
             camera.Position = arenaPresentation.ArenaRect.Value.GetCenter();
         }
+    }
+
+    private void ClearRemoteReplicas()
+    {
+        foreach (GameplayReplicaNode node in remoteNodes.Values)
+        {
+            node.QueueFree();
+        }
+        foreach (GameplayBodyLine bodyLine in remoteBodyLines.Values)
+        {
+            bodyLine.QueueFree();
+        }
+        remoteNodes.Clear();
+        remoteBodyLines.Clear();
     }
 
     private void ClearControlledBody()

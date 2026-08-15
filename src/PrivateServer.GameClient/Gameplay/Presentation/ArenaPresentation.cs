@@ -30,18 +30,46 @@ internal partial class ArenaPresentation : Node2D
     {
         if (ready is null)
         {
-            arenaRect = null;
-            gridPattern.Visible = false;
-            mapBoundaryGlow.Visible = false;
-            mapBoundary.Visible = false;
+            ClearArena();
             return;
         }
 
-        Rect2 nextArena = GodotWorldTransform.Arena(
+        ApplyArenaBounds(
             ready.ArenaMinX,
             ready.ArenaMinY,
             ready.ArenaMaxX,
             ready.ArenaMaxY,
+            pixelsPerUnit);
+    }
+
+    internal void ApplyArena(ObserverReady? ready, float pixelsPerUnit)
+    {
+        if (ready is null)
+        {
+            ClearArena();
+            return;
+        }
+
+        ApplyArenaBounds(
+            ready.ArenaMinX,
+            ready.ArenaMinY,
+            ready.ArenaMaxX,
+            ready.ArenaMaxY,
+            pixelsPerUnit);
+    }
+
+    private void ApplyArenaBounds(
+        float arenaMinX,
+        float arenaMinY,
+        float arenaMaxX,
+        float arenaMaxY,
+        float pixelsPerUnit)
+    {
+        Rect2 nextArena = GodotWorldTransform.Arena(
+            arenaMinX,
+            arenaMinY,
+            arenaMaxX,
+            arenaMaxY,
             pixelsPerUnit);
         if (arenaRect.HasValue && arenaRect.Value == nextArena)
         {
@@ -69,6 +97,14 @@ internal partial class ArenaPresentation : Node2D
         mapBoundary.Points = boundaryPoints;
         mapBoundaryGlow.Visible = true;
         mapBoundary.Visible = true;
+    }
+
+    private void ClearArena()
+    {
+        arenaRect = null;
+        gridPattern.Visible = false;
+        mapBoundaryGlow.Visible = false;
+        mapBoundary.Visible = false;
     }
 
     internal void ApplyActiveArea(WorldOverviewState? overview, float pixelsPerUnit)

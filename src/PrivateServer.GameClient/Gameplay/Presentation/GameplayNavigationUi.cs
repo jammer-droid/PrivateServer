@@ -11,6 +11,7 @@ internal partial class GameplayNavigationUi : CanvasLayer
     private PanelContainer channelPanel = null!;
     private OptionButton channelSelector = null!;
     private Button connectButton = null!;
+    private Button observeButton = null!;
     private PanelContainer playerSetupPanel = null!;
     private Label selectedChannelLabel = null!;
     private LineEdit nicknameInput = null!;
@@ -20,10 +21,12 @@ internal partial class GameplayNavigationUi : CanvasLayer
     private PanelContainer errorPanel = null!;
     private Label errorLabel = null!;
     private PanelContainer resultActionsPanel = null!;
+    private PanelContainer activeActionsPanel = null!;
     private AnimationPlayer transitionAnimation = null!;
     private GameplayFlowState? appliedState;
 
     internal event Action<int>? ChannelSelected;
+    internal event Action<int>? ObserveRequested;
     internal event Action<string>? ConnectRequested;
     internal event Action? ReturnToChannelSelectRequested;
     internal event Action? ExitRequested;
@@ -33,6 +36,7 @@ internal partial class GameplayNavigationUi : CanvasLayer
         channelPanel = GetNode<PanelContainer>("%ChannelPanel");
         channelSelector = GetNode<OptionButton>("%ChannelSelector");
         connectButton = GetNode<Button>("%ConnectButton");
+        observeButton = GetNode<Button>("%ObserveButton");
         playerSetupPanel = GetNode<PanelContainer>("%PlayerSetupPanel");
         selectedChannelLabel = GetNode<Label>("%SelectedChannelLabel");
         nicknameInput = GetNode<LineEdit>("%NicknameInput");
@@ -42,9 +46,11 @@ internal partial class GameplayNavigationUi : CanvasLayer
         errorPanel = GetNode<PanelContainer>("%ErrorPanel");
         errorLabel = GetNode<Label>("%ErrorLabel");
         resultActionsPanel = GetNode<PanelContainer>("%ResultActionsPanel");
+        activeActionsPanel = GetNode<PanelContainer>("%ActiveActionsPanel");
         transitionAnimation = GetNode<AnimationPlayer>("%TransitionAnimation");
 
         connectButton.Pressed += () => ChannelSelected?.Invoke(channelSelector.Selected);
+        observeButton.Pressed += () => ObserveRequested?.Invoke(channelSelector.Selected);
         playerConnectButton.Pressed += () => ConnectRequested?.Invoke(nicknameInput.Text);
         nicknameInput.TextChanged += FilterNicknameInput;
         GetNode<Button>("%PlayerBackButton").Pressed +=
@@ -59,6 +65,8 @@ internal partial class GameplayNavigationUi : CanvasLayer
             () => ReturnToChannelSelectRequested?.Invoke();
         GetNode<Button>("%ResultExitButton").Pressed +=
             () => ExitRequested?.Invoke();
+        GetNode<Button>("%ActiveLobbyButton").Pressed +=
+            () => ReturnToChannelSelectRequested?.Invoke();
     }
 
     internal void ConfigureChannels(IReadOnlyList<GameplayChannelOption> channels)
@@ -101,11 +109,16 @@ internal partial class GameplayNavigationUi : CanvasLayer
         statusPanel.Visible =
             state == GameplayFlowState.Connecting ||
             state == GameplayFlowState.Joining ||
-            state == GameplayFlowState.SpawnPending;
+            state == GameplayFlowState.SpawnPending ||
+            state == GameplayFlowState.ReturningToChannelSelect;
         errorPanel.Visible = state == GameplayFlowState.Error;
         resultActionsPanel.Visible = state == GameplayFlowState.Result;
+        activeActionsPanel.Visible =
+            state == GameplayFlowState.Playing ||
+            state == GameplayFlowState.Observing;
 
         connectButton.Disabled = !canConnect || channelSelector.ItemCount == 0;
+        observeButton.Disabled = !canConnect || channelSelector.ItemCount == 0;
         connectButton.Text = canConnect
             ? "NEXT"
             : "CLOSING PREVIOUS SESSION...";
@@ -115,6 +128,7 @@ internal partial class GameplayNavigationUi : CanvasLayer
             GameplayFlowState.Connecting => "LINKING TO WORLD SERVER",
             GameplayFlowState.Joining => "SYNCHRONIZING AUTHORITATIVE WORLD",
             GameplayFlowState.SpawnPending => "WAITING FOR SERVER SPAWN",
+            GameplayFlowState.ReturningToChannelSelect => "RETURNING TO CHANNEL SELECT",
             _ => string.Empty,
         };
         errorLabel.Text = string.IsNullOrWhiteSpace(faultMessage)

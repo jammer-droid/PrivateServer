@@ -80,6 +80,100 @@ public sealed class RemoteGameplaySessionTests
     }
 
     [TestMethod]
+    public void ObserverAdmissionUsesObserverRequestAndSkipsPlayerTimeSync()
+    {
+        FakeRemoteGameplayTransport transport = new FakeRemoteGameplayTransport();
+        using RemoteGameplaySession session = new RemoteGameplaySession(transport);
+
+        Assert.IsTrue(session.Connect(
+            NetworkRuntimeIpv4Endpoint.Loopback(40000),
+            expectedChannelId: 7,
+            mode: RemoteGameplaySessionMode.Observer).Succeeded);
+        transport.Enqueue(RemoteGameplayTransportEvent.Connected());
+        transport.Enqueue(Packet(new RoundState(100, 1, RoundPhase.Running, 600, 10, 0)));
+        transport.Enqueue(Packet(new ObserverReady(
+            120,
+            60,
+            -10.0f,
+            -10.0f,
+            10.0f,
+            10.0f,
+            7)));
+
+        session.DrainFrame(1.0);
+
+        Assert.AreEqual(RemoteGameplaySessionState.Active, session.State);
+        Assert.AreEqual(RemoteGameplaySessionMode.Observer, session.Mode);
+        Assert.IsNotNull(session.ObserverReadyConfiguration);
+        Assert.IsNull(session.ReadyConfiguration);
+        Assert.AreEqual(1, transport.SentPackets.Count);
+        Assert.AreEqual(ObserveWorldRequest.PacketTypeValue, transport.SentPackets[0].PacketType);
+        Assert.AreEqual(
+            GameplayProtocolError.Success,
+            ObserveWorldRequest.Decode(
+                transport.SentPackets[0].Payload,
+                out ObserveWorldRequest _));
+        Assert.AreEqual(
+            WorldTimeSyncError.None,
+            session.EstimateServerTick(1.5, out uint estimatedTick));
+        Assert.AreEqual(150u, estimatedTick);
+
+        session.DrainFrame(20.0);
+        Assert.AreEqual(1, transport.SentPackets.Count);
+    }
+
+    [TestMethod]
+    public void ObserverReceivesOverviewAndResultWithoutRecipientIdentity()
+    {
+        FakeRemoteGameplayTransport transport = new FakeRemoteGameplayTransport();
+        using RemoteGameplaySession session = new RemoteGameplaySession(transport);
+        session.Connect(
+            NetworkRuntimeIpv4Endpoint.Loopback(40000),
+            mode: RemoteGameplaySessionMode.Observer);
+        transport.Enqueue(RemoteGameplayTransportEvent.Connected());
+        transport.Enqueue(Packet(new ObserverReady(
+            120,
+            60,
+            -10.0f,
+            -10.0f,
+            10.0f,
+            10.0f,
+            7)));
+        session.DrainFrame(1.0);
+
+        transport.Enqueue(Packet(MakeOverviewChunk(1, 0, 1, 20, true)));
+        transport.Enqueue(Packet(new RoundResultV2(700, 1, 9, 0, new uint[] { 20 })));
+        session.DrainFrame(1.1);
+
+        Assert.IsNotNull(session.LatestWorldOverview);
+        Assert.IsNotNull(session.LatestRoundResult);
+        Assert.IsNull(session.LatestRoundResultRecipientPlayerId);
+        Assert.AreEqual(RemoteGameplaySessionState.Disconnecting, session.State);
+        Assert.AreEqual(1, transport.DisconnectCallCount);
+    }
+
+    [TestMethod]
+    public void RequestedDisconnectReturnsIdleWithoutTransportFault()
+    {
+        FakeRemoteGameplayTransport transport = new FakeRemoteGameplayTransport();
+        using RemoteGameplaySession session = new RemoteGameplaySession(transport);
+        session.Connect(
+            NetworkRuntimeIpv4Endpoint.Loopback(40000),
+            mode: RemoteGameplaySessionMode.Observer);
+        transport.Enqueue(RemoteGameplayTransportEvent.Connected());
+        session.DrainFrame(1.0);
+
+        Assert.IsTrue(session.Disconnect().Succeeded);
+        transport.Enqueue(RemoteGameplayTransportEvent.Disconnected(
+            new RemoteGameplayTransportStatus(NetworkRuntimeErrorCode.Success, 0),
+            NetworkRuntimeDisconnectReason.LocalRequested));
+        session.DrainFrame(1.1);
+
+        Assert.AreEqual(RemoteGameplaySessionState.Idle, session.State);
+        Assert.IsNull(session.LastFault);
+    }
+
+    [TestMethod]
     public void EntitySpawnV2OwnsAoiScopedPlayerLabelsAndClearsThemOnRemove()
     {
         FakeRemoteGameplayTransport transport = new FakeRemoteGameplayTransport();
@@ -1251,6 +1345,10 @@ public sealed class RemoteGameplaySessionTests
                 break;
             case RoundState value:
                 payload = new byte[RoundState.PayloadBytes];
+                encodeError = value.Encode(payload);
+                break;
+            case ObserverReady value:
+                payload = new byte[ObserverReady.PayloadBytes];
                 encodeError = value.Encode(payload);
                 break;
             case WorldTimeSyncResponse value:

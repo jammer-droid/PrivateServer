@@ -60,7 +60,9 @@ public partial class GameplayHud : CanvasLayer
         _ = drainResult;
 
         ControlledEntityStateV2? controlledState = session.LatestControlledStateV2;
-        controlledStateLabel.Text = controlledState is null
+        controlledStateLabel.Text = session.Mode == RemoteGameplaySessionMode.Observer
+            ? "OBSERVER"
+            : controlledState is null
             ? "GROWTH --"
             : $"GROWTH {controlledState.GrowthPoint}";
 

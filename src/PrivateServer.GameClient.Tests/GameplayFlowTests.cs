@@ -49,6 +49,34 @@ public sealed class GameplayFlowTests
     }
 
     [TestMethod]
+    public void ObserverConnectsDirectlyFromChannelSelectAndEntersObserving()
+    {
+        GameplayFlow flow = new GameplayFlow();
+
+        Assert.IsTrue(flow.TryBeginObservation());
+        Assert.AreEqual(GameplayFlowState.Connecting, flow.State);
+        Assert.IsTrue(flow.TryApply(Observe(RemoteGameplaySessionState.AwaitingBaseline)));
+        Assert.AreEqual(GameplayFlowState.Joining, flow.State);
+        Assert.IsTrue(flow.TryApply(Observe(
+            RemoteGameplaySessionState.Active,
+            isObserver: true)));
+        Assert.AreEqual(GameplayFlowState.Observing, flow.State);
+    }
+
+    [TestMethod]
+    public void ActiveSessionReturnsOnlyAfterTransportBecomesIdle()
+    {
+        GameplayFlow flow = BeginPlayingFlow();
+
+        Assert.IsTrue(flow.TryReturnToChannelSelect());
+        Assert.AreEqual(GameplayFlowState.ReturningToChannelSelect, flow.State);
+        Assert.IsTrue(flow.TryApply(Observe(RemoteGameplaySessionState.Disconnecting)));
+        Assert.AreEqual(GameplayFlowState.ReturningToChannelSelect, flow.State);
+        Assert.IsTrue(flow.TryApply(Observe(RemoteGameplaySessionState.Idle)));
+        Assert.AreEqual(GameplayFlowState.ChannelSelect, flow.State);
+    }
+
+    [TestMethod]
     public void CommittedResultSurvivesDisconnectingAndIdleObservations()
     {
         GameplayFlow flow = BeginPlayingFlow();
@@ -130,6 +158,7 @@ public sealed class GameplayFlowTests
         RemoteGameplaySessionState sessionState,
         bool isControlledSpawnPending = false,
         bool hasControlledEntity = false,
+        bool isObserver = false,
         bool hasResult = false,
         bool hasFault = false)
     {
@@ -137,6 +166,7 @@ public sealed class GameplayFlowTests
             sessionState,
             isControlledSpawnPending,
             hasControlledEntity,
+            isObserver,
             hasResult,
             hasFault);
     }

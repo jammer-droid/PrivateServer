@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://Gameplay/Presentation/RemoteGameplayScene.cs" id="1_remote"]
 [ext_resource type="PackedScene" path="res://Gameplay/Presentation/ArenaPresentation.tscn" id="2_arena"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://Gameplay/Presentation/GameplayNavigationUi.tscn" id="7_navigation"]
 [ext_resource type="PackedScene" path="res://Gameplay/Presentation/DeveloperOverlay.tscn" id="8_developer"]
 [ext_resource type="PackedScene" path="res://Gameplay/Presentation/GameplayAudio.tscn" id="9_audio"]
+[ext_resource type="Script" path="res://Gameplay/Presentation/WorldOverviewPresentation.cs" id="10_overview"]
 
 [node name="RemoteGameplayScene" type="Node2D"]
 script = ExtResource("1_remote")
@@ -17,6 +18,10 @@ BodyLineScene = ExtResource("5_body")
 
 [node name="ArenaPresentation" parent="." instance=ExtResource("2_arena")]
 unique_name_in_owner = true
+
+[node name="WorldOverviewPresentation" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("10_overview")
 
 [node name="WorldEntities" type="Node2D" parent="."]
 unique_name_in_owner = true

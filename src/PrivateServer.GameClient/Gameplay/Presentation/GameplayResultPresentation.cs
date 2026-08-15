@@ -21,7 +21,10 @@ internal readonly record struct GameplayResultPresentation(
 
         StringBuilder details = new StringBuilder();
         details.Append($"Round {result.RoundId}\n");
-        details.Append($"Final growth: {result.RecipientFinalGrowthPoint}\n");
+        if (recipientPlayerId.HasValue)
+        {
+            details.Append($"Final growth: {result.RecipientFinalGrowthPoint}\n");
+        }
         if (!hasWinner)
         {
             details.Append("Winner: none");

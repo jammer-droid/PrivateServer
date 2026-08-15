@@ -11,6 +11,8 @@ internal enum GameplayFlowState
     Joining,
     SpawnPending,
     Playing,
+    Observing,
+    ReturningToChannelSelect,
     Result,
     Error,
     Exiting,
@@ -20,6 +22,7 @@ internal readonly record struct GameplayFlowObservation(
     RemoteGameplaySessionState SessionState,
     bool IsControlledSpawnPending,
     bool HasControlledEntity,
+    bool IsObserver,
     bool HasResult,
     bool HasFault)
 {
@@ -30,6 +33,7 @@ internal readonly record struct GameplayFlowObservation(
             session.State,
             session.IsControlledSpawnPending,
             session.ControlledPrediction.HasValue,
+            session.Mode == RemoteGameplaySessionMode.Observer,
             session.LatestRoundResult is not null,
             session.LastFault is not null);
     }
@@ -61,6 +65,17 @@ internal sealed class GameplayFlow
         return true;
     }
 
+    internal bool TryBeginObservation()
+    {
+        if (State != GameplayFlowState.ChannelSelect)
+        {
+            return false;
+        }
+
+        State = GameplayFlowState.Connecting;
+        return true;
+    }
+
     internal bool TryApply(GameplayFlowObservation observation)
     {
         if (State == GameplayFlowState.ChannelSelect ||
@@ -68,6 +83,15 @@ internal sealed class GameplayFlow
             State == GameplayFlowState.Exiting)
         {
             return false;
+        }
+
+        if (State == GameplayFlowState.ReturningToChannelSelect)
+        {
+            if (observation.SessionState == RemoteGameplaySessionState.Idle)
+            {
+                State = GameplayFlowState.ChannelSelect;
+            }
+            return true;
         }
 
         if (observation.HasResult)
@@ -93,7 +117,9 @@ internal sealed class GameplayFlow
                 State = GameplayFlowState.SpawnPending;
                 return true;
             case RemoteGameplaySessionState.Active:
-                State = observation.IsControlledSpawnPending || !observation.HasControlledEntity
+                State = observation.IsObserver
+                    ? GameplayFlowState.Observing
+                    : observation.IsControlledSpawnPending || !observation.HasControlledEntity
                     ? GameplayFlowState.SpawnPending
                     : GameplayFlowState.Playing;
                 return true;
@@ -109,14 +135,23 @@ internal sealed class GameplayFlow
 
     internal bool TryReturnToChannelSelect()
     {
-        if (State != GameplayFlowState.PlayerSetup &&
-            State != GameplayFlowState.Result &&
-            State != GameplayFlowState.Error)
+        if (State == GameplayFlowState.PlayerSetup ||
+            State == GameplayFlowState.Result ||
+            State == GameplayFlowState.Error)
+        {
+            State = GameplayFlowState.ChannelSelect;
+            return true;
+        }
+        if (State != GameplayFlowState.Connecting &&
+            State != GameplayFlowState.Joining &&
+            State != GameplayFlowState.SpawnPending &&
+            State != GameplayFlowState.Playing &&
+            State != GameplayFlowState.Observing)
         {
             return false;
         }
 
-        State = GameplayFlowState.ChannelSelect;
+        State = GameplayFlowState.ReturningToChannelSelect;
         return true;
     }
 

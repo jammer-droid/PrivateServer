@@ -15,6 +15,12 @@ internal enum RemoteGameplaySessionState
     Faulted,
 }
 
+internal enum RemoteGameplaySessionMode
+{
+    Player,
+    Observer,
+}
+
 internal enum RemoteGameplaySessionFaultKind
 {
     TransportFailure,

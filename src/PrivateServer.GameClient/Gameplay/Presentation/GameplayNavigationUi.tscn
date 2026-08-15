@@ -178,6 +178,12 @@ custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 text = "NEXT"
 
+[node name="ObserveButton" type="Button" parent="NavigationRoot/ChannelPanel/ChannelContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "OBSERVE"
+
 [node name="ChannelExitButton" type="Button" parent="NavigationRoot/ChannelPanel/ChannelContent"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
@@ -376,6 +382,28 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 text = "EXIT"
+
+[node name="ActiveActionsPanel" type="PanelContainer" parent="NavigationRoot"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+theme_type_variation = &"FocusPanel"
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -76.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="ActiveLobbyButton" type="Button" parent="NavigationRoot/ActiveActionsPanel"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(210, 44)
+layout_mode = 2
+text = "RETURN TO LOBBY"
 
 [node name="TransitionAnimation" type="AnimationPlayer" parent="."]
 unique_name_in_owner = true

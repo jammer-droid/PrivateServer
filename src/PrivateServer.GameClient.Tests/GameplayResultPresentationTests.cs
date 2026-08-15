@@ -8,6 +8,18 @@ namespace PrivateServer.GameClient.Tests;
 public sealed class GameplayResultPresentationTests
 {
     [TestMethod]
+    public void ObserverResultOmitsRecipientSpecificGrowth()
+    {
+        GameplayResultPresentation presentation = GameplayResultPresentation.From(
+            new RoundResult(100, 3, 12, 0, new uint[] { 7 }),
+            recipientPlayerId: null);
+
+        Assert.AreEqual("ROUND COMPLETE", presentation.Title);
+        Assert.IsFalse(presentation.Details.Contains("Final growth", System.StringComparison.Ordinal));
+        StringAssert.Contains(presentation.Details, "Winning growth: 12");
+    }
+
+    [TestMethod]
     public void MarksRecipientVictoryForSingleWinner()
     {
         GameplayResultPresentation presentation = GameplayResultPresentation.From(

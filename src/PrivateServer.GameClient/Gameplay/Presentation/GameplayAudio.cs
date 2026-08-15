@@ -86,6 +86,8 @@ internal partial class GameplayAudio : Node
             GameplayFlowState.Joining => lobbyMusic,
             GameplayFlowState.SpawnPending => playingMusic,
             GameplayFlowState.Playing => playingMusic,
+            GameplayFlowState.Observing => playingMusic,
+            GameplayFlowState.ReturningToChannelSelect => lobbyMusic,
             GameplayFlowState.Result => resultMusic,
             GameplayFlowState.Error => lobbyMusic,
             GameplayFlowState.Exiting => null,
@@ -97,9 +99,10 @@ internal partial class GameplayAudio : Node
         {
             PlayOneShot(errorPlayer);
         }
-        else if (state == GameplayFlowState.Playing &&
+        else if ((state == GameplayFlowState.Playing ||
+                  state == GameplayFlowState.Observing) &&
                  previous.HasValue &&
-                 previous.Value != GameplayFlowState.Playing)
+                 previous.Value != state)
         {
             PlayOneShot(confirmationPlayer);
         }
