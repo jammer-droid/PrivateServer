@@ -54,7 +54,7 @@ NuGet의 `nlohmann.json`은 solution restore로 준비된다. `spdlog`는 `src/v
 .\tools\build.ps1 -Target All -Configuration Release
 ```
 
-`Server` target은 World Host와 의존 native library를, `Client` target은 CAbi/Runtime DLL, Managed adapter와 Godot C# assembly를 빌드한다. Debug/Release native DLL과 managed client 구성을 섞지 않는다.
+`Server` target은 World Host, benchmark controller와 의존 native library를, `Client` target은 CAbi/Runtime DLL, Managed adapter와 Godot C# assembly를 빌드한다. Debug/Release native DLL과 managed client 구성을 섞지 않는다.
 
 모든 C++ test, smoke와 benchmark project를 포함한 전체 solution 빌드는 MSBuild를 직접 사용한다. Game Client는 solution 밖에 있으므로 필요하면 별도로 빌드한다.
 
@@ -141,7 +141,7 @@ Fleet benchmark는 controller 두 개가 각자 World Host를 시작하고 한 �
 .\tools\run-world-host-benchmark-fleet.ps1 -RepeatCount 3
 ```
 
-두 Channel의 bot fleet을 Godot 관전자 창으로 함께 보려면 `-LaunchObservers`를 사용한다. 각 창은 `channels.local.json`의 Channel 1과 2에 관전자로 자동 접속하며 기본 960×600 크기로 좌우에 배치된다.
+두 Channel의 bot fleet을 Godot 관전자 창으로 함께 보려면 `-LaunchObservers`를 사용한다. 각 창은 `channels.local.json`의 Channel 1과 2에 관전자로 자동 접속하며 기본 크기는 960×600이다. 초기 위치는 Windows/Godot의 기본 창 배치에 맡긴다. 관전자 창 안쪽 화면의 상단 48px 영역을 마우스 왼쪽 버튼으로 드래그하면 촬영에 맞게 OS 창 위치를 옮길 수 있다.
 
 ```powershell
 .\tools\build.ps1 -Target All -Configuration Release

@@ -15,6 +15,8 @@ namespace PrivateServer.GameClient.Gameplay.Presentation;
 
 public partial class RemoteGameplayScene : Node2D
 {
+    private const float ObserverWindowDragRegionHeight = 48.0f;
+
     private readonly record struct RemovalPresentationCue(
         EntityRemoveReason Reason,
         Vector2 Position,
@@ -48,6 +50,7 @@ public partial class RemoteGameplayScene : Node2D
     private GameplayBodyLine? controlledBodyLine;
     private ClientWorldEntityKey? controlledKey;
     private uint? presentationTransportGeneration;
+    private bool observerWindowDragEnabled;
 
     [Export]
     public PackedScene ReplicaScene { get; set; } = null!;
@@ -229,6 +232,21 @@ public partial class RemoteGameplayScene : Node2D
         ApplyFlowPresentation();
     }
 
+    public override void _Input(InputEvent inputEvent)
+    {
+        if (!observerWindowDragEnabled ||
+            inputEvent is not InputEventMouseButton mouseButton ||
+            mouseButton.ButtonIndex != MouseButton.Left ||
+            !mouseButton.Pressed ||
+            mouseButton.Position.Y > ObserverWindowDragRegionHeight)
+        {
+            return;
+        }
+
+        DisplayServer.WindowStartDrag();
+        GetViewport().SetInputAsHandled();
+    }
+
     private void BeginObserve(int index)
     {
         if (index < 0 ||
@@ -272,6 +290,8 @@ public partial class RemoteGameplayScene : Node2D
         {
             return;
         }
+
+        observerWindowDragEnabled = true;
 
         for (int index = 0; index < channelDirectory.Channels.Count; ++index)
         {

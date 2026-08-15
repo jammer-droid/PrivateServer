@@ -200,15 +200,12 @@ try {
         [int]$observerWindowHeight = 600
         for ([int]$channelIndex = 0; $channelIndex -lt $resolvedConfigPaths.Length; ++$channelIndex) {
             [int]$channelId = $channelIndex + 1
-            [int]$windowX = $channelIndex * $observerWindowWidth
             [string[]]$observerArguments = @(
                 "--path",
                 "`"$gameClientPath`"",
                 "--windowed",
                 "--resolution",
                 "$observerWindowWidth`x$observerWindowHeight",
-                "--position",
-                "$windowX,0",
                 "--",
                 "--observe-channel",
                 "$channelId"
@@ -221,7 +218,7 @@ try {
             $observerProcesses.Add($observerProcess)
             Write-Output (
                 "Godot observer starting: channelId=$channelId " +
-                "pid=$($observerProcess.Id) position=$windowX,0 " +
+                "pid=$($observerProcess.Id) " +
                 "resolution=$observerWindowWidth`x$observerWindowHeight"
             )
         }

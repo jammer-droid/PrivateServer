@@ -71,6 +71,7 @@ function Invoke-ClientBuild {
 [string]$msbuildPath = Resolve-MSBuildExecutable
 [string]$solutionPath = Join-Path $repositoryRoot "PrivateServer.sln"
 [string]$serverProject = Join-Path $repositoryRoot "src\PrivateServer.WorldServer.Host\PrivateServer.WorldServer.Host.vcxproj"
+[string]$benchmarkProject = Join-Path $repositoryRoot "src\PrivateServer.NetworkRuntime.Benchmark\PrivateServer.NetworkRuntime.Benchmark.vcxproj"
 [string]$clientNativeProject = Join-Path $repositoryRoot "src\PrivateServer.NetworkRuntime.CAbi\PrivateServer.NetworkRuntime.CAbi.vcxproj"
 
 Write-Output "Build target: $Target"
@@ -91,6 +92,7 @@ if ($LASTEXITCODE -ne 0) {
 
 if ($Target -eq "Server" -or $Target -eq "All") {
     Invoke-NativeBuild -ProjectPath $serverProject
+    Invoke-NativeBuild -ProjectPath $benchmarkProject
 }
 if ($Target -eq "Client" -or $Target -eq "All") {
     Invoke-NativeBuild -ProjectPath $clientNativeProject
