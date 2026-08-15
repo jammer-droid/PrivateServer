@@ -85,7 +85,7 @@
   "gameplay": {
     "minimumPlayersToStart": 1,
     "scoreToWin": 5,
-    "roundDurationTicks": 10800,
+    "roundDurationTicks": 1800,
     "endedDurationTicks": 180,
     "resourceArchetypeId": 2,
     "resourceCircleRadius": 0.25,

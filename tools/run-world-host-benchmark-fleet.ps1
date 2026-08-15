@@ -9,11 +9,70 @@ param(
         Join-Path $PSScriptRoot "..\config\world-host-benchmark-channel-2.json"
     ),
     [ValidateRange(1, 10)]
-    [int]$RepeatCount = 1
+    [int]$RepeatCount = 1,
+    [switch]$LaunchObservers,
+    [string]$GodotExecutablePath = ""
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+if ($LaunchObservers -and $RepeatCount -ne 1) {
+    throw "Observer capture mode supports exactly one fleet benchmark round. repeatCount=$RepeatCount"
+}
+
+function Resolve-GodotExecutable {
+    param(
+        [string]$ExplicitPath
+    )
+
+    [System.Collections.Generic.List[string]]$candidates =
+        [System.Collections.Generic.List[string]]::new()
+    if (-not [string]::IsNullOrWhiteSpace($ExplicitPath)) {
+        $candidates.Add($ExplicitPath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($env:GODOT_EXECUTABLE)) {
+        $candidates.Add($env:GODOT_EXECUTABLE)
+    }
+    foreach ($commandName in @("godot", "godot4")) {
+        [System.Management.Automation.CommandInfo]$command =
+            Get-Command $commandName -ErrorAction SilentlyContinue
+        if ($null -ne $command -and
+            -not [string]::IsNullOrWhiteSpace($command.Source)) {
+            $candidates.Add($command.Source)
+        }
+    }
+    $candidates.Add((Join-Path $env:USERPROFILE "Desktop\Dev\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64.exe"))
+
+    foreach ($candidate in $candidates) {
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            return (Resolve-Path -LiteralPath $candidate).Path
+        }
+    }
+    throw "Godot executable was not found. Pass -GodotExecutablePath or set GODOT_EXECUTABLE."
+}
+
+function Wait-FleetEndpointListening {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Address,
+        [Parameter(Mandatory = $true)]
+        [int]$Port
+    )
+
+    [System.Diagnostics.Stopwatch]$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    while ($stopwatch.ElapsedMilliseconds -lt 10000) {
+        [System.Net.IPEndPoint[]]$listeners =
+            [System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveTcpListeners()
+        foreach ($listener in $listeners) {
+            if ($listener.Address.ToString() -eq $Address -and $listener.Port -eq $Port) {
+                return
+            }
+        }
+        Start-Sleep -Milliseconds 100
+    }
+    throw "Fleet endpoint did not begin listening within 10 seconds. endpoint=$Address`:$Port"
+}
 
 [string]$singleChannelScript =
     (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "run-world-host-benchmark-baseline.ps1")).Path
@@ -61,8 +120,46 @@ foreach ($configPath in $resolvedConfigPaths) {
     }
 }
 
+[string]$resolvedGodotPath = ""
+[string]$gameClientPath = ""
+if ($LaunchObservers) {
+    $resolvedGodotPath = Resolve-GodotExecutable -ExplicitPath $GodotExecutablePath
+    $gameClientPath = (Resolve-Path -LiteralPath (
+        Join-Path $PSScriptRoot "..\src\PrivateServer.GameClient"
+    )).Path
+    [string]$clientChannelDirectoryPath = Join-Path $gameClientPath "Config\channels.local.json"
+    [object]$clientChannelDirectory =
+        Get-Content -Raw -Encoding utf8 -LiteralPath $clientChannelDirectoryPath | ConvertFrom-Json
+    if ($clientChannelDirectory.schema -ne "psnr.game_client.channels" -or
+        $clientChannelDirectory.version -ne 1) {
+        throw "Unsupported Game Client channel directory. path=$clientChannelDirectoryPath"
+    }
+    for ([int]$channelIndex = 0; $channelIndex -lt $resolvedConfigPaths.Length; ++$channelIndex) {
+        [uint32]$channelId = [uint32]($channelIndex + 1)
+        [object]$benchmarkConfig =
+            Get-Content -Raw -Encoding utf8 -LiteralPath $resolvedConfigPaths[$channelIndex] | ConvertFrom-Json
+        [object[]]$clientChannels = @(
+            $clientChannelDirectory.channels | Where-Object { [uint32]$_.id -eq $channelId }
+        )
+        if ($clientChannels.Count -ne 1) {
+            throw "Observer channel directory must contain one matching channel. channelId=$channelId"
+        }
+        [string]$clientAddress = [string]$clientChannels[0].address
+        [int]$clientPort = [int]$clientChannels[0].port
+        [string]$benchmarkAddress = [string]$benchmarkConfig.clients.address
+        [int]$benchmarkPort = [int]$benchmarkConfig.clients.port
+        if ($clientAddress -ne $benchmarkAddress -or $clientPort -ne $benchmarkPort) {
+            throw "Observer channel directory does not match fleet benchmark endpoint. channelId=$channelId"
+        }
+    }
+    Write-Output "Godot observer executable: $resolvedGodotPath"
+    Write-Output "Godot observer project: $gameClientPath"
+}
+
 [System.Collections.Generic.List[System.Management.Automation.Job]]$jobs =
     [System.Collections.Generic.List[System.Management.Automation.Job]]::new()
+[System.Collections.Generic.List[System.Diagnostics.Process]]$observerProcesses =
+    [System.Collections.Generic.List[System.Diagnostics.Process]]::new()
 try {
     for ([int]$channelIndex = 0; $channelIndex -lt $resolvedConfigPaths.Length; ++$channelIndex) {
         [int]$channelId = $channelIndex + 1
@@ -91,6 +188,51 @@ try {
         )
     }
 
+    if ($LaunchObservers) {
+        for ([int]$channelIndex = 0; $channelIndex -lt $resolvedConfigPaths.Length; ++$channelIndex) {
+            [object]$benchmarkConfig =
+                Get-Content -Raw -Encoding utf8 -LiteralPath $resolvedConfigPaths[$channelIndex] | ConvertFrom-Json
+            Wait-FleetEndpointListening `
+                -Address ([string]$benchmarkConfig.clients.address) `
+                -Port ([int]$benchmarkConfig.clients.port)
+        }
+        [int]$observerWindowWidth = 960
+        [int]$observerWindowHeight = 600
+        for ([int]$channelIndex = 0; $channelIndex -lt $resolvedConfigPaths.Length; ++$channelIndex) {
+            [int]$channelId = $channelIndex + 1
+            [int]$windowX = $channelIndex * $observerWindowWidth
+            [string[]]$observerArguments = @(
+                "--path",
+                "`"$gameClientPath`"",
+                "--windowed",
+                "--resolution",
+                "$observerWindowWidth`x$observerWindowHeight",
+                "--position",
+                "$windowX,0",
+                "--",
+                "--observe-channel",
+                "$channelId"
+            )
+            [System.Diagnostics.Process]$observerProcess = Start-Process `
+                -FilePath $resolvedGodotPath `
+                -ArgumentList $observerArguments `
+                -WorkingDirectory $gameClientPath `
+                -PassThru
+            $observerProcesses.Add($observerProcess)
+            Write-Output (
+                "Godot observer starting: channelId=$channelId " +
+                "pid=$($observerProcess.Id) position=$windowX,0 " +
+                "resolution=$observerWindowWidth`x$observerWindowHeight"
+            )
+        }
+        Start-Sleep -Milliseconds 1000
+        foreach ($observerProcess in $observerProcesses) {
+            if ($observerProcess.HasExited) {
+                throw "Godot observer exited during startup. pid=$($observerProcess.Id) exitCode=$($observerProcess.ExitCode)"
+            }
+        }
+    }
+
     Wait-Job -Job $jobs.ToArray() | Out-Null
     [System.Collections.Generic.List[string]]$failures =
         [System.Collections.Generic.List[string]]::new()
@@ -110,9 +252,18 @@ try {
     if ($failures.Count -gt 0) {
         throw "Fleet benchmark failed: $($failures -join '; ')"
     }
+    if ($LaunchObservers) {
+        Start-Sleep -Milliseconds 5000
+    }
     Write-Output "Fleet benchmark completed: channels=2 clientsPerChannel=100 totalClients=200"
 }
 finally {
+    foreach ($observerProcess in $observerProcesses) {
+        if (-not $observerProcess.HasExited) {
+            Stop-Process -Id $observerProcess.Id -ErrorAction SilentlyContinue
+            $observerProcess.WaitForExit()
+        }
+    }
     foreach ($job in $jobs) {
         if ($job.State -eq [System.Management.Automation.JobState]::Running) {
             Stop-Job -Job $job

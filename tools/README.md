@@ -141,6 +141,17 @@ Fleet benchmark는 controller 두 개가 각자 World Host를 시작하고 한 �
 .\tools\run-world-host-benchmark-fleet.ps1 -RepeatCount 3
 ```
 
+두 Channel의 bot fleet을 Godot 관전자 창으로 함께 보려면 `-LaunchObservers`를 사용한다. 각 창은 `channels.local.json`의 Channel 1과 2에 관전자로 자동 접속하며 기본 960×600 크기로 좌우에 배치된다.
+
+```powershell
+.\tools\build.ps1 -Target All -Configuration Release
+.\tools\run-world-host-benchmark-fleet.ps1 `
+  -LaunchObservers `
+  -GodotExecutablePath "C:\tools\Godot_v4.7.1-stable_mono_win64.exe"
+```
+
+`-GodotExecutablePath`를 생략하면 `GODOT_EXECUTABLE`, PATH의 `godot`/`godot4`, 기본 개발 경로 순서로 찾는다. 관전자 실행은 촬영·시각 검증용이며 추가 Session과 렌더링 부하가 생기므로 이 실행의 benchmark artifact를 기존 canonical 성능 비교 자료로 사용하지 않는다. 관전자 몸체 굵기는 `WorldOverview`에 실제 diameter가 없기 때문에 고정 표시다.
+
 ## Artifact
 
 일반 Host 실행:

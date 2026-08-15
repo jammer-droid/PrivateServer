@@ -98,6 +98,7 @@ public partial class RemoteGameplayScene : Node2D
         navigationUi.ConfigureChannels(channelDirectory.Channels);
         audio.BindButtons(navigationUi);
         ApplyFlowPresentation();
+        ApplyLaunchOptions();
     }
 
     public override void _Process(double delta)
@@ -256,6 +257,34 @@ public partial class RemoteGameplayScene : Node2D
             flow.TryApply(GameplayFlowObservation.FromSession(session));
         }
         ApplyFlowPresentation();
+    }
+
+    private void ApplyLaunchOptions()
+    {
+        string[] arguments = OS.GetCmdlineUserArgs();
+        if (!GameplayLaunchOptions.TryParse(arguments, out GameplayLaunchOptions options))
+        {
+            GD.PushError("Invalid game client launch arguments.");
+            SetProcess(false);
+            return;
+        }
+        if (!options.ObserverChannelId.HasValue)
+        {
+            return;
+        }
+
+        for (int index = 0; index < channelDirectory.Channels.Count; ++index)
+        {
+            if (channelDirectory.Channels[index].Id == options.ObserverChannelId.Value)
+            {
+                BeginObserve(index);
+                return;
+            }
+        }
+
+        GD.PushError(
+            $"Observer channel does not exist in the client directory: {options.ObserverChannelId.Value}.");
+        SetProcess(false);
     }
 
     private void ReturnToChannelSelect()
