@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{d43ee84c-d558-485f-ace4-01ef2dfab0d9}</ProjectGuid>
+    <RootNamespace>PrivateServerNetworkRuntimeInternal</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\..\LocalToolset.props" Condition="Exists('$(MSBuildThisFileDirectory)..\..\LocalToolset.props')" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' != ''">$(LocalPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' == ''">v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' != ''">$(LocalPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' == ''">v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' != ''">$(LocalPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' == ''">v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' != ''">$(LocalPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' == ''">v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(MSBuildThisFileDirectory)..\..\build\bin\NetworkRuntime\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(MSBuildThisFileDirectory)..\..\build\obj\NetworkRuntime\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(MSBuildThisFileDirectory)..\..\build\bin\NetworkRuntime\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(MSBuildThisFileDirectory)..\..\build\obj\NetworkRuntime\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(MSBuildThisFileDirectory)..\..\build\bin\NetworkRuntime\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(MSBuildThisFileDirectory)..\..\build\obj\NetworkRuntime\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(MSBuildThisFileDirectory)..\..\build\bin\NetworkRuntime\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(MSBuildThisFileDirectory)..\..\build\obj\NetworkRuntime\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;PSNR_INTERNAL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\PrivateServer.NetworkRuntime;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;PSNR_INTERNAL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\PrivateServer.NetworkRuntime;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;PSNR_INTERNAL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\PrivateServer.NetworkRuntime;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;PSNR_INTERNAL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\PrivateServer.NetworkRuntime;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="NrClientCommand.h" />
+    <ClInclude Include="NrClientCommandChannel.h" />
+    <ClInclude Include="NrClientConnection.h" />
+    <ClInclude Include="NrClientConnectIoContext.h" />
+    <ClInclude Include="NrClientControlCompletion.h" />
+    <ClInclude Include="NrClientIoCompletionDispatcher.h" />
+    <ClInclude Include="NrClientIoContextOperations.h" />
+    <ClInclude Include="NrClientIoWorker.h" />
+    <ClInclude Include="NrClientLifecycleStateMachine.h" />
+    <ClInclude Include="NrClientMemoryPoolConfigFactory.h" />
+    <ClInclude Include="NrClientPendingSend.h" />
+    <ClInclude Include="NrClientTransport.h" />
+    <ClInclude Include="NrClientTransportEventSink.h" />
+    <ClInclude Include="NrActor.h" />
+    <ClInclude Include="NrActorExecutor.h" />
+    <ClInclude Include="NrActorMailbox.h" />
+    <ClInclude Include="NrActorScheduleHandle.h" />
+    <ClInclude Include="NrActorScheduleGate.h" />
+    <ClInclude Include="NrAcceptIoContext.h" />
+    <ClInclude Include="NrIoContextView.h" />
+    <ClInclude Include="NrIocpCompletionHandler.h" />
+    <ClInclude Include="NrIocpCompletionPacket.h" />
+    <ClInclude Include="NrIocpCompletionPump.h" />
+    <ClInclude Include="NrIocpIoCompletionDispatcher.h" />
+    <ClInclude Include="NrIocpIoContextHeader.h" />
+    <ClInclude Include="NrIocpOverlappedContextFactory.h" />
+    <ClInclude Include="NrIocpPort.h" />
+    <ClInclude Include="NrIocpRuntime.h" />
+    <ClInclude Include="NrIoEvent.h" />
+    <ClInclude Include="NrIoEventDispatcher.h" />
+    <ClInclude Include="NrIoOperationType.h" />
+    <ClInclude Include="NrListener.h" />
+    <ClInclude Include="NrRecvIoContext.h" />
+    <ClInclude Include="NrSendIoContext.h" />
+    <ClInclude Include="NrSocketAddressWin32.h" />
+    <ClInclude Include="NrToWorldHandoff.h" />
+    <ClInclude Include="NrToWorldLifecycleState.h" />
+    <ClInclude Include="NrWin32Socket.h" />
+    <ClInclude Include="NrWindows.h" />
+    <ClInclude Include="NrWinsockRuntime.h" />
+    <ClInclude Include="NrBoundedMpscQueue.h" />
+    <ClInclude Include="NrConcurrency.h" />
+    <ClInclude Include="NrDispatchLane.h" />
+    <ClInclude Include="NrDiagnosticEmitter.h" />
+    <ClInclude Include="NrDiagnosticEmitterState.h" />
+    <ClInclude Include="NrDiagnosticRecord.h" />
+    <ClInclude Include="NrDiagnosticSink.h" />
+    <ClInclude Include="NrDebugDiagnosticSink.h" />
+    <ClInclude Include="NrJsonlDiagnosticSink.h" />
+    <ClInclude Include="NrDiagnosticsComponent.h" />
+    <ClInclude Include="NrDiagnosticsConfigInternal.h" />
+    <ClInclude Include="NrIngress.h" />
+    <ClInclude Include="NrIngressRegistry.h" />
+    <ClInclude Include="NrInput.h" />
+    <ClInclude Include="NrInputFactory.h" />
+    <ClInclude Include="NrLifecycleInternal.h" />
+    <ClInclude Include="NrMemoryMath.h" />
+    <ClInclude Include="NrMemoryPool.h" />
+    <ClInclude Include="NrMemoryPoolConfigFactory.h" />
+    <ClInclude Include="NrMemoryPoolManager.h" />
+    <ClInclude Include="NrPacketDispatchRule.h" />
+    <ClInclude Include="NrPacketDispatchTable.h" />
+    <ClInclude Include="NrPacketHeader.h" />
+    <ClInclude Include="NrPacketHeaderCodec.h" />
+    <ClInclude Include="NrPacketParser.h" />
+    <ClInclude Include="NrPayload.h" />
+    <ClInclude Include="NrPayloadRef.h" />
+    <ClInclude Include="NrPrimitiveCodec.h" />
+    <ClInclude Include="NrProtocolErrorReason.h" />
+    <ClInclude Include="NrQueueIngress.h" />
+    <ClInclude Include="NrRecvBuffer.h" />
+    <ClInclude Include="NrResult.h" />
+    <ClInclude Include="NrServerComponentGraph.h" />
+    <ClInclude Include="NrServerGraphBuilder.h" />
+    <ClInclude Include="NrServerIoOpControl.h" />
+    <ClInclude Include="NrServerIoOpInternal.h" />
+    <ClInclude Include="NrServerIoOpStateHandler.h" />
+    <ClInclude Include="NrServerLifecycleOrder.h" />
+    <ClInclude Include="NrServerMetrics.h" />
+    <ClInclude Include="NrServerPressureInternal.h" />
+    <ClInclude Include="NrServerSubmissionGate.h" />
+    <ClInclude Include="NrSession.h" />
+    <ClInclude Include="NrSessionActorRegistry.h" />
+    <ClInclude Include="NrSessionActorScheduler.h" />
+    <ClInclude Include="NrSessionIoActor.h" />
+    <ClInclude Include="NrSessionIoEvent.h" />
+    <ClInclude Include="NrSessionIoOperations.h" />
+    <ClInclude Include="NrSessionRegistry.h" />
+    <ClInclude Include="NrSessionSendChannelControl.h" />
+    <ClInclude Include="NrTypeTraits.h" />
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NrClientCommandChannel.cpp" />
+    <ClCompile Include="NrClientConnection.cpp" />
+    <ClCompile Include="NrClientConnectIoContext.cpp" />
+    <ClCompile Include="NrClientControlCompletion.cpp" />
+    <ClCompile Include="NrClientIoCompletionDispatcher.cpp" />
+    <ClCompile Include="NrClientIoContextOperations.cpp" />
+    <ClCompile Include="NrClientIoWorker.cpp" />
+    <ClCompile Include="NrClientLifecycleStateMachine.cpp" />
+    <ClCompile Include="NrClientMemoryPoolConfigFactory.cpp" />
+    <ClCompile Include="NrClientTransport.cpp" />
+    <ClCompile Include="NrBootstrapPlan.cpp" />
+    <ClCompile Include="NrAcceptIoContext.cpp" />
+    <ClCompile Include="NrIocpCompletionPump.cpp" />
+    <ClCompile Include="NrIocpIoCompletionDispatcher.cpp" />
+    <ClCompile Include="NrIocpOverlappedContextFactory.cpp" />
+    <ClCompile Include="NrIocpPort.cpp" />
+    <ClCompile Include="NrIocpRuntime.cpp" />
+    <ClCompile Include="NrIoEventDispatcher.cpp" />
+    <ClCompile Include="NrListener.cpp" />
+    <ClCompile Include="NrRecvIoContext.cpp" />
+    <ClCompile Include="NrSendIoContext.cpp" />
+    <ClCompile Include="NrSocketAddressWin32.cpp" />
+    <ClCompile Include="NrToWorldHandoff.cpp" />
+    <ClCompile Include="NrToWorldLifecycleState.cpp" />
+    <ClCompile Include="NrWin32Socket.cpp" />
+    <ClCompile Include="NrWinsockRuntime.cpp" />
+    <ClCompile Include="NrActor.cpp" />
+    <ClCompile Include="NrActorExecutor.cpp" />
+    <ClCompile Include="NrActorScheduleGate.cpp" />
+    <ClCompile Include="NrDiagnosticEmitter.cpp" />
+    <ClCompile Include="NrDebugDiagnosticSink.cpp" />
+    <ClCompile Include="NrJsonlDiagnosticSink.cpp" />
+    <ClCompile Include="NrDiagnosticsComponent.cpp" />
+    <ClCompile Include="NrDiagnosticsConfigInternal.cpp" />
+    <ClCompile Include="NrIngressRegistry.cpp" />
+    <ClCompile Include="NrInputFactory.cpp" />
+    <ClCompile Include="NrMemoryPool.cpp" />
+    <ClCompile Include="NrMemoryPoolConfigFactory.cpp" />
+    <ClCompile Include="NrMemoryPoolManager.cpp" />
+    <ClCompile Include="NrPacketDispatchTable.cpp" />
+    <ClCompile Include="NrPacketParser.cpp" />
+    <ClCompile Include="NrPayload.cpp" />
+    <ClCompile Include="NrPayloadRef.cpp" />
+    <ClCompile Include="NrQueueIngress.cpp" />
+    <ClCompile Include="NrRecvBuffer.cpp" />
+    <ClCompile Include="NrServerComponentGraph.cpp" />
+    <ClCompile Include="NrServerGraphBuilder.cpp" />
+    <ClCompile Include="NrServerIoOpControl.cpp" />
+    <ClCompile Include="NrServerLifecycleOrder.cpp" />
+    <ClCompile Include="NrServerMetrics.cpp" />
+    <ClCompile Include="NrServerSubmissionGate.cpp" />
+    <ClCompile Include="NrSession.cpp" />
+    <ClCompile Include="NrSessionActorRegistry.cpp" />
+    <ClCompile Include="NrSessionActorScheduler.cpp" />
+    <ClCompile Include="NrSessionIoActor.cpp" />
+    <ClCompile Include="NrSessionIoActor.Accept.cpp" />
+    <ClCompile Include="NrSessionIoActor.Drain.cpp" />
+    <ClCompile Include="NrSessionIoActor.Recv.cpp" />
+    <ClCompile Include="NrSessionIoActor.Send.cpp" />
+    <ClCompile Include="NrSessionIoOperations.cpp" />
+    <ClCompile Include="NrSessionRegistry.cpp" />
+    <ClCompile Include="NrSessionSendChannelControl.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets" Condition="Exists('..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets'))" />
+  </Target>
+</Project>

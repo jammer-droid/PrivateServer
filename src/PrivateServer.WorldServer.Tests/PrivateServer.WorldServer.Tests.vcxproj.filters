@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Internal">
+      <UniqueIdentifier>{6AC8EF1A-C515-40F2-B0C1-2868E3F06EA0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{2C2329A6-1358-4881-9963-EEE2F0713AC3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World">
+      <UniqueIdentifier>{575D94C4-D843-4B99-815C-96B8D78C137F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Identity">
+      <UniqueIdentifier>{1B6FE5FB-FBBA-465C-99D8-D67C217F9775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Entity">
+      <UniqueIdentifier>{E6E5B99C-FCEF-44AA-9F89-A8633AED9CB5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Execution">
+      <UniqueIdentifier>{4B86B9E5-0E02-4FC0-B107-0E670EE5DDD0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Execution\DoubleBuffered">
+      <UniqueIdentifier>{2D3B9F53-6275-4A15-AE53-86170A2C646D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Session">
+      <UniqueIdentifier>{DDCE5D03-503C-42A2-BDCE-A320D95DA054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress">
+      <UniqueIdentifier>{8E03DCA7-CAE9-4E0F-912B-5E90C5130498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\DoubleBuffered">
+      <UniqueIdentifier>{1A5417B0-4EDC-445E-A3E8-A701772E1653}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\Movement">
+      <UniqueIdentifier>{880382A9-871A-4AEC-ABFE-98B2CE6450C3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\TimeSync">
+      <UniqueIdentifier>{F6071FF5-A93A-44A1-B69E-B463AC0540F4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\Join">
+      <UniqueIdentifier>{FEAC151C-F89E-41BF-8F85-EFC2B4372788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\Control">
+      <UniqueIdentifier>{9A2C7182-FB87-4F20-BCBD-2FCCBDB71CD9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\RuntimeAdapter">
+      <UniqueIdentifier>{6B164998-3C39-4602-AF13-7F9D63ECD6D4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Command">
+      <UniqueIdentifier>{645248F9-B313-4ECC-9FDB-A6076A440425}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Command\Movement">
+      <UniqueIdentifier>{40B55551-3731-4B63-BE41-C7DA37C5B8E6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Tick">
+      <UniqueIdentifier>{1DBAF717-2C9E-4196-A4A6-557BD5CB35F4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Tick\Movement">
+      <UniqueIdentifier>{7CBF034B-F5FD-43BE-A275-B0F0C582FF07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Outbound">
+      <UniqueIdentifier>{579CF230-C11B-4F00-A87D-A1B0DB64A081}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Outbound\DoubleBuffered">
+      <UniqueIdentifier>{ED33FFEC-795B-43A0-A1B7-F20944A5B07A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Smoke">
+      <UniqueIdentifier>{A35FD70C-D1AB-46B4-A30D-9C26D2C8B38C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Physics">
+      <UniqueIdentifier>{DB75F32E-9935-459D-AA3E-4950166C0155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Spatial">
+      <UniqueIdentifier>{7E206DFC-C292-4074-B538-DBD1A81BEB30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Replication">
+      <UniqueIdentifier>{4DD3C230-8855-4F3D-9537-E47A67B30B27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Gameplay">
+      <UniqueIdentifier>{712526AE-473B-4720-A1BC-FA579FC7E7BF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Host">
+      <UniqueIdentifier>{71217085-65D0-4870-9B92-4F16FB680F9E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Host\Log">
+      <UniqueIdentifier>{E3BBBD65-AAC7-4074-A1F1-C69CD6BF3221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Host\Bootstrap">
+      <UniqueIdentifier>{0708925E-B7A1-4413-9B51-5C311FDDCA9D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Host\Benchmark">
+      <UniqueIdentifier>{0BDB0117-E466-45DE-BAC1-B9DAE665D57E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Benchmark">
+      <UniqueIdentifier>{0A05D043-A519-47E7-8634-DC951B1A6BB7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WorldEntityComponentStoreTests.cpp">
+      <Filter>World\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldEntityIdentityTests.cpp">
+      <Filter>World\Identity</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldEntityManagerTests.cpp">
+      <Filter>World\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldEntityRegistryTests.cpp">
+      <Filter>World\Identity</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldExecutionModeConfigTests.cpp">
+      <Filter>World\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldExecutionStorageTests.cpp">
+      <Filter>World\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldClockTests.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldFixedStepScheduleTests.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayConfigTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayCommitterTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayPhaseTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldRoundResultPlannerTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayReplicationTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayStateTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGrowthSolverTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDeterministicSamplerTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldActiveAreaSolverTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldResourcePopulationSolverTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDeathDropAnchorPlannerTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDeathDropPlacementFilterTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldPlayerBodyTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldPlayerSpawnPlannerTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldResourceSpawnPlannerTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldBodyTrailSamplerTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldBodyTrailComponentTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldBodyTrailTrimmerTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIngressEventDrainTests.cpp">
+      <Filter>World\RuntimeAdapter</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIngressPumpTests.cpp">
+      <Filter>World\Ingress\DoubleBuffered</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIngressTerminalConsumerTests.cpp">
+      <Filter>World\Ingress\DoubleBuffered</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIngressEventConsumerTests.cpp">
+      <Filter>World\RuntimeAdapter</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIngressPacketRouterTests.cpp">
+      <Filter>World\Ingress</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDoubleBufferedTickCoordinatorTests.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDoubleBufferRoleExchangeTests.cpp">
+      <Filter>World\Execution\DoubleBuffered</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDoubleBufferedWorkersTests.cpp">
+      <Filter>World\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldJoinIngressTests.cpp">
+      <Filter>World\Ingress\Join</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldSessionRegistryTests.cpp">
+      <Filter>World\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementCommandAdmissionTests.cpp">
+      <Filter>World\Ingress\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldControlCommandAdmissionTests.cpp">
+      <Filter>World\Ingress\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldBoostCostSolverTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldCollisionDeathResolverTests.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldControlMovementSolverTests.cpp">
+      <Filter>World\Tick\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementCommandStoreTests.cpp">
+      <Filter>World\Command\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementPhaseCommitterTests.cpp">
+      <Filter>World\Tick\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementPhaseTests.cpp">
+      <Filter>World\Tick\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementTickInputBuilderTests.cpp">
+      <Filter>World\Tick\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldOwnerLoopTests.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldOutboundDoubleBufferTests.cpp">
+      <Filter>World\Outbound\DoubleBuffered</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldOutboundPublisherTests.cpp">
+      <Filter>World\Outbound\DoubleBuffered</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldPhysicsSceneTests.cpp">
+      <Filter>World\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldCollisionProxyBatchTests.cpp">
+      <Filter>World\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldAoiPlannerTests.cpp">
+      <Filter>World\Spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldSpatialIndexTests.cpp">
+      <Filter>World\Spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldSpatialProjectionBuilderTests.cpp">
+      <Filter>World\Spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTickInputTests.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTickProcessorTests.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldWorkerStartupTests.cpp">
+      <Filter>World\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldWorkerShutdownTests.cpp">
+      <Filter>World\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldProtocolTests.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldOverviewPlannerTests.cpp">
+      <Filter>World\Replication</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldPublicLoopbackTests.cpp">
+      <Filter>World\Smoke</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldReadViewTests.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldReplicationPublisherTests.cpp">
+      <Filter>World\Replication</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTimeSyncIngressTests.cpp">
+      <Filter>World\Ingress\TimeSync</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostChildControlTests.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostChildControlWorkerTests.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostCommandLineTests.cpp">
+      <Filter>Host\Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostConfigTests.cpp">
+      <Filter>Host\Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostStopSignalTests.cpp">
+      <Filter>Host\Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostLogTests.cpp">
+      <Filter>Host\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostRuntimeArtifactWriterTests.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostArtifactWriteQueueTests.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostArtifactWriteQueue.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostArtifactWriterTests.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTickSampleBufferTests.cpp">
+      <Filter>World\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostChildControl.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostChildControlWorker.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostCommandLine.cpp">
+      <Filter>Host\Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostConfig.cpp">
+      <Filter>Host\Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostStopSignal.cpp">
+      <Filter>Host\Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostLog.cpp">
+      <Filter>Host\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostRuntimeArtifactWriter.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostArtifactWriter.cpp">
+      <Filter>Host\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="WorldApplicationEventSinkTestDouble.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

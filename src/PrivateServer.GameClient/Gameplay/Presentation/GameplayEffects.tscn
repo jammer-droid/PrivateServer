@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Gameplay/Presentation/GameplayEffects.cs" id="1_effects"]
+[ext_resource type="PackedScene" path="res://Gameplay/Presentation/GameplayOneShotEffect.tscn" id="2_one_shot"]
+
+[node name="GameplayEffects" type="Node2D"]
+script = ExtResource("1_effects")
+OneShotEffectScene = ExtResource("2_one_shot")

@@ -1,0 +1,54 @@
+﻿<Project Sdk="Godot.NET.Sdk/4.7.1">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- PrivateServer Managed Adapter-->
+		<ProjectReference Include="..\PrivateServer.NetworkRuntime.Managed\PrivateServer.NetworkRuntime.Managed.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Test 프로젝트에 Internal 접근 권한 부여-->
+		<InternalsVisibleTo Include="PrivateServer.GameClient.Tests" />
+	</ItemGroup>
+
+	<PropertyGroup>
+
+		<!-- Debug or Release -->
+		<NativeRuntimeConfiguration
+		  Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">Debug</NativeRuntimeConfiguration>
+		<NativeRuntimeConfiguration
+		  Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease'">Release</NativeRuntimeConfiguration>
+
+		<!-- native DLL path -->
+		<NativeRuntimeBinDir
+		  Condition="'$(NativeRuntimeConfiguration)' != ''">$(MSBuildThisFileDirectory)..\..\build\bin\NetworkRuntime\x64\$(NativeRuntimeConfiguration)\</NativeRuntimeBinDir>
+	</PropertyGroup>
+
+
+	<Target Name="CopyNativeRuntimeDependencies" AfterTargets="Build">
+		<Error
+		  Condition="'$(NativeRuntimeConfiguration)' == ''"
+		  Text="Unsupported GameClient configuration: $(Configuration)" />
+		<Error
+		  Condition="!Exists('$(NativeRuntimeBinDir)PrivateServer.NetworkRuntime.CAbi.dll')"
+		  Text="Missing native dependency: PrivateServer.NetworkRuntime.CAbi.dll" />
+		<Error
+		  Condition="!Exists('$(NativeRuntimeBinDir)PrivateServer.NetworkRuntime.dll')"
+		  Text="Missing native dependency: PrivateServer.NetworkRuntime.dll" />
+
+		<ItemGroup>
+			<NativeRuntimeDependency Include="$(NativeRuntimeBinDir)PrivateServer.NetworkRuntime.CAbi.dll" />
+			<NativeRuntimeDependency Include="$(NativeRuntimeBinDir)PrivateServer.NetworkRuntime.dll" />
+		</ItemGroup>
+
+		<Copy
+		  SourceFiles="@(NativeRuntimeDependency)"
+		  DestinationFolder="$(TargetDir)"
+		  SkipUnchangedFiles="true" />
+	</Target>
+</Project>

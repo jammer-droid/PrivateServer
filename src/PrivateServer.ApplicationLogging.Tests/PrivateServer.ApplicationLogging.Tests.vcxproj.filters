@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Build Support">
+      <UniqueIdentifier>{A6CF1CB5-4929-4D48-BD71-265B19C4DD36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public">
+      <UniqueIdentifier>{2774A1C3-91B8-40EA-BFB2-AB90BC28CFD6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal">
+      <UniqueIdentifier>{C935F52E-3983-42FC-A2EF-014317F5319E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ApplicationLogConfigTests.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogEnvelopeTests.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogFanoutSinkTests.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogFormatterTests.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogHealthTests.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLoggerTests.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationRunArtifactsTests.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogOutputFactoryTests.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogPayloadCodecTests.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogRecordTests.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <Filter>Build Support</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+</Project>

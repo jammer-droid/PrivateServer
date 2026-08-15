@@ -1,0 +1,98 @@
+{
+  "schema": "psnr.world_server.host.config",
+  "version": 2,
+  "channel": {
+    "id": 1,
+    "name": "Solo Debug"
+  },
+  "logging": {
+    "minimumSeverity": "info"
+  },
+  "network": {
+    "bindAddress": "127.0.0.1",
+    "port": 27015,
+    "listenBacklog": 64,
+    "acceptSlotCount": 1,
+    "actorMailboxCapacity": 2048,
+    "pendingSendQueueCapacity": 2048,
+    "maxSessionCount": 100,
+    "toWorldEventCapacity": 128,
+    "payloadPools": {
+      "payload64BlockCount": 4096,
+      "payload256BlockCount": 256,
+      "payload1024BlockCount": 256,
+      "payload8192BlockCount": 256,
+      "payloadRefControlBlockCount": 4096
+    }
+  },
+  "execution": {
+    "tickRateHz": 60,
+    "maxCatchUpSteps": 4,
+    "inboundEventCapacityPerSlot": 128,
+    "outboundRecordCapacityPerSlot": 8192,
+    "outboundRecipientCapacityPerSlot": 8192,
+    "outboundPayloadByteCapacityPerSlot": 4194304,
+    "shutdownDrainTimeoutMilliseconds": 2000,
+    "tickSampleCapacity": 12000,
+    "tickSampleWriteQueueCapacity": 8,
+    "runtimeSampleIntervalMilliseconds": 1000,
+    "runtimeSampleWriteQueueCapacity": 8
+  },
+  "simulation": {
+    "physics": {
+      "maxContactsPerTick": 4,
+      "collisionEpsilon": 0.0001,
+      "contactTolerance": 0.0001
+    },
+    "arena": {
+      "minimumX": -100.0,
+      "minimumY": -100.0,
+      "maximumX": 100.0,
+      "maximumY": 100.0
+    },
+    "movement": {
+      "baseMoveSpeed": 5.0,
+      "boostMoveSpeed": 7.5,
+      "angularSpeedRadiansPerSecond": 3.141592653589793
+    },
+    "growth": {
+      "initialLength": 10.0,
+      "lengthPerPoint": 0.25,
+      "initialDiameter": 1.0,
+      "diameterPerPoint": 0.01
+    },
+    "body": {
+      "sampleIntervalTicks": 3,
+      "maxSampleCount": 560
+    },
+    "player": {
+      "archetypeId": 1,
+      "circleRadius": 0.5,
+      "spawnX": 0.0,
+      "spawnY": 0.0,
+      "spawnMaxCandidatesPerTick": 4
+    }
+  },
+  "replication": {
+    "snapshotIntervalTicks": 2,
+    "commandSlackTicks": 2,
+    "spatialCellSize": 10.0,
+    "aoiEnterRadius": 30.0,
+    "aoiRetainRadius": 32.0,
+    "replicationIntervalTicks": 2,
+    "firstPlayerId": 1
+  },
+  "gameplay": {
+    "minimumPlayersToStart": 1,
+    "scoreToWin": 5,
+    "roundDurationTicks": 10800,
+    "endedDurationTicks": 180,
+    "resourceArchetypeId": 2,
+    "resourceCircleRadius": 0.25,
+    "resourceScoreValue": 1,
+    "resourceDensityPerUnit2": 0.05,
+    "boostInitialLengthCostPerSecond": 4.0,
+    "activeAreaStartRatio": 1.0,
+    "activeAreaEndRatio": 0.25
+  }
+}

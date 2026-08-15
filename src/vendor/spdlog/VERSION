@@ -1,0 +1,8 @@
+name=spdlog
+version=1.17.0
+tag=v1.17.0
+commit=79524ddd08a4ec981b7fea76afd08ee05f83755d
+source_archive=https://github.com/gabime/spdlog/archive/refs/tags/v1.17.0.zip
+archive_sha256=b11912a82d149792fef33fabd0503b13d54aeac25c1464755461d4108ea71fc2
+license=MIT
+vendoring=header-only

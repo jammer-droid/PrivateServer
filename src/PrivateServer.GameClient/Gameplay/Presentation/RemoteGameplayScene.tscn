@@ -1,0 +1,42 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://Gameplay/Presentation/RemoteGameplayScene.cs" id="1_remote"]
+[ext_resource type="PackedScene" path="res://Gameplay/Presentation/ArenaPresentation.tscn" id="2_arena"]
+[ext_resource type="PackedScene" path="res://Gameplay/Presentation/GameplayEffects.tscn" id="3_effects"]
+[ext_resource type="PackedScene" path="res://Gameplay/Presentation/GameplayReplicaNode.tscn" id="4_replica"]
+[ext_resource type="PackedScene" path="res://Gameplay/Presentation/GameplayBodyLine.tscn" id="5_body"]
+[ext_resource type="PackedScene" path="res://Gameplay/Presentation/GameplayHud.tscn" id="6_hud"]
+[ext_resource type="PackedScene" path="res://Gameplay/Presentation/GameplayNavigationUi.tscn" id="7_navigation"]
+[ext_resource type="PackedScene" path="res://Gameplay/Presentation/DeveloperOverlay.tscn" id="8_developer"]
+[ext_resource type="PackedScene" path="res://Gameplay/Presentation/GameplayAudio.tscn" id="9_audio"]
+
+[node name="RemoteGameplayScene" type="Node2D"]
+script = ExtResource("1_remote")
+ReplicaScene = ExtResource("4_replica")
+BodyLineScene = ExtResource("5_body")
+
+[node name="ArenaPresentation" parent="." instance=ExtResource("2_arena")]
+unique_name_in_owner = true
+
+[node name="WorldEntities" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="GameplayEffects" parent="." instance=ExtResource("3_effects")]
+unique_name_in_owner = true
+
+[node name="GameplayCamera" type="Camera2D" parent="."]
+unique_name_in_owner = true
+position_smoothing_enabled = true
+position_smoothing_speed = 6.5
+
+[node name="GameplayHud" parent="." instance=ExtResource("6_hud")]
+unique_name_in_owner = true
+
+[node name="GameplayNavigationUi" parent="." instance=ExtResource("7_navigation")]
+unique_name_in_owner = true
+
+[node name="DeveloperOverlay" parent="." instance=ExtResource("8_developer")]
+unique_name_in_owner = true
+
+[node name="GameplayAudio" parent="." instance=ExtResource("9_audio")]
+unique_name_in_owner = true

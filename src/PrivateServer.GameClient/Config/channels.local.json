@@ -1,0 +1,18 @@
+{
+  "schema": "psnr.game_client.channels",
+  "version": 1,
+  "channels": [
+	{
+	  "id": 1,
+	  "name": "Channel 1",
+	  "address": "127.0.0.1",
+	  "port": 27015
+	},
+	{
+	  "id": 2,
+	  "name": "Channel 2",
+	  "address": "127.0.0.1",
+	  "port": 27016
+	}
+  ]
+}

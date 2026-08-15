@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\..\LocalToolset.props" Condition="Exists('$(MSBuildThisFileDirectory)..\..\LocalToolset.props')" />
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{b55a6fa6-b7b3-47be-89cb-1e321eb47c37}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' != ''">$(LocalPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' == ''">v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(MSBuildThisFileDirectory)..\..\build\bin\WorldServer\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(MSBuildThisFileDirectory)..\..\build\obj\WorldServer\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\PrivateServer.WorldServer;$(MSBuildThisFileDirectory)..\PrivateServer.WorldServer.Host;$(MSBuildThisFileDirectory)..\PrivateServer.ApplicationLogging;$(MSBuildThisFileDirectory)..\..\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="WorldApplicationEventSinkTestDouble.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="WorldEntityComponentStoreTests.cpp" />
+    <ClCompile Include="WorldEntityIdentityTests.cpp" />
+    <ClCompile Include="WorldEntityManagerTests.cpp" />
+    <ClCompile Include="WorldEntityRegistryTests.cpp" />
+    <ClCompile Include="WorldExecutionModeConfigTests.cpp" />
+    <ClCompile Include="WorldExecutionStorageTests.cpp" />
+    <ClCompile Include="WorldClockTests.cpp" />
+    <ClCompile Include="WorldDoubleBufferedTickCoordinatorTests.cpp" />
+    <ClCompile Include="WorldDoubleBufferRoleExchangeTests.cpp" />
+    <ClCompile Include="WorldDoubleBufferedWorkersTests.cpp" />
+    <ClCompile Include="WorldFixedStepScheduleTests.cpp" />
+    <ClCompile Include="WorldGameplayCommitterTests.cpp" />
+    <ClCompile Include="WorldGameplayConfigTests.cpp" />
+    <ClCompile Include="WorldGameplayPhaseTests.cpp" />
+    <ClCompile Include="WorldGameplayReplicationTests.cpp" />
+    <ClCompile Include="WorldGameplayStateTests.cpp" />
+    <ClCompile Include="WorldRoundResultPlannerTests.cpp" />
+    <ClCompile Include="WorldActiveAreaSolverTests.cpp" />
+    <ClCompile Include="WorldResourcePopulationSolverTests.cpp" />
+    <ClCompile Include="WorldDeathDropAnchorPlannerTests.cpp" />
+    <ClCompile Include="WorldDeathDropPlacementFilterTests.cpp" />
+    <ClCompile Include="WorldGrowthSolverTests.cpp" />
+    <ClCompile Include="WorldDeterministicSamplerTests.cpp" />
+    <ClCompile Include="WorldPlayerBodyTests.cpp" />
+    <ClCompile Include="WorldPlayerSpawnPlannerTests.cpp" />
+    <ClCompile Include="WorldResourceSpawnPlannerTests.cpp" />
+    <ClCompile Include="WorldCollisionDeathResolverTests.cpp" />
+    <ClCompile Include="WorldCollisionProxyBatchTests.cpp" />
+    <ClCompile Include="WorldIngressEventConsumerTests.cpp" />
+    <ClCompile Include="WorldIngressEventDrainTests.cpp" />
+    <ClCompile Include="WorldIngressPacketRouterTests.cpp" />
+    <ClCompile Include="WorldIngressPumpTests.cpp" />
+    <ClCompile Include="WorldIngressTerminalConsumerTests.cpp" />
+    <ClCompile Include="WorldJoinIngressTests.cpp" />
+    <ClCompile Include="WorldBoostCostSolverTests.cpp" />
+    <ClCompile Include="WorldBodyTrailSamplerTests.cpp" />
+    <ClCompile Include="WorldBodyTrailComponentTests.cpp" />
+    <ClCompile Include="WorldBodyTrailTrimmerTests.cpp" />
+    <ClCompile Include="WorldControlCommandAdmissionTests.cpp" />
+    <ClCompile Include="WorldControlMovementSolverTests.cpp" />
+    <ClCompile Include="WorldMovementCommandAdmissionTests.cpp" />
+    <ClCompile Include="WorldMovementCommandStoreTests.cpp" />
+    <ClCompile Include="WorldMovementPhaseCommitterTests.cpp" />
+    <ClCompile Include="WorldMovementPhaseTests.cpp" />
+    <ClCompile Include="WorldMovementTickInputBuilderTests.cpp" />
+    <ClCompile Include="WorldOwnerLoopTests.cpp" />
+    <ClCompile Include="WorldOutboundDoubleBufferTests.cpp" />
+    <ClCompile Include="WorldOutboundPublisherTests.cpp" />
+    <ClCompile Include="WorldPhysicsSceneTests.cpp" />
+    <ClCompile Include="WorldAoiPlannerTests.cpp" />
+    <ClCompile Include="WorldSpatialIndexTests.cpp" />
+    <ClCompile Include="WorldSpatialProjectionBuilderTests.cpp" />
+    <ClCompile Include="WorldProtocolTests.cpp" />
+    <ClCompile Include="WorldOverviewPlannerTests.cpp" />
+    <ClCompile Include="WorldPublicLoopbackTests.cpp" />
+    <ClCompile Include="WorldReadViewTests.cpp" />
+    <ClCompile Include="WorldReplicationPublisherTests.cpp" />
+    <ClCompile Include="WorldSessionRegistryTests.cpp" />
+    <ClCompile Include="WorldTimeSyncIngressTests.cpp" />
+    <ClCompile Include="WorldTickInputTests.cpp" />
+    <ClCompile Include="WorldTickProcessorTests.cpp" />
+    <ClCompile Include="WorldWorkerStartupTests.cpp" />
+    <ClCompile Include="WorldWorkerShutdownTests.cpp" />
+    <ClCompile Include="WorldServerHostChildControlTests.cpp" />
+    <ClCompile Include="WorldServerHostChildControlWorkerTests.cpp" />
+    <ClCompile Include="WorldServerHostCommandLineTests.cpp" />
+    <ClCompile Include="WorldServerHostConfigTests.cpp" />
+    <ClCompile Include="WorldServerHostLogTests.cpp" />
+    <ClCompile Include="WorldServerHostRuntimeArtifactWriterTests.cpp" />
+    <ClCompile Include="WorldServerHostArtifactWriteQueueTests.cpp" />
+    <ClCompile Include="WorldServerHostArtifactWriterTests.cpp" />
+    <ClCompile Include="WorldServerHostStopSignalTests.cpp" />
+    <ClCompile Include="WorldResultTests.cpp" />
+    <ClCompile Include="WorldTickSampleBufferTests.cpp" />
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostConfig.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostChildControl.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostChildControlWorker.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostCommandLine.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostLog.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostRuntimeArtifactWriter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostArtifactWriteQueue.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostArtifactWriter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\PrivateServer.WorldServer.Host\WorldServerHostStopSignal.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PrivateServer.ApplicationLogging\PrivateServer.ApplicationLogging.vcxproj">
+      <Project>{3cb067a3-4eb8-483a-9011-9fe7b1fdcb32}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\PrivateServer.WorldServer\PrivateServer.WorldServer.vcxproj">
+      <Project>{89a76868-4c7f-4da1-aac8-b4266b92b0e4}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup>
+    <NetworkRuntimeDllPath>$(MSBuildThisFileDirectory)..\..\build\bin\NetworkRuntime\$(Platform)\$(Configuration)\PrivateServer.NetworkRuntime.dll</NetworkRuntimeDllPath>
+  </PropertyGroup>
+  <Target Name="StageNetworkRuntimeDll" AfterTargets="Build">
+    <Error Condition="!Exists('$(NetworkRuntimeDllPath)')" Text="NetworkRuntime DLL을 찾을 수 없습니다: $(NetworkRuntimeDllPath)" />
+    <Copy SourceFiles="$(NetworkRuntimeDllPath)" DestinationFiles="$(OutDir)PrivateServer.NetworkRuntime.dll" SkipUnchangedFiles="true" />
+  </Target>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.8\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.8\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
+    <Import Project="..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets" Condition="Exists('..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.8\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.8\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
+    <Error Condition="!Exists('..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets'))" />
+  </Target>
+</Project>

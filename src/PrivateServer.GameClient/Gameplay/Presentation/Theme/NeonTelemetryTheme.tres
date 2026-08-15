@@ -1,0 +1,152 @@
+[gd_resource type="Theme" load_steps=15 format=3]
+
+[ext_resource type="FontFile" path="res://Assets/Fonts/Oxanium/Oxanium-VariableFont_wght.ttf" id="1_oxanium"]
+[ext_resource type="FontFile" path="res://Assets/Fonts/NotoSansKR/NotoSansKR-VariableFont_wght.ttf" id="2_noto"]
+[ext_resource type="Texture2D" path="res://Assets/UI/KenneySciFi/panel_glass_notches.svg" id="3_panel"]
+[ext_resource type="Texture2D" path="res://Assets/UI/KenneySciFi/button_rectangle.svg" id="4_button"]
+[ext_resource type="Texture2D" path="res://Assets/UI/KenneySciFi/panel_rectangle.svg" id="5_developer_panel"]
+
+[sub_resource type="FontVariation" id="FontVariation_ui"]
+base_font = ExtResource("1_oxanium")
+fallbacks = Array[Font]([ExtResource("2_noto")])
+variation_embolden = 0.18
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_panel"]
+texture = ExtResource("3_panel")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+modulate_color = Color(0.045, 0.12, 0.18, 0.94)
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_panel_focus"]
+texture = ExtResource("3_panel")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
+content_margin_left = 20.0
+content_margin_top = 18.0
+content_margin_right = 20.0
+content_margin_bottom = 18.0
+modulate_color = Color(0.04, 0.22, 0.28, 0.98)
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_developer"]
+texture = ExtResource("5_developer_panel")
+texture_margin_left = 18.0
+texture_margin_top = 12.0
+texture_margin_right = 18.0
+texture_margin_bottom = 12.0
+content_margin_left = 14.0
+content_margin_top = 12.0
+content_margin_right = 14.0
+content_margin_bottom = 12.0
+modulate_color = Color(0.025, 0.11, 0.16, 0.96)
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_button_normal"]
+texture = ExtResource("4_button")
+texture_margin_left = 16.0
+texture_margin_top = 10.0
+texture_margin_right = 16.0
+texture_margin_bottom = 10.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+modulate_color = Color(0.055, 0.2, 0.29, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_button_hover"]
+texture = ExtResource("4_button")
+texture_margin_left = 16.0
+texture_margin_top = 10.0
+texture_margin_right = 16.0
+texture_margin_bottom = 10.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+modulate_color = Color(0.06, 0.46, 0.58, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_button_pressed"]
+texture = ExtResource("4_button")
+texture_margin_left = 16.0
+texture_margin_top = 10.0
+texture_margin_right = 16.0
+texture_margin_bottom = 10.0
+content_margin_left = 20.0
+content_margin_top = 11.0
+content_margin_right = 20.0
+content_margin_bottom = 9.0
+modulate_color = Color(0.04, 0.68, 0.67, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_button_disabled"]
+texture = ExtResource("4_button")
+texture_margin_left = 16.0
+texture_margin_top = 10.0
+texture_margin_right = 16.0
+texture_margin_bottom = 10.0
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+modulate_color = Color(0.08, 0.11, 0.14, 0.72)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_focus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.36, 0.94, 1, 0.9)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[resource]
+default_font = SubResource("FontVariation_ui")
+default_font_size = 17
+Button/colors/font_color = Color(0.87, 0.97, 1, 1)
+Button/colors/font_disabled_color = Color(0.42, 0.51, 0.57, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/font_sizes/font_size = 17
+Button/styles/disabled = SubResource("StyleBox_button_disabled")
+Button/styles/focus = SubResource("StyleBox_focus")
+Button/styles/hover = SubResource("StyleBox_button_hover")
+Button/styles/normal = SubResource("StyleBox_button_normal")
+Button/styles/pressed = SubResource("StyleBox_button_pressed")
+Label/colors/font_color = Color(0.86, 0.94, 0.98, 1)
+Label/colors/font_outline_color = Color(0.01, 0.025, 0.04, 0.9)
+Label/constants/outline_size = 3
+Label/font_sizes/font_size = 17
+PanelContainer/styles/panel = SubResource("StyleBox_panel")
+HudPanel/base_type = &"PanelContainer"
+HudPanel/styles/panel = SubResource("StyleBox_panel")
+FocusPanel/base_type = &"PanelContainer"
+FocusPanel/styles/panel = SubResource("StyleBox_panel_focus")
+DeveloperPanel/base_type = &"PanelContainer"
+DeveloperPanel/styles/panel = SubResource("StyleBox_developer")
+TitleLabel/base_type = &"Label"
+TitleLabel/colors/font_color = Color(0.38, 0.94, 1, 1)
+TitleLabel/font_sizes/font_size = 28
+SectionLabel/base_type = &"Label"
+SectionLabel/colors/font_color = Color(0.35, 0.9, 1, 1)
+SectionLabel/font_sizes/font_size = 18
+ValueLabel/base_type = &"Label"
+ValueLabel/colors/font_color = Color(0.96, 0.99, 1, 1)
+ValueLabel/font_sizes/font_size = 20
+MutedLabel/base_type = &"Label"
+MutedLabel/colors/font_color = Color(0.78, 0.88, 0.91, 1)
+MutedLabel/constants/outline_size = 1
+MutedLabel/font_sizes/font_size = 15
+SuccessLabel/base_type = &"Label"
+SuccessLabel/colors/font_color = Color(0.46, 1, 0.62, 1)
+WarningLabel/base_type = &"Label"
+WarningLabel/colors/font_color = Color(1, 0.79, 0.3, 1)
+DangerLabel/base_type = &"Label"
+DangerLabel/colors/font_color = Color(1, 0.35, 0.43, 1)

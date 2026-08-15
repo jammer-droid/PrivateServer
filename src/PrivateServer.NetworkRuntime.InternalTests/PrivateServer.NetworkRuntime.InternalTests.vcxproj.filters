@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="NrClientCommandChannelTests.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientConnectionTests.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientControlCompletionTests.cpp">
+      <Filter>Client\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientIoCompletionDispatcherTests.cpp">
+      <Filter>Client\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientIoContextOperationsTests.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientIoWorkerTests.cpp">
+      <Filter>Client\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientPoolQueueTests.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientTransportTests.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientTransportEventSinkTests.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientLifecycleStateMachineTests.cpp">
+      <Filter>Client\Lifecycle</Filter>
+    </ClCompile>
+    <ClCompile Include="NrWin32SocketIoTests.cpp">
+      <Filter>Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="NrResultTests.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="TypeTraitsTests.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="NrConcurrencyTests.cpp">
+      <Filter>Concurrency</Filter>
+    </ClCompile>
+    <ClCompile Include="NrDiagnosticEmitterTests.cpp">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClCompile>
+    <ClCompile Include="NrDebugDiagnosticSinkTests.cpp">
+      <Filter>Runtime\Diagnostics\Sink</Filter>
+    </ClCompile>
+    <ClCompile Include="NrJsonlDiagnosticSinkTests.cpp">
+      <Filter>Runtime\Diagnostics\Sink</Filter>
+    </ClCompile>
+    <ClCompile Include="NrDiagnosticsComponentTests.cpp">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClCompile>
+    <ClCompile Include="NrMemoryPoolTests.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="NrMemoryPoolManagerTests.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPayloadTests.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPayloadRefTests.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="NrBoundedMpscQueueTests.cpp">
+      <Filter>Queue</Filter>
+    </ClCompile>
+    <ClCompile Include="NrRecvBufferTests.cpp">
+      <Filter>Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPrimitiveCodecTests.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPacketParserTests.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPacketHeaderCodecTests.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPacketDispatchRuleTests.cpp">
+      <Filter>Dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPacketDispatchTableTests.cpp">
+      <Filter>Dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="NrIngressRegistryTests.cpp">
+      <Filter>Dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="NrQueueIngressTests.cpp">
+      <Filter>Dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="NrInputTests.cpp">
+      <Filter>Dispatch\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="NrInputFactoryTests.cpp">
+      <Filter>Dispatch\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerOpRulesTests.cpp">
+      <Filter>Runtime\Lifecycle</Filter>
+    </ClCompile>
+    <ClCompile Include="NrRecvDispatchFlowTests.cpp">
+      <Filter>Integration\Recv</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Test Support</Filter>
+    </ClCompile>
+    <ClCompile Include="NrActorScheduleGateTests.cpp">
+      <Filter>Core\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionActorSchedulerAdmissionTests.cpp">
+      <Filter>Session\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerSubmissionGateTests.cpp">
+      <Filter>Runtime\Submission</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerMetricsTests.cpp">
+      <Filter>Runtime\Observation</Filter>
+    </ClCompile>
+    <ClCompile Include="NrToWorldHandoffTests.cpp">
+      <Filter>Runtime\ToWorld</Filter>
+    </ClCompile>
+    <ClCompile Include="NrToWorldLifecycleStateTests.cpp">
+      <Filter>Runtime\ToWorld</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="NrMemoryPoolTestUtils.h">
+      <Filter>Test Support</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Test Support</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <Filter>Test Support</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Client">
+      <UniqueIdentifier>{220fe739-d5a6-4026-87a7-abf8b4dac82a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Lifecycle">
+      <UniqueIdentifier>{c1f5d701-f094-4270-b3f0-90d224e8a701}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Transport">
+      <UniqueIdentifier>{ea673301-e29a-4123-bdb5-07004998db88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Worker">
+      <UniqueIdentifier>{bb051455-a90f-48a2-bf85-40500a63c131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{58b457b9-1879-48f5-a24e-0dfc4cfad490}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Windows">
+      <UniqueIdentifier>{1d064bbc-e437-4b7d-917a-4f357466e970}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{bb4ba2fa-d9f9-4b10-9113-973d9d614e38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Concurrency">
+      <UniqueIdentifier>{670d59c0-22b5-49d1-a346-ac9486a814f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{28230cb2-73b3-4f4b-a8cb-c5ccd6d629b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Queue">
+      <UniqueIdentifier>{48cdcb6c-d877-4e04-b08e-08ca5ccebf2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buffer">
+      <UniqueIdentifier>{1df6dcad-256d-4c7f-9b0b-81e3bdf20e72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{ece9a32e-bea5-4bae-93af-41ecae8dacf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dispatch">
+      <UniqueIdentifier>{b77f162c-df62-45ca-a43d-2a4b0cd690bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dispatch\Input">
+      <UniqueIdentifier>{b323309a-38de-42d4-ab33-5321da57f4b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime">
+      <UniqueIdentifier>{8c9ce865-0146-443f-9b17-dd976e447902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Lifecycle">
+      <UniqueIdentifier>{e7be9d65-6e90-4b95-b1d2-0b9280a50fe1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Integration">
+      <UniqueIdentifier>{78aa404f-59fc-442e-9dd6-65eb11c83067}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Integration\Recv">
+      <UniqueIdentifier>{ea9abcf4-eb09-4f41-90a1-eac781c25da2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test Support">
+      <UniqueIdentifier>{d6a3194d-32d3-4eb7-b52a-9ce757f0ffbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{990befdf-e5f7-46d4-bea7-797afb6607b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Actor">
+      <UniqueIdentifier>{51db4823-3b90-4d92-8537-2054122448f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Session">
+      <UniqueIdentifier>{3149fa8a-71d6-4bae-a6d3-dcddd2eed951}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Session\Actor">
+      <UniqueIdentifier>{0fcbe0b8-1577-43e4-bc32-d4f59fa5b1d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\ToWorld">
+      <UniqueIdentifier>{6d8bee17-b668-4ecd-a93d-f1357b0f31bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Submission">
+      <UniqueIdentifier>{a4603cd7-059b-42ba-b833-84d2dc287250}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Observation">
+      <UniqueIdentifier>{18d1aee0-6618-41ba-9eab-ccfc2d24462e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Diagnostics">
+      <UniqueIdentifier>{ab2001d7-671e-4f1d-8392-f8dc3fd1a860}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Diagnostics\Sink">
+      <UniqueIdentifier>{f576f7c3-ef45-46d0-8eb3-fb26033a9a80}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

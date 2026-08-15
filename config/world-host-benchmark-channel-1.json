@@ -1,0 +1,32 @@
+{
+  "schema": "psnr.world_server.benchmark.controller.config",
+  "version": 1,
+  "worldHost": {
+    "executablePath": "../build/bin/WorldServer/x64/Release/PrivateServer.WorldServer.Host.exe",
+    "configPath": "world-server-baseline.json"
+  },
+  "artifact": {
+    "runsRoot": "../artifacts/fleet-benchmark/channel-1"
+  },
+  "clients": {
+    "address": "127.0.0.1",
+    "port": 27015,
+    "count": 100,
+    "rampPerSecond": 20,
+    "admissionTimeoutMilliseconds": 10000,
+    "roundResultTimeoutMilliseconds": 200000,
+    "eventQueueCapacity": 1024,
+    "payloadQueueCapacity": 256
+  },
+  "workload": {
+    "seed": 77,
+    "controlIntervalMilliseconds": 500,
+    "boostPercent": 10
+  },
+  "sampling": {
+    "intervalMilliseconds": 1000
+  },
+  "lifecycle": {
+    "shutdownTimeoutMilliseconds": 10000
+  }
+}

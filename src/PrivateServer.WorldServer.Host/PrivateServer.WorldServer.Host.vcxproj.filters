@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Log">
+      <UniqueIdentifier>{559d58b5-7462-424b-8863-fa185d2f5bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bootstrap">
+      <UniqueIdentifier>{39e0bf8e-7e43-494e-b828-60ee715ae104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Benchmark">
+      <UniqueIdentifier>{616d2f4e-0eb7-464f-ba9c-19db5881ab73}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="WorldApplicationLogAdapter.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostChildControl.cpp">
+      <Filter>Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostChildControlWorker.cpp">
+      <Filter>Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostLog.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostRuntimeArtifactWriter.cpp">
+      <Filter>Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostCommandLine.cpp">
+      <Filter>Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostConfig.cpp">
+      <Filter>Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostRunner.cpp">
+      <Filter>Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostStopSignal.cpp">
+      <Filter>Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostArtifactWriteQueue.cpp">
+      <Filter>Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldServerHostArtifactWriter.cpp">
+      <Filter>Benchmark</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WorldApplicationLogAdapter.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostChildControl.h">
+      <Filter>Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostChildControlWorker.h">
+      <Filter>Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostLog.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostRuntimeArtifactWriter.h">
+      <Filter>Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostStopSignal.h">
+      <Filter>Bootstrap</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostArtifactWriteQueue.h">
+      <Filter>Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostArtifactWriter.h">
+      <Filter>Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostRuntimeSample.h">
+      <Filter>Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostCommandLine.h">
+      <Filter>Bootstrap</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostConfig.h">
+      <Filter>Bootstrap</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldServerHostRunner.h">
+      <Filter>Bootstrap</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

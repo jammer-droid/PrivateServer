@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Public">
+      <UniqueIdentifier>{90f9438f-043d-4911-91fc-773c5ab8268f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\NetworkRuntime">
+      <UniqueIdentifier>{1237d272-f8ec-42fb-824c-3fe9a87d3787}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Build">
+      <UniqueIdentifier>{98e325d6-a002-4453-a4db-eb21b337feaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private">
+      <UniqueIdentifier>{c48fa927-adbd-472a-936e-c484ed8e6d27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Send">
+      <UniqueIdentifier>{0a96a160-16ae-4df5-888f-c5c2740e5245}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Handoff">
+      <UniqueIdentifier>{f1a3e225-c544-4d32-8c5a-70110e20190e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Snapshot">
+      <UniqueIdentifier>{4c02b569-bca6-4bcd-97bb-e97d040285a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Client">
+      <UniqueIdentifier>{ccbc9547-b7f8-447d-aa75-6e76b2e38e8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Client">
+      <UniqueIdentifier>{2ee545fd-14f4-4af7-aaf7-84c83af3218e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Export.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrEndpoint.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrDiagnosticsConfig.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrErrorCode.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrGateway.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrGatewayAccess.h">
+      <Filter>Private</Filter>
+    </ClInclude>
+    <ClInclude Include="NrPacketType.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServer.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerConfig.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionKey.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionSendChannel.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrStatus.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="Version.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Build</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionSendChannelAccess.h">
+      <Filter>Private\Send</Filter>
+    </ClInclude>
+    <ClInclude Include="NrToWorldEvent.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrToWorldEventAccess.h">
+      <Filter>Private\Handoff</Filter>
+    </ClInclude>
+    <ClInclude Include="NrByteView.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientConfig.h">
+      <Filter>Public\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClient.h">
+      <Filter>Public\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientEvent.h">
+      <Filter>Public\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientEventAccess.h">
+      <Filter>Private\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientSnapshot.h">
+      <Filter>Public\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientSnapshotAccess.h">
+      <Filter>Private\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionCloseRequestReason.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionEndReason.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerSnapshot.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerPressureTypes.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerSnapshotAccess.h">
+      <Filter>Private\Snapshot</Filter>
+    </ClInclude>
+    <ClInclude Include="NrUtf8View.h">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NrGateway.cpp">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServer.cpp">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionSendChannel.cpp">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClCompile>
+    <ClCompile Include="Version.cpp">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Build</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Build</Filter>
+    </ClCompile>
+    <ClCompile Include="NrToWorldEvent.cpp">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerSnapshot.cpp">
+      <Filter>Public\NetworkRuntime</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientEvent.cpp">
+      <Filter>Public\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClient.cpp">
+      <Filter>Public\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientSnapshot.cpp">
+      <Filter>Public\Client</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

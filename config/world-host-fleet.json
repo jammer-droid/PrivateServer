@@ -1,0 +1,12 @@
+{
+  "schema": "psnr.world_server.host.fleet",
+  "version": 1,
+  "hosts": [
+    {
+      "config": "world-server-baseline.json"
+    },
+    {
+      "config": "world-server-channel-2.json"
+    }
+  ]
+}

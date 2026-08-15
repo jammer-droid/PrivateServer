@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Public">
+      <UniqueIdentifier>{2758948D-642F-4297-A08B-5B3053C40A99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal">
+      <UniqueIdentifier>{26A8A76F-8EDB-4C93-8B52-71147627101E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ApplicationLogConfig.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogContext.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogEnvelope.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogFanoutSink.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogFormatter.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogHandle.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogHealth.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogger.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLoggerResult.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLoggerTestAccess.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationRunArtifacts.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogOutputFactory.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogPayloadCodec.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogRecord.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogSeverity.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationLogValidation.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ApplicationLogConfig.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogEnvelope.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogFanoutSink.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogFormatter.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogger.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationRunArtifacts.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogOutputFactory.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogPayloadCodec.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationLogRecord.cpp">
+      <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

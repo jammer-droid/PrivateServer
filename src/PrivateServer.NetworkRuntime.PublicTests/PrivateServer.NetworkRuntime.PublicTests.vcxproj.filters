@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="NrClientEventTests.cpp">
+      <Filter>Contract\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientSnapshotTests.cpp">
+      <Filter>Contract\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientTests.cpp">
+      <Filter>Contract\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="NrDiagnosticsConfigTests.cpp">
+      <Filter>Contract\Diagnostics</Filter>
+    </ClCompile>
+    <ClCompile Include="NrStatusTests.cpp">
+      <Filter>Contract\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="VersionTests.cpp">
+      <Filter>Contract\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerLifecycleTests.cpp">
+      <Filter>Contract\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerSnapshotTests.cpp">
+      <Filter>Contract\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="NrGatewayTests.cpp">
+      <Filter>Contract\Send</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionSendChannelTests.cpp">
+      <Filter>Contract\Send</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Test Support</Filter>
+    </ClCompile>
+    <ClCompile Include="NrToWorldEventTests.cpp">
+      <Filter>Runtime\ToWorld</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="NrServerTestUtils.h">
+      <Filter>Test Support</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Test Support</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <Filter>Test Support</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Contract">
+      <UniqueIdentifier>{d2066bbd-7b91-4ec0-bb71-e9ca00123556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contract\Common">
+      <UniqueIdentifier>{f290f037-2f5b-40e3-acd2-2a4b97204962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contract\Server">
+      <UniqueIdentifier>{9072b313-ba4b-49da-8ada-fcdc2e27e4cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contract\Send">
+      <UniqueIdentifier>{67403790-c778-4639-b602-4327a7127425}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contract\Diagnostics">
+      <UniqueIdentifier>{aa987184-42d0-4c37-b21a-f6628667b61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test Support">
+      <UniqueIdentifier>{ec8782a2-e458-458f-afcc-595a425c5878}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime">
+      <UniqueIdentifier>{c461e496-3c4c-4a16-b262-9e1493d02c0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\ToWorld">
+      <UniqueIdentifier>{86b5cdfc-b6c6-4dcc-b4cb-5590770fabd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contract\Client">
+      <UniqueIdentifier>{110db5dd-cc7a-42a2-868c-97fee92365b7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

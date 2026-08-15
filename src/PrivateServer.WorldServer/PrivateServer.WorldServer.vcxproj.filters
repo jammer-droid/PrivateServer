@@ -1,0 +1,780 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Public">
+      <UniqueIdentifier>{596E34D4-43E9-4F1C-A7DE-FE197B7442AF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{9B32392C-D114-4559-8269-3D997392C569}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\C2S">
+      <UniqueIdentifier>{83D197BE-EB63-4242-AB89-88553AF92ED4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\S2C">
+      <UniqueIdentifier>{DC8DB3F2-E481-4883-A41F-D9B04A09941C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World">
+      <UniqueIdentifier>{956EDAD7-B403-48EE-B2A2-DF6537CFECDA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Identity">
+      <UniqueIdentifier>{E68A8585-F2CB-4558-A1B4-163856FF69A5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Entity">
+      <UniqueIdentifier>{E2D129A1-10C5-4237-8B59-B52788ABCE7E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Execution">
+      <UniqueIdentifier>{4B86B9E5-0E02-4FC0-B107-0E670EE5DDD0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Execution\DoubleBuffered">
+      <UniqueIdentifier>{2D3B9F53-6275-4A15-AE53-86170A2C646D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Execution\IngressPump">
+      <UniqueIdentifier>{E41F48F5-CD63-401F-9E94-69CD78FA6574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Execution\Coordinator">
+      <UniqueIdentifier>{C0B65404-C678-4A61-A30F-117E4122AE78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Execution\OutboundPublisher">
+      <UniqueIdentifier>{48B14AE1-1A2B-46FD-994B-14FD2A07765D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Session">
+      <UniqueIdentifier>{DB48116A-0D1A-4A02-B922-AED4FD84DF53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Command">
+      <UniqueIdentifier>{68F5D805-8F1C-43CE-9792-FC7619F19FF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress">
+      <UniqueIdentifier>{82CBDE40-E953-43C4-B418-4D2BF562C3A1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\DoubleBuffered">
+      <UniqueIdentifier>{1A5417B0-4EDC-445E-A3E8-A701772E1653}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Command\Movement">
+      <UniqueIdentifier>{BAD5BC64-68EA-4DA3-9971-9DBB658ECFAC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\Movement">
+      <UniqueIdentifier>{032BE04A-D31D-4D18-8134-340EAD5A2EF4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\TimeSync">
+      <UniqueIdentifier>{B16ED033-F944-4F2C-A0DC-633BE0F960C1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\Join">
+      <UniqueIdentifier>{074CD5F8-8BE9-49D0-976C-39A15B53BF9E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Command\Control">
+      <UniqueIdentifier>{1DC52BC1-9785-42E5-983D-E3ABBD9ED67D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Ingress\Control">
+      <UniqueIdentifier>{15649EF7-AD34-448D-9E18-FB8D190E6A56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\RuntimeAdapter">
+      <UniqueIdentifier>{FD92ABBC-7710-420D-9465-D46B22D03086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Tick">
+      <UniqueIdentifier>{1DBAF717-2C9E-4196-A4A6-557BD5CB35F4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Benchmark">
+      <UniqueIdentifier>{A4E9207F-E8AD-49E7-B15A-45707F1E6C67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Tick\Movement">
+      <UniqueIdentifier>{7CBF034B-F5FD-43BE-A275-B0F0C582FF07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Outbound">
+      <UniqueIdentifier>{579CF230-C11B-4F00-A87D-A1B0DB64A081}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Outbound\DoubleBuffered">
+      <UniqueIdentifier>{ED33FFEC-795B-43A0-A1B7-F20944A5B07A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Physics">
+      <UniqueIdentifier>{CF45095B-59F8-471F-A7CD-4892E5E68F28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Spatial">
+      <UniqueIdentifier>{B0286881-6647-4DB6-901E-157812612F9E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Replication">
+      <UniqueIdentifier>{AE847BFD-1964-4E23-8912-C6C1320F6B97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Gameplay">
+      <UniqueIdentifier>{3050F7E3-49D2-462A-92E4-CC58FAA13F36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor">
+      <UniqueIdentifier>{dfc5f8b8-03df-49b8-a8d4-ab03c69aa28a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\Box2D">
+      <UniqueIdentifier>{aeb66d35-81e0-407b-b940-9a3c3b23217e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\Box2D\Source">
+      <UniqueIdentifier>{5db678cc-91a5-4966-8f67-311fa6366df4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WorldApplicationEventSink.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlledEntityState.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldOverviewSnapshot.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldOverviewPlanner.h">
+      <Filter>World\Replication</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityRemove.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="EntitySpawn.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityStateBatch.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="JoinWorldRequest.h">
+      <Filter>Protocol\C2S</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlStateCommand.h">
+      <Filter>Protocol\C2S</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementInput.h">
+      <Filter>Protocol\C2S</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerWorldEventSource.h">
+      <Filter>World\RuntimeAdapter</Filter>
+    </ClInclude>
+    <ClInclude Include="RoundState.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="RoundResult.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreState.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldPacketTypes.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldProtocolWireCodec.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldProtocolValues.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldEntityIdentity.h">
+      <Filter>World\Identity</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldClock.h">
+      <Filter>World\Tick</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDoubleBufferedTickCoordinator.h">
+      <Filter>World\Tick</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTickSample.h">
+      <Filter>World\Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTickSampleBuffer.h">
+      <Filter>World\Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="IWorldTickSampleSink.h">
+      <Filter>World\Benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldExecutionModeConfig.h">
+      <Filter>World\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldExecutionStorage.h">
+      <Filter>World\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDoubleBufferRoleExchange.h">
+      <Filter>World\Execution\DoubleBuffered</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDoubleBufferedWorkers.h">
+      <Filter>World\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldEntityManager.h">
+      <Filter>World\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldEntityComponents.h">
+      <Filter>World\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldEntityComponentStore.h">
+      <Filter>World\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldEntityRegistry.h">
+      <Filter>World\Identity</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldFixedStepSchedule.h">
+      <Filter>World\Tick</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMovementCommand.h">
+      <Filter>World\Command\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldControlCommand.h">
+      <Filter>World\Command\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldBoostCostSolver.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldCollisionDeathResolver.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldControlMovementSolver.h">
+      <Filter>World\Tick\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMovementCommandStore.h">
+      <Filter>World\Command\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMovementPhaseCommitter.h">
+      <Filter>World\Tick\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMovementPhase.h">
+      <Filter>World\Tick\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMovementPhaseResult.h">
+      <Filter>World\Tick\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMovementTickInputBuilder.h">
+      <Filter>World\Tick\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMovementTickInput.h">
+      <Filter>World\Tick\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldOwnerLoop.h">
+      <Filter>World\Tick</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldOutboundDoubleBuffer.h">
+      <Filter>World\Outbound\DoubleBuffered</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldOutboundPublisher.h">
+      <Filter>World\Outbound\DoubleBuffered</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldPhysicsScene.h">
+      <Filter>World\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldPhysicsStepResult.h">
+      <Filter>World\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldPhysicsValues.h">
+      <Filter>World\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldCollisionProxyBatch.h">
+      <Filter>World\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldBox2dCollisionAdapter.h">
+      <Filter>World\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldAoiPlanner.h">
+      <Filter>World\Spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldSpatialIndex.h">
+      <Filter>World\Spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldSpatialProjectionBuilder.h">
+      <Filter>World\Spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldSpatialProxy.h">
+      <Filter>World\Spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIngressAdmission.h">
+      <Filter>World\Ingress</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIngressDoubleBuffer.h">
+      <Filter>World\Ingress\DoubleBuffered</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIngressEventDrain.h">
+      <Filter>World\RuntimeAdapter</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIngressEventConsumer.h">
+      <Filter>World\RuntimeAdapter</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIngressPacketRouter.h">
+      <Filter>World\Ingress</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIngressPump.h">
+      <Filter>World\Ingress\DoubleBuffered</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIngressTerminalConsumer.h">
+      <Filter>World\Ingress\DoubleBuffered</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMovementCommandAdmission.h">
+      <Filter>World\Ingress\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldControlCommandAdmission.h">
+      <Filter>World\Ingress\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldSessionRegistry.h">
+      <Filter>World\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldReady.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlledEntityRebind.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldReplicationPlan.h">
+      <Filter>World\Replication</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldReplicationConfig.h">
+      <Filter>World\Replication</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldReplicationPublishReport.h">
+      <Filter>World\Replication</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldReplicationPublisher.h">
+      <Filter>World\Replication</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldReadView.h">
+      <Filter>World\Tick</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTimeSyncRequest.h">
+      <Filter>Protocol\C2S</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTimeSyncIngress.h">
+      <Filter>World\Ingress\TimeSync</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldJoinIngress.h">
+      <Filter>World\Ingress\Join</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTimeSyncResponse.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTickInput.h">
+      <Filter>World\Tick</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTickProcessor.h">
+      <Filter>World\Tick</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGameplayConfig.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGameplayCommitter.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGameplayPhase.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGameplayPhaseResult.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldRoundResultPlanner.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGameplayReplicationPlan.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGameplayState.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGrowthSolver.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDeterministicSampler.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldActiveAreaSolver.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldResourcePopulationSolver.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDeathDropAnchorPlanner.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDeathDropPlacementFilter.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldResourceRegistry.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldPlayerBody.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldPlayerSpawnPlanner.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldResourceSpawnPlanner.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldBodyTrailSampler.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldBodyTrailComponent.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldBodyTrailTrimmer.h">
+      <Filter>World\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldWorkerStartup.h">
+      <Filter>World\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldWorkerShutdown.h">
+      <Filter>World\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="..\vendor\box2d\src\aabb.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\arena_allocator.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\array.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\atomic.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\bitset.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\body.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\broad_phase.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\constants.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\constraint_graph.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\contact.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\contact_solver.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\core.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\ctz.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\id_pool.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\island.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\joint.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\sensor.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\shape.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\solver.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\solver_set.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\table.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\box2d\src\world.h">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WorldOverviewPlanner.cpp">
+      <Filter>World\Replication</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldEntityComponentStore.cpp">
+      <Filter>World\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldEntityManager.cpp">
+      <Filter>World\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldEntityRegistry.cpp">
+      <Filter>World\Identity</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldExecutionStorage.cpp">
+      <Filter>World\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDoubleBufferedCoordinatorWorker.cpp">
+      <Filter>World\Execution\Coordinator</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDoubleBufferRoleExchange.cpp">
+      <Filter>World\Execution\DoubleBuffered</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDoubleBufferedWorkers.cpp">
+      <Filter>World\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldFixedStepSchedule.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIngressEventConsumer.cpp">
+      <Filter>World\RuntimeAdapter</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIngressDoubleBuffer.cpp">
+      <Filter>World\Ingress\DoubleBuffered</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIngressPacketRouter.cpp">
+      <Filter>World\Ingress</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIngressPumpWorker.cpp">
+      <Filter>World\Execution\IngressPump</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementCommandAdmission.cpp">
+      <Filter>World\Ingress\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldControlCommandAdmission.cpp">
+      <Filter>World\Ingress\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldBoostCostSolver.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldCollisionDeathResolver.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldControlMovementSolver.cpp">
+      <Filter>World\Tick\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementCommandStore.cpp">
+      <Filter>World\Command\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementPhaseCommitter.cpp">
+      <Filter>World\Tick\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementPhase.cpp">
+      <Filter>World\Tick\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementPhaseResult.cpp">
+      <Filter>World\Tick\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMovementTickInputBuilder.cpp">
+      <Filter>World\Tick\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldOutboundDoubleBuffer.cpp">
+      <Filter>World\Outbound\DoubleBuffered</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldOutboundPublisherWorker.cpp">
+      <Filter>World\Execution\OutboundPublisher</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldPhysicsScene.cpp">
+      <Filter>World\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldPhysicsStepResult.cpp">
+      <Filter>World\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldCollisionProxyBatch.cpp">
+      <Filter>World\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldBox2dCollisionAdapter.cpp">
+      <Filter>World\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldAoiPlanner.cpp">
+      <Filter>World\Spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldSpatialIndex.cpp">
+      <Filter>World\Spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldSpatialProjectionBuilder.cpp">
+      <Filter>World\Spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldSessionRegistry.cpp">
+      <Filter>World\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldProtocolWireCodec.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldReadView.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldReplicationPlan.cpp">
+      <Filter>World\Replication</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldReplicationPublisher.cpp">
+      <Filter>World\Replication</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTimeSyncIngress.cpp">
+      <Filter>World\Ingress\TimeSync</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldJoinIngress.cpp">
+      <Filter>World\Ingress\Join</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTickProcessor.cpp">
+      <Filter>World\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTickSampleBuffer.cpp">
+      <Filter>World\Benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayConfig.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayCommitter.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayPhase.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayPhaseResult.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldRoundResultPlanner.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayReplicationPlan.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGameplayState.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGrowthSolver.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDeterministicSampler.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldActiveAreaSolver.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldResourcePopulationSolver.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDeathDropAnchorPlanner.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDeathDropPlacementFilter.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldResourceRegistry.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldPlayerBody.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldPlayerSpawnPlanner.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldResourceSpawnPlanner.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldBodyTrailSampler.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldBodyTrailComponent.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldBodyTrailTrimmer.cpp">
+      <Filter>World\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="..\vendor\box2d\src\aabb.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\arena_allocator.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\array.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\bitset.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\body.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\broad_phase.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\constraint_graph.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\contact.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\contact_solver.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\core.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\distance.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\distance_joint.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\dynamic_tree.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\geometry.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\hull.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\id_pool.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\island.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\joint.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\manifold.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\math_functions.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\motor_joint.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\mouse_joint.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\mover.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\prismatic_joint.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\revolute_joint.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\sensor.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\shape.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\solver.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\solver_set.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\table.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\timer.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\types.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\weld_joint.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\wheel_joint.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\world.c">
+      <Filter>vendor\Box2D\Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\vendor\box2d\src\box2d.natvis">
+      <Filter>vendor\Box2D\Source</Filter>
+    </Natvis>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\vendor\box2d\src\CMakeLists.txt">
+      <Filter>vendor\Box2D\Source</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

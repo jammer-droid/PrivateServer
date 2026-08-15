@@ -1,0 +1,7 @@
+# Public Markdown whitelist managed by document-subsystem, relative to this directory.
+README.md
+aoi-active-area-and-replication.md
+authoritative-gameplay-and-round-contract.md
+gameplay-protocol-reference.md
+host-configuration-and-process-lifecycle.md
+runtime-ownership-and-tick-pipeline.md

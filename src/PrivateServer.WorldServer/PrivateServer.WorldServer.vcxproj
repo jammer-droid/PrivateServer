@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{89a76868-4c7f-4da1-aac8-b4266b92b0e4}</ProjectGuid>
+    <RootNamespace>PrivateServerWorldServer</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\..\LocalToolset.props" Condition="Exists('$(MSBuildThisFileDirectory)..\..\LocalToolset.props')" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' != ''">$(LocalPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' == ''">v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' != ''">$(LocalPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' == ''">v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' != ''">$(LocalPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' == ''">v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' != ''">$(LocalPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(LocalPlatformToolset)' == ''">v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(MSBuildThisFileDirectory)..\..\build\bin\WorldServer\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(MSBuildThisFileDirectory)..\..\build\obj\WorldServer\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(MSBuildThisFileDirectory)..\..\build\include;$(ProjectDir)..\vendor\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PrivateServer.NetworkRuntime\PrivateServer.NetworkRuntime.vcxproj">
+      <Project>{c0307d3f-83de-4737-a611-ad4119895138}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\vendor\box2d\src\aabb.h" />
+    <ClInclude Include="..\vendor\box2d\src\arena_allocator.h" />
+    <ClInclude Include="..\vendor\box2d\src\array.h" />
+    <ClInclude Include="..\vendor\box2d\src\atomic.h" />
+    <ClInclude Include="..\vendor\box2d\src\bitset.h" />
+    <ClInclude Include="..\vendor\box2d\src\body.h" />
+    <ClInclude Include="..\vendor\box2d\src\broad_phase.h" />
+    <ClInclude Include="..\vendor\box2d\src\constants.h" />
+    <ClInclude Include="..\vendor\box2d\src\constraint_graph.h" />
+    <ClInclude Include="..\vendor\box2d\src\contact.h" />
+    <ClInclude Include="..\vendor\box2d\src\contact_solver.h" />
+    <ClInclude Include="..\vendor\box2d\src\core.h" />
+    <ClInclude Include="..\vendor\box2d\src\ctz.h" />
+    <ClInclude Include="..\vendor\box2d\src\id_pool.h" />
+    <ClInclude Include="..\vendor\box2d\src\island.h" />
+    <ClInclude Include="..\vendor\box2d\src\joint.h" />
+    <ClInclude Include="..\vendor\box2d\src\sensor.h" />
+    <ClInclude Include="..\vendor\box2d\src\shape.h" />
+    <ClInclude Include="..\vendor\box2d\src\solver.h" />
+    <ClInclude Include="..\vendor\box2d\src\solver_set.h" />
+    <ClInclude Include="..\vendor\box2d\src\table.h" />
+    <ClInclude Include="..\vendor\box2d\src\world.h" />
+    <ClInclude Include="ControlledEntityState.h" />
+    <ClInclude Include="WorldOverviewSnapshot.h" />
+    <ClInclude Include="WorldOverviewPlanner.h" />
+    <ClInclude Include="EntityRemove.h" />
+    <ClInclude Include="EntitySpawn.h" />
+    <ClInclude Include="EntityStateBatch.h" />
+    <ClInclude Include="JoinWorldRequest.h" />
+    <ClInclude Include="ControlStateCommand.h" />
+    <ClInclude Include="MovementInput.h" />
+    <ClInclude Include="NrServerWorldEventSource.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="RoundState.h" />
+    <ClInclude Include="RoundResult.h" />
+    <ClInclude Include="ScoreState.h" />
+    <ClInclude Include="WorldActiveAreaSolver.h" />
+    <ClInclude Include="WorldResourcePopulationSolver.h" />
+    <ClInclude Include="WorldDeathDropAnchorPlanner.h" />
+    <ClInclude Include="WorldDeathDropPlacementFilter.h" />
+    <ClInclude Include="WorldResourceRegistry.h" />
+    <ClInclude Include="WorldResult.h" />
+    <ClInclude Include="WorldBoostCostSolver.h" />
+    <ClInclude Include="WorldCollisionDeathResolver.h" />
+    <ClInclude Include="WorldBodyTrailSampler.h" />
+    <ClInclude Include="WorldBodyTrailComponent.h" />
+    <ClInclude Include="WorldBodyTrailTrimmer.h" />
+    <ClInclude Include="WorldControlCommand.h" />
+    <ClInclude Include="WorldControlCommandAdmission.h" />
+    <ClInclude Include="WorldControlMovementSolver.h" />
+    <ClInclude Include="WorldMovementCommand.h" />
+    <ClInclude Include="WorldMovementCommandAdmission.h" />
+    <ClInclude Include="WorldMovementCommandStore.h" />
+    <ClInclude Include="WorldMovementPhase.h" />
+    <ClInclude Include="WorldMovementPhaseCommitter.h" />
+    <ClInclude Include="WorldMovementPhaseResult.h" />
+    <ClInclude Include="WorldMovementTickInputBuilder.h" />
+    <ClInclude Include="WorldMovementTickInput.h" />
+    <ClInclude Include="WorldOwnerLoop.h" />
+    <ClInclude Include="WorldOutboundDoubleBuffer.h" />
+    <ClInclude Include="WorldOutboundPublisher.h" />
+    <ClInclude Include="WorldPhysicsScene.h" />
+    <ClInclude Include="WorldPhysicsStepResult.h" />
+    <ClInclude Include="WorldPhysicsValues.h" />
+    <ClInclude Include="WorldAoiPlanner.h" />
+    <ClInclude Include="WorldApplicationEventSink.h" />
+    <ClInclude Include="WorldSpatialIndex.h" />
+    <ClInclude Include="WorldSpatialProjectionBuilder.h" />
+    <ClInclude Include="WorldSpatialProxy.h" />
+    <ClInclude Include="WorldPacketTypes.h" />
+    <ClInclude Include="WorldProtocolWireCodec.h" />
+    <ClInclude Include="WorldProtocolValues.h" />
+    <ClInclude Include="WorldEntityComponentStore.h" />
+    <ClInclude Include="ControlledEntityRebind.h" />
+    <ClInclude Include="WorldEntityComponents.h" />
+    <ClInclude Include="WorldEntityIdentity.h" />
+    <ClInclude Include="WorldExecutionModeConfig.h" />
+    <ClInclude Include="WorldExecutionStorage.h" />
+    <ClInclude Include="WorldDoubleBufferRoleExchange.h" />
+    <ClInclude Include="WorldDoubleBufferedWorkers.h" />
+    <ClInclude Include="WorldDoubleBufferedTickCoordinator.h" />
+    <ClInclude Include="WorldEntityManager.h" />
+    <ClInclude Include="WorldEntityRegistry.h" />
+    <ClInclude Include="WorldClock.h" />
+    <ClInclude Include="WorldFixedStepSchedule.h" />
+    <ClInclude Include="WorldGameplayCommitter.h" />
+    <ClInclude Include="WorldGameplayConfig.h" />
+    <ClInclude Include="WorldGameplayPhase.h" />
+    <ClInclude Include="WorldGameplayPhaseResult.h" />
+    <ClInclude Include="WorldGameplayReplicationPlan.h" />
+    <ClInclude Include="WorldGameplayState.h" />
+    <ClInclude Include="WorldRoundResultPlanner.h" />
+    <ClInclude Include="WorldGrowthSolver.h" />
+    <ClInclude Include="WorldDeterministicSampler.h" />
+    <ClInclude Include="WorldPlayerBody.h" />
+    <ClInclude Include="WorldPlayerSpawnPlanner.h" />
+    <ClInclude Include="WorldResourceSpawnPlanner.h" />
+    <ClInclude Include="WorldCollisionProxyBatch.h" />
+    <ClInclude Include="WorldBox2dCollisionAdapter.h" />
+    <ClInclude Include="WorldIngressAdmission.h" />
+    <ClInclude Include="WorldIngressDoubleBuffer.h" />
+    <ClInclude Include="WorldIngressEventConsumer.h" />
+    <ClInclude Include="WorldIngressEventDrain.h" />
+    <ClInclude Include="WorldIngressPacketRouter.h" />
+    <ClInclude Include="WorldIngressPump.h" />
+    <ClInclude Include="WorldIngressTerminalConsumer.h" />
+    <ClInclude Include="WorldJoinIngress.h" />
+    <ClInclude Include="WorldReady.h" />
+    <ClInclude Include="WorldReadView.h" />
+    <ClInclude Include="WorldReplicationPlan.h" />
+    <ClInclude Include="WorldReplicationConfig.h" />
+    <ClInclude Include="WorldReplicationPublishReport.h" />
+    <ClInclude Include="WorldReplicationPublisher.h" />
+    <ClInclude Include="WorldSessionRegistry.h" />
+    <ClInclude Include="WorldTimeSyncIngress.h" />
+    <ClInclude Include="WorldTimeSyncRequest.h" />
+    <ClInclude Include="WorldTimeSyncResponse.h" />
+    <ClInclude Include="WorldTickInput.h" />
+    <ClInclude Include="WorldTickProcessor.h" />
+    <ClInclude Include="IWorldTickSampleSink.h" />
+    <ClInclude Include="WorldTickSample.h" />
+    <ClInclude Include="WorldTickSampleBuffer.h" />
+    <ClInclude Include="WorldWorkerStartup.h" />
+    <ClInclude Include="WorldWorkerShutdown.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\vendor\box2d\src\aabb.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\arena_allocator.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\array.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\bitset.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\body.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\broad_phase.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\constraint_graph.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\contact.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\contact_solver.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\core.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\distance.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\distance_joint.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\dynamic_tree.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\geometry.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\hull.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\id_pool.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\island.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\joint.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\manifold.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\math_functions.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\motor_joint.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\mouse_joint.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\mover.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\prismatic_joint.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\revolute_joint.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\sensor.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\shape.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\solver.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\solver_set.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\table.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\timer.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\types.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\weld_joint.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\wheel_joint.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="..\vendor\box2d\src\world.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="WorldOverviewPlanner.cpp" />
+    <ClCompile Include="WorldEntityComponentStore.cpp" />
+    <ClCompile Include="WorldEntityManager.cpp" />
+    <ClCompile Include="WorldEntityRegistry.cpp" />
+    <ClCompile Include="WorldExecutionStorage.cpp" />
+    <ClCompile Include="WorldDoubleBufferedCoordinatorWorker.cpp" />
+    <ClCompile Include="WorldDoubleBufferRoleExchange.cpp" />
+    <ClCompile Include="WorldDoubleBufferedWorkers.cpp" />
+    <ClCompile Include="WorldFixedStepSchedule.cpp" />
+    <ClCompile Include="WorldGameplayCommitter.cpp" />
+    <ClCompile Include="WorldGameplayConfig.cpp" />
+    <ClCompile Include="WorldGameplayPhase.cpp" />
+    <ClCompile Include="WorldGameplayPhaseResult.cpp" />
+    <ClCompile Include="WorldGameplayReplicationPlan.cpp" />
+    <ClCompile Include="WorldGameplayState.cpp" />
+    <ClCompile Include="WorldRoundResultPlanner.cpp" />
+    <ClCompile Include="WorldActiveAreaSolver.cpp" />
+    <ClCompile Include="WorldResourcePopulationSolver.cpp" />
+    <ClCompile Include="WorldDeathDropAnchorPlanner.cpp" />
+    <ClCompile Include="WorldDeathDropPlacementFilter.cpp" />
+    <ClCompile Include="WorldResourceRegistry.cpp" />
+    <ClCompile Include="WorldGrowthSolver.cpp" />
+    <ClCompile Include="WorldDeterministicSampler.cpp" />
+    <ClCompile Include="WorldPlayerBody.cpp" />
+    <ClCompile Include="WorldPlayerSpawnPlanner.cpp" />
+    <ClCompile Include="WorldResourceSpawnPlanner.cpp" />
+    <ClCompile Include="WorldCollisionDeathResolver.cpp" />
+    <ClCompile Include="WorldCollisionProxyBatch.cpp" />
+    <ClCompile Include="WorldBox2dCollisionAdapter.cpp" />
+    <ClCompile Include="WorldIngressDoubleBuffer.cpp" />
+    <ClCompile Include="WorldIngressEventConsumer.cpp" />
+    <ClCompile Include="WorldIngressPacketRouter.cpp" />
+    <ClCompile Include="WorldIngressPumpWorker.cpp" />
+    <ClCompile Include="WorldJoinIngress.cpp" />
+    <ClCompile Include="WorldBoostCostSolver.cpp" />
+    <ClCompile Include="WorldBodyTrailSampler.cpp" />
+    <ClCompile Include="WorldBodyTrailComponent.cpp" />
+    <ClCompile Include="WorldBodyTrailTrimmer.cpp" />
+    <ClCompile Include="WorldControlCommandAdmission.cpp" />
+    <ClCompile Include="WorldControlMovementSolver.cpp" />
+    <ClCompile Include="WorldMovementCommandAdmission.cpp" />
+    <ClCompile Include="WorldMovementCommandStore.cpp" />
+    <ClCompile Include="WorldMovementPhase.cpp" />
+    <ClCompile Include="WorldMovementPhaseCommitter.cpp" />
+    <ClCompile Include="WorldMovementPhaseResult.cpp" />
+    <ClCompile Include="WorldMovementTickInputBuilder.cpp" />
+    <ClCompile Include="WorldOutboundDoubleBuffer.cpp" />
+    <ClCompile Include="WorldOutboundPublisherWorker.cpp" />
+    <ClCompile Include="WorldPhysicsScene.cpp" />
+    <ClCompile Include="WorldPhysicsStepResult.cpp" />
+    <ClCompile Include="WorldAoiPlanner.cpp" />
+    <ClCompile Include="WorldSpatialIndex.cpp" />
+    <ClCompile Include="WorldSpatialProjectionBuilder.cpp" />
+    <ClCompile Include="WorldProtocolWireCodec.cpp" />
+    <ClCompile Include="WorldReadView.cpp" />
+    <ClCompile Include="WorldReplicationPlan.cpp" />
+    <ClCompile Include="WorldReplicationPublisher.cpp" />
+    <ClCompile Include="WorldSessionRegistry.cpp" />
+    <ClCompile Include="WorldTimeSyncIngress.cpp" />
+    <ClCompile Include="WorldTickProcessor.cpp" />
+    <ClCompile Include="WorldTickSampleBuffer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\vendor\box2d\src\box2d.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\vendor\box2d\src\CMakeLists.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

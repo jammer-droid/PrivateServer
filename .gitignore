@@ -1,0 +1,27 @@
+.DS_Store
+.agents/*
+!.agents/skills/
+!.agents/skills/**
+backup/
+build/
+bin/
+obj/
+HANDOFF.md
+.godot/
+
+# Visual Studio local state
+.vs/
+*.user
+packages/
+LocalToolset.props
+
+# Visual Studio build outputs
+x64/
+x86/
+Debug/
+Release/
+compile_commands.json
+.zed/
+docs/memo/sticky/
+**/artifacts/network-runtime-benchmark/
+artifacts

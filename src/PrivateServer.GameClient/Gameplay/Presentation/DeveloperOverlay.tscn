@@ -1,0 +1,79 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Gameplay/Presentation/DeveloperOverlay.cs" id="1_overlay"]
+[ext_resource type="Theme" path="res://Gameplay/Presentation/Theme/NeonTelemetryTheme.tres" id="2_theme"]
+
+[node name="DeveloperOverlay" type="CanvasLayer"]
+visible = false
+layer = 10
+script = ExtResource("1_overlay")
+
+[node name="OverlayRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="DiagnosticsPanel" type="PanelContainer" parent="OverlayRoot"]
+layout_mode = 0
+theme_type_variation = &"DeveloperPanel"
+offset_left = 16.0
+offset_top = 180.0
+offset_right = 340.0
+offset_bottom = 620.0
+grow_vertical = 1
+mouse_filter = 2
+
+[node name="DiagnosticsContent" type="VBoxContainer" parent="OverlayRoot/DiagnosticsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Title" type="Label" parent="OverlayRoot/DiagnosticsPanel/DiagnosticsContent"]
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+theme_override_font_sizes/font_size = 20
+text = "Developer Overlay  ·  F3"
+
+[node name="EndpointLabel" type="Label" parent="OverlayRoot/DiagnosticsPanel/DiagnosticsContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Endpoint: -"
+autowrap_mode = 3
+
+[node name="ConnectionLabel" type="Label" parent="OverlayRoot/DiagnosticsPanel/DiagnosticsContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Connection: Idle  transport generation: 0"
+autowrap_mode = 3
+
+[node name="IdentityLabel" type="Label" parent="OverlayRoot/DiagnosticsPanel/DiagnosticsContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Player ID: -  entity ID: -"
+autowrap_mode = 3
+
+[node name="TickLabel" type="Label" parent="OverlayRoot/DiagnosticsPanel/DiagnosticsContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Server tick: -"
+
+[node name="ReplicaLabel" type="Label" parent="OverlayRoot/DiagnosticsPanel/DiagnosticsContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Replicas: 0  resources: 0"
+
+[node name="DrainLabel" type="Label" parent="OverlayRoot/DiagnosticsPanel/DiagnosticsContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Drained: 0/0"
+
+[node name="FaultLabel" type="Label" parent="OverlayRoot/DiagnosticsPanel/DiagnosticsContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"WarningLabel"
+text = "Fault: -"
+autowrap_mode = 3

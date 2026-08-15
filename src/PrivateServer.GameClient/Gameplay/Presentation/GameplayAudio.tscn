@@ -1,0 +1,104 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://Gameplay/Presentation/GameplayAudio.cs" id="1_audio"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/DarkSciFiAudio/title.ogg" id="2_lobby"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/DarkSciFiAudio/pulse.ogg" id="3_playing"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/DarkSciFiAudio/transmission.ogg" id="4_result"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/DarkSciFiAudio/hover.ogg" id="5_hover"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneyInterface/click_003.ogg" id="6_click"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneyInterface/select_002.ogg" id="7_overlay"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneyInterface/confirmation_002.ogg" id="8_confirm"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneyInterface/error_004.ogg" id="9_error"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneyDigital/phaseJump1.ogg" id="10_spawn"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneyDigital/powerUp7.ogg" id="11_growth"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneyDigital/pepSound3.ogg" id="12_collect"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneySciFi/explosionCrunch_001.ogg" id="13_destroyed"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneyDigital/highDown.ogg" id="14_warning"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/DarkSciFiAudio/victory.ogg" id="15_victory"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/KenneySciFi/thrusterFire_000.ogg" id="16_boost"]
+
+[node name="GameplayAudio" type="Node"]
+script = ExtResource("1_audio")
+
+[node name="LobbyMusic" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("2_lobby")
+volume_db = -40.0
+bus = &"Music"
+
+[node name="PlayingMusic" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("3_playing")
+volume_db = -40.0
+bus = &"Music"
+
+[node name="ResultMusic" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("4_result")
+volume_db = -40.0
+bus = &"Music"
+
+[node name="HoverPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("5_hover")
+volume_db = -5.0
+bus = &"UI"
+
+[node name="ClickPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("6_click")
+bus = &"UI"
+
+[node name="OverlayPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("7_overlay")
+volume_db = -2.0
+bus = &"UI"
+
+[node name="ConfirmationPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("8_confirm")
+bus = &"UI"
+
+[node name="ErrorPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("9_error")
+bus = &"UI"
+
+[node name="SpawnPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("10_spawn")
+bus = &"SFX"
+
+[node name="GrowthPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("11_growth")
+bus = &"SFX"
+
+[node name="CollectPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("12_collect")
+bus = &"SFX"
+
+[node name="DestroyedPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("13_destroyed")
+volume_db = -3.0
+bus = &"SFX"
+
+[node name="WarningPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("14_warning")
+volume_db = -4.0
+bus = &"SFX"
+
+[node name="VictoryPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("15_victory")
+bus = &"SFX"
+
+[node name="BoostLoopPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("16_boost")
+volume_db = -9.0
+bus = &"SFX"

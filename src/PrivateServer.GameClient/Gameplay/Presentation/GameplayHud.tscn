@@ -1,0 +1,217 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://Gameplay/Presentation/GameplayHud.cs" id="1_hud"]
+[ext_resource type="Script" path="res://Gameplay/Presentation/GameplayMinimap.cs" id="2_minimap"]
+[ext_resource type="Theme" path="res://Gameplay/Presentation/Theme/NeonTelemetryTheme.tres" id="3_theme"]
+
+[sub_resource type="Animation" id="Animation_reset"]
+resource_name = "RESET"
+length = 0.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("HudRoot/PlayerStatusPanel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_growth"]
+resource_name = "growth"
+length = 0.42
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("HudRoot/PlayerStatusPanel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.12, 0.42),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(0.55, 1, 0.78, 1), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hud"]
+_data = {
+&"RESET": SubResource("Animation_reset"),
+&"growth": SubResource("Animation_growth")
+}
+
+[node name="GameplayHud" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="HudRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("3_theme")
+
+[node name="TimePanel" type="PanelContainer" parent="HudRoot"]
+layout_mode = 0
+theme_type_variation = &"FocusPanel"
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 16.0
+offset_right = 130.0
+offset_bottom = 80.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="TimeLabel" type="Label" parent="HudRoot/TimePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ValueLabel"
+text = "TIME --"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ActiveAreaWarningPanel" type="PanelContainer" parent="HudRoot"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+theme_type_variation = &"HudPanel"
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 92.0
+offset_right = 190.0
+offset_bottom = 140.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="WarningLabel" type="Label" parent="HudRoot/ActiveAreaWarningPanel"]
+layout_mode = 2
+theme_type_variation = &"WarningLabel"
+text = "WARNING"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerStatusPanel" type="PanelContainer" parent="HudRoot"]
+layout_mode = 0
+theme_type_variation = &"HudPanel"
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -142.0
+offset_right = 392.0
+offset_bottom = -16.0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="PlayerStatusContent" type="VBoxContainer" parent="HudRoot/PlayerStatusPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="PlayerTitle" type="Label" parent="HudRoot/PlayerStatusPanel/PlayerStatusContent"]
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "PLAYER STATUS"
+
+[node name="ControlledStateLabel" type="Label" parent="HudRoot/PlayerStatusPanel/PlayerStatusContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ValueLabel"
+text = "GROWTH --"
+autowrap_mode = 3
+
+[node name="HelpLabel" type="Label" parent="HudRoot/PlayerStatusPanel/PlayerStatusContent"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "A / D  TURN    ·    SPACE  BOOST    ·    F3  DEBUG"
+autowrap_mode = 3
+
+[node name="Minimap" type="Control" parent="HudRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -236.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 236.0
+grow_horizontal = 0
+mouse_filter = 2
+script = ExtResource("2_minimap")
+
+[node name="LeaderboardPanel" type="PanelContainer" parent="HudRoot"]
+layout_mode = 0
+theme_type_variation = &"HudPanel"
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -236.0
+offset_top = 248.0
+offset_right = -16.0
+offset_bottom = 560.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="LeaderboardContent" type="VBoxContainer" parent="HudRoot/LeaderboardPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LeaderboardTitle" type="Label" parent="HudRoot/LeaderboardPanel/LeaderboardContent"]
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "LEADERBOARD"
+horizontal_alignment = 1
+
+[node name="LeaderboardLabel" type="Label" parent="HudRoot/LeaderboardPanel/LeaderboardContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "-"
+horizontal_alignment = 0
+autowrap_mode = 3
+
+[node name="ResultPanel" type="PanelContainer" parent="HudRoot"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+theme_type_variation = &"FocusPanel"
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -270.0
+offset_top = -150.0
+offset_right = 270.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ResultContent" type="VBoxContainer" parent="HudRoot/ResultPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="ResultTitleLabel" type="Label" parent="HudRoot/ResultPanel/ResultContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 32
+text = "ROUND COMPLETE"
+horizontal_alignment = 1
+
+[node name="ResultDetailsLabel" type="Label" parent="HudRoot/ResultPanel/ResultContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ValueLabel"
+text = "Press R to return to Channel Select"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="GrowthAnimation" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_hud")
+}

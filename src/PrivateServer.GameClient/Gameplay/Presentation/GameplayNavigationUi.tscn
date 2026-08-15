@@ -1,0 +1,384 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://Gameplay/Presentation/GameplayNavigationUi.cs" id="1_navigation"]
+[ext_resource type="Theme" path="res://Gameplay/Presentation/Theme/NeonTelemetryTheme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://Assets/Input/KenneyInputPrompts/keyboard_a_outline.svg" id="3_a"]
+[ext_resource type="Texture2D" path="res://Assets/Input/KenneyInputPrompts/keyboard_d_outline.svg" id="4_d"]
+[ext_resource type="Texture2D" path="res://Assets/Input/KenneyInputPrompts/keyboard_space_outline.svg" id="5_space"]
+[ext_resource type="Texture2D" path="res://Assets/Input/KenneyInputPrompts/keyboard_f3_outline.svg" id="6_f3"]
+[ext_resource type="Texture2D" path="res://Assets/Input/KenneyInputPrompts/keyboard_r_outline.svg" id="7_r"]
+
+[sub_resource type="Animation" id="Animation_reset"]
+resource_name = "RESET"
+length = 0.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("NavigationRoot:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+
+[sub_resource type="Animation" id="Animation_enter"]
+resource_name = "enter"
+length = 0.24
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("NavigationRoot:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.24),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.3, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_navigation"]
+_data = {
+&"RESET": SubResource("Animation_reset"),
+&"enter": SubResource("Animation_enter")
+}
+
+[node name="GameplayNavigationUi" type="CanvasLayer"]
+script = ExtResource("1_navigation")
+
+[node name="NavigationRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="ChannelPanel" type="PanelContainer" parent="NavigationRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+theme_type_variation = &"FocusPanel"
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -218.0
+offset_right = 300.0
+offset_bottom = 218.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ChannelContent" type="VBoxContainer" parent="NavigationRoot/ChannelPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="NavigationRoot/ChannelPanel/ChannelContent"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 36
+text = "SLITHER ARENA"
+horizontal_alignment = 1
+
+[node name="ChannelLabel" type="Label" parent="NavigationRoot/ChannelPanel/ChannelContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+theme_override_font_sizes/font_size = 18
+text = "SELECT CHANNEL"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ChannelSelector" type="OptionButton" parent="NavigationRoot/ChannelPanel/ChannelContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="Separator" type="HSeparator" parent="NavigationRoot/ChannelPanel/ChannelContent"]
+layout_mode = 2
+
+[node name="ControlsTitle" type="Label" parent="NavigationRoot/ChannelPanel/ChannelContent"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "CONTROLS"
+horizontal_alignment = 1
+
+[node name="ControlsRow" type="HBoxContainer" parent="NavigationRoot/ChannelPanel/ChannelContent"]
+layout_mode = 2
+theme_override_constants/separation = 22
+alignment = 1
+
+[node name="TurnControl" type="HBoxContainer" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="AKey" type="TextureRect" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow/TurnControl"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+texture = ExtResource("3_a")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DKey" type="TextureRect" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow/TurnControl"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+texture = ExtResource("4_d")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TurnLabel" type="Label" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow/TurnControl"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "TURN"
+vertical_alignment = 1
+
+[node name="BoostControl" type="HBoxContainer" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="SpaceKey" type="TextureRect" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow/BoostControl"]
+custom_minimum_size = Vector2(72, 30)
+layout_mode = 2
+texture = ExtResource("5_space")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BoostLabel" type="Label" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow/BoostControl"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "BOOST"
+vertical_alignment = 1
+
+[node name="DebugControl" type="HBoxContainer" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="F3Key" type="TextureRect" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow/DebugControl"]
+custom_minimum_size = Vector2(42, 30)
+layout_mode = 2
+texture = ExtResource("6_f3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DebugLabel" type="Label" parent="NavigationRoot/ChannelPanel/ChannelContent/ControlsRow/DebugControl"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "DEBUG"
+vertical_alignment = 1
+
+[node name="ConnectButton" type="Button" parent="NavigationRoot/ChannelPanel/ChannelContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "NEXT"
+
+[node name="ChannelExitButton" type="Button" parent="NavigationRoot/ChannelPanel/ChannelContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "EXIT"
+
+[node name="PlayerSetupPanel" type="PanelContainer" parent="NavigationRoot"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+theme_type_variation = &"FocusPanel"
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -205.0
+offset_right = 300.0
+offset_bottom = 205.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerSetupContent" type="VBoxContainer" parent="NavigationRoot/PlayerSetupPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="PlayerSetupTitle" type="Label" parent="NavigationRoot/PlayerSetupPanel/PlayerSetupContent"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 32
+text = "PLAYER SETUP"
+horizontal_alignment = 1
+
+[node name="SelectedChannelLabel" type="Label" parent="NavigationRoot/PlayerSetupPanel/PlayerSetupContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="PlayerSetupSeparator" type="HSeparator" parent="NavigationRoot/PlayerSetupPanel/PlayerSetupContent"]
+layout_mode = 2
+
+[node name="NicknameLabel" type="Label" parent="NavigationRoot/PlayerSetupPanel/PlayerSetupContent"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "NICKNAME"
+horizontal_alignment = 1
+
+[node name="NicknameInput" type="LineEdit" parent="NavigationRoot/PlayerSetupPanel/PlayerSetupContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+placeholder_text = "OPTIONAL"
+max_length = 48
+alignment = 1
+
+[node name="NicknameRuleLabel" type="Label" parent="NavigationRoot/PlayerSetupPanel/PlayerSetupContent"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "ENGLISH LETTERS AND NUMBERS ONLY · NO SPACES"
+horizontal_alignment = 1
+
+[node name="PlayerConnectButton" type="Button" parent="NavigationRoot/PlayerSetupPanel/PlayerSetupContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "CONNECT"
+
+[node name="PlayerBackButton" type="Button" parent="NavigationRoot/PlayerSetupPanel/PlayerSetupContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "BACK"
+
+[node name="StatusPanel" type="PanelContainer" parent="NavigationRoot"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+theme_type_variation = &"FocusPanel"
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -270.0
+offset_top = -58.0
+offset_right = 270.0
+offset_bottom = 58.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="StatusLabel" type="Label" parent="NavigationRoot/StatusPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ValueLabel"
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ErrorPanel" type="PanelContainer" parent="NavigationRoot"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+theme_type_variation = &"FocusPanel"
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -160.0
+offset_right = 300.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ErrorContent" type="VBoxContainer" parent="NavigationRoot/ErrorPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="ErrorTitle" type="Label" parent="NavigationRoot/ErrorPanel/ErrorContent"]
+layout_mode = 2
+theme_type_variation = &"DangerLabel"
+theme_override_font_sizes/font_size = 28
+text = "CONNECTION ERROR"
+horizontal_alignment = 1
+
+[node name="ErrorLabel" type="Label" parent="NavigationRoot/ErrorPanel/ErrorContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="RetryButton" type="Button" parent="NavigationRoot/ErrorPanel/ErrorContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+text = "RETRY"
+
+[node name="ErrorExitButton" type="Button" parent="NavigationRoot/ErrorPanel/ErrorContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "EXIT"
+
+[node name="ResultActionsPanel" type="PanelContainer" parent="NavigationRoot"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+theme_type_variation = &"FocusPanel"
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = 172.0
+offset_right = 210.0
+offset_bottom = 318.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ResultActionsContent" type="VBoxContainer" parent="NavigationRoot/ResultActionsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="ReplayHint" type="HBoxContainer" parent="NavigationRoot/ResultActionsPanel/ResultActionsContent"]
+layout_mode = 2
+theme_override_constants/separation = 7
+alignment = 1
+
+[node name="RKey" type="TextureRect" parent="NavigationRoot/ResultActionsPanel/ResultActionsContent/ReplayHint"]
+custom_minimum_size = Vector2(34, 30)
+layout_mode = 2
+texture = ExtResource("7_r")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ReplayLabel" type="Label" parent="NavigationRoot/ResultActionsPanel/ResultActionsContent/ReplayHint"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "RETURN TO CHANNEL SELECT"
+vertical_alignment = 1
+
+[node name="PlayAgainButton" type="Button" parent="NavigationRoot/ResultActionsPanel/ResultActionsContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+text = "PLAY AGAIN  ·  R"
+
+[node name="ResultExitButton" type="Button" parent="NavigationRoot/ResultActionsPanel/ResultActionsContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "EXIT"
+
+[node name="TransitionAnimation" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_navigation")
+}

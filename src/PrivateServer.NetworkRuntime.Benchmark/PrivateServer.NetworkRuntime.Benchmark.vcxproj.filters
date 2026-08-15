@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="BenchmarkClientWorkload.cpp">
+      <Filter>Echo\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkCommandLine.cpp">
+      <Filter>CommandLine</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkConfig.cpp">
+      <Filter>Echo\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkConfigSource.cpp">
+      <Filter>Echo\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkEndpointParser.cpp">
+      <Filter>Config</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkIpcCommand.cpp">
+      <Filter>IPC</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkIpcEvent.cpp">
+      <Filter>IPC</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkIpcPipe.cpp">
+      <Filter>IPC</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkRuntimeSampleProjection.cpp">
+      <Filter>IPC</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkServerChildProcess.cpp">
+      <Filter>Process</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkServerChildRunner.cpp">
+      <Filter>Echo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkServerEchoWorker.cpp">
+      <Filter>Echo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkServerProcessSampler.cpp">
+      <Filter>Process</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkProtocolContract.cpp">
+      <Filter>Echo\Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkRunController.cpp">
+      <Filter>Echo\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkServeController.cpp">
+      <Filter>Echo\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkRunArtifact.cpp">
+      <Filter>Artifact</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkWorldHostController.cpp">
+      <Filter>World Host\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkWorldHostControllerConfig.cpp">
+      <Filter>World Host\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkWorldClient.cpp">
+      <Filter>World Host\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkClientTransport.cpp">
+      <Filter>Client\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkWorldClientWorkload.cpp">
+      <Filter>World Host\Workload</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkStatistics.cpp">
+      <Filter>Measurement\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkWorldArtifactSummary.cpp">
+      <Filter>World Host\Measurement</Filter>
+    </ClCompile>
+    <ClCompile Include="BenchmarkWorldMergedArtifact.cpp">
+      <Filter>World Host\Artifact</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CommandLine">
+      <UniqueIdentifier>{eb521af4-df58-443a-a9cd-627628061828}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{d8105bd9-87c5-42e2-9e03-177ea8ae86bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IPC">
+      <UniqueIdentifier>{2f38bca5-588f-4178-8af2-7073b92b9415}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Process">
+      <UniqueIdentifier>{6caea08c-c899-4e31-8f8d-e90840fb0b66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Artifact">
+      <UniqueIdentifier>{f70791a8-e34e-42cc-90f1-7869e63c48bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World Host">
+      <UniqueIdentifier>{63288e1e-9f2e-4e07-92e7-c25f2ec48267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World Host\Config">
+      <UniqueIdentifier>{751a6f05-93c6-4ec1-a355-8c5a6df5876d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World Host\Controller">
+      <UniqueIdentifier>{e5310859-0f57-46e4-bf95-60b1bfb64fb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World Host\Client">
+      <UniqueIdentifier>{c3b784ef-543b-48ef-adac-30d400a85f90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client">
+      <UniqueIdentifier>{b5398d47-5ad3-4234-87d0-73f02ed88068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Common">
+      <UniqueIdentifier>{76f16dc8-76ac-4ddc-9e32-34b45a21de11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Echo">
+      <UniqueIdentifier>{9764bddf-9941-483b-adc4-4650b6f141fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Echo\Client">
+      <UniqueIdentifier>{9aeb08ff-1947-4f63-ac78-5465709276b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Echo\Protocol">
+      <UniqueIdentifier>{c807f541-dcc4-48d8-916f-36b797063bb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Echo\Server">
+      <UniqueIdentifier>{d06e777d-f5de-4acd-9b62-cdf31807a0c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Echo\Config">
+      <UniqueIdentifier>{02957a45-abd9-469d-b071-80c22537557c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Echo\Controller">
+      <UniqueIdentifier>{b472213f-cdf3-483a-93c8-c3948692dc48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World Host\Workload">
+      <UniqueIdentifier>{45d44e00-5d66-4559-b8aa-ccabf89de6e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Measurement">
+      <UniqueIdentifier>{5de848a4-0dd0-416c-80ea-ac426f11bd9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Measurement\Common">
+      <UniqueIdentifier>{c819e1ef-2f0d-4a0a-ad0d-ee8ee844229d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World Host\Measurement">
+      <UniqueIdentifier>{d59d5db1-7a37-4d2a-9aa5-572608f76bb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World Host\Artifact">
+      <UniqueIdentifier>{3f250891-e426-43be-836e-e01d4ccd8f5c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BenchmarkClientWorkload.h">
+      <Filter>Echo\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkCommandLine.h">
+      <Filter>CommandLine</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkConfig.h">
+      <Filter>Echo\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkConfigSource.h">
+      <Filter>Echo\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkEndpointParser.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkIpcCommand.h">
+      <Filter>IPC</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkIpcEvent.h">
+      <Filter>IPC</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkIpcPipe.h">
+      <Filter>IPC</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkRuntimeSampleProjection.h">
+      <Filter>IPC</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkServerChildProcess.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkServerChildRunner.h">
+      <Filter>Echo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkServerEchoWorker.h">
+      <Filter>Echo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkServerProcessSampler.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkProtocol.h">
+      <Filter>Echo\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkRunController.h">
+      <Filter>Echo\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkServeController.h">
+      <Filter>Echo\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkRunArtifact.h">
+      <Filter>Artifact</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkWorldHostController.h">
+      <Filter>World Host\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkWorldHostControllerConfig.h">
+      <Filter>World Host\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkWorldClient.h">
+      <Filter>World Host\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkClientTransport.h">
+      <Filter>Client\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkWorldClientWorkload.h">
+      <Filter>World Host\Workload</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkStatistics.h">
+      <Filter>Measurement\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkWorldArtifactSummary.h">
+      <Filter>World Host\Measurement</Filter>
+    </ClInclude>
+    <ClInclude Include="BenchmarkWorldMergedArtifact.h">
+      <Filter>World Host\Artifact</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,135 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://Gameplay/Presentation/GameplayOneShotEffect.cs" id="1_effect"]
+[ext_resource type="Texture2D" path="res://Assets/Vfx/KenneyParticle/circle_04.png" id="2_ring"]
+[ext_resource type="Texture2D" path="res://Assets/Vfx/KenneyParticle/star_06.png" id="3_burst"]
+[ext_resource type="Texture2D" path="res://Assets/Vfx/KenneyParticle/smoke_02.png" id="4_smoke"]
+[ext_resource type="Texture2D" path="res://Assets/Vfx/KenneyParticle/spark_03.png" id="5_spark"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_add"]
+blend_mode = 1
+
+[sub_resource type="Animation" id="Animation_reset"]
+resource_name = "RESET"
+length = 0.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("VisualRoot:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.35, 0.35)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("VisualRoot:modulate:a")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("VisualRoot:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_burst"]
+resource_name = "burst"
+length = 0.72
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("VisualRoot:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.22, 0.72),
+"transitions": PackedFloat32Array(0.45, 1, 1),
+"update": 0,
+"values": [Vector2(0.35, 0.35), Vector2(1.05, 1.05), Vector2(1.48, 1.48)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("VisualRoot:modulate:a")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.72),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [1.0, 0.84, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("VisualRoot:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.72),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 0.55]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_effect"]
+_data = {
+&"RESET": SubResource("Animation_reset"),
+&"burst": SubResource("Animation_burst")
+}
+
+[node name="GameplayOneShotEffect" type="Node2D"]
+z_index = 30
+script = ExtResource("1_effect")
+
+[node name="VisualRoot" type="Node2D" parent="."]
+unique_name_in_owner = true
+visible = false
+
+[node name="Smoke" type="Sprite2D" parent="VisualRoot"]
+unique_name_in_owner = true
+material = SubResource("CanvasItemMaterial_add")
+modulate = Color(1, 1, 1, 0.72)
+scale = Vector2(0.22, 0.22)
+texture = ExtResource("4_smoke")
+
+[node name="Ring" type="Sprite2D" parent="VisualRoot"]
+unique_name_in_owner = true
+material = SubResource("CanvasItemMaterial_add")
+scale = Vector2(0.18, 0.18)
+texture = ExtResource("2_ring")
+
+[node name="Burst" type="Sprite2D" parent="VisualRoot"]
+unique_name_in_owner = true
+material = SubResource("CanvasItemMaterial_add")
+scale = Vector2(0.14, 0.14)
+texture = ExtResource("3_burst")
+
+[node name="Spark" type="Sprite2D" parent="VisualRoot"]
+unique_name_in_owner = true
+material = SubResource("CanvasItemMaterial_add")
+scale = Vector2(0.18, 0.18)
+texture = ExtResource("5_spark")
+
+[node name="Animation" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_effect")
+}

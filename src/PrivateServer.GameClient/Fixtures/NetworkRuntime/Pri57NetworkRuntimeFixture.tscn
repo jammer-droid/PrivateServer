@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://deqapbrg24oj0"]
+
+[ext_resource type="Script" uid="uid://dns61e7ieo6ga" path="res://Fixtures/NetworkRuntime/Pri57NetworkRuntimeFixture.cs" id="1_qswfu"]
+
+[node name="Pri57NetworkRuntimeFixture" type="Node" unique_id=1522226157]
+script = ExtResource("1_qswfu")

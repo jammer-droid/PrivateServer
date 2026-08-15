@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="NrClientCommand.h">
+      <Filter>Client\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientCommandChannel.h">
+      <Filter>Client\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientConnection.h">
+      <Filter>Client\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientConnectIoContext.h">
+      <Filter>Client\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientControlCompletion.h">
+      <Filter>Client\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientIoCompletionDispatcher.h">
+      <Filter>Client\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientIoContextOperations.h">
+      <Filter>Client\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientIoWorker.h">
+      <Filter>Client\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientLifecycleStateMachine.h">
+      <Filter>Client\Lifecycle</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientMemoryPoolConfigFactory.h">
+      <Filter>Client\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientPendingSend.h">
+      <Filter>Client\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientTransport.h">
+      <Filter>Client\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="NrClientTransportEventSink.h">
+      <Filter>Client\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Build</Filter>
+    </ClInclude>
+    <ClInclude Include="NrActor.h">
+      <Filter>Core\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="NrActorExecutor.h">
+      <Filter>Core\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="NrActorMailbox.h">
+      <Filter>Core\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="NrActorScheduleHandle.h">
+      <Filter>Session\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="NrActorScheduleGate.h">
+      <Filter>Core\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="NrBoundedMpscQueue.h">
+      <Filter>Core\Queue</Filter>
+    </ClInclude>
+    <ClInclude Include="NrConcurrency.h">
+      <Filter>Core\Concurrency</Filter>
+    </ClInclude>
+    <ClInclude Include="NrDispatchLane.h">
+      <Filter>Core\Dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="NrDiagnosticEmitter.h">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClInclude>
+    <ClInclude Include="NrDiagnosticEmitterState.h">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClInclude>
+    <ClInclude Include="NrDiagnosticRecord.h">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClInclude>
+    <ClInclude Include="NrDiagnosticSink.h">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClInclude>
+    <ClInclude Include="NrDebugDiagnosticSink.h">
+      <Filter>Runtime\Diagnostics\Sink</Filter>
+    </ClInclude>
+    <ClInclude Include="NrJsonlDiagnosticSink.h">
+      <Filter>Runtime\Diagnostics\Sink</Filter>
+    </ClInclude>
+    <ClInclude Include="NrDiagnosticsComponent.h">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClInclude>
+    <ClInclude Include="NrDiagnosticsConfigInternal.h">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIngress.h">
+      <Filter>Core\Dispatch\Ingress</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIngressRegistry.h">
+      <Filter>Core\Dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="NrInput.h">
+      <Filter>Core\Dispatch\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="NrInputFactory.h">
+      <Filter>Core\Dispatch\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="NrLifecycleInternal.h">
+      <Filter>Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="NrMemoryMath.h">
+      <Filter>Core\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="NrMemoryPool.h">
+      <Filter>Core\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="NrMemoryPoolConfigFactory.h">
+      <Filter>Core\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="NrMemoryPoolManager.h">
+      <Filter>Core\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="NrPacketDispatchRule.h">
+      <Filter>Core\Dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="NrPacketDispatchTable.h">
+      <Filter>Core\Dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="NrPacketHeader.h">
+      <Filter>Core\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="NrPacketHeaderCodec.h">
+      <Filter>Core\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="NrPacketParser.h">
+      <Filter>Core\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="NrPayload.h">
+      <Filter>Core\Dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="NrPayloadRef.h">
+      <Filter>Core\Dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="NrPrimitiveCodec.h">
+      <Filter>Core\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="NrProtocolErrorReason.h">
+      <Filter>Core\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="NrQueueIngress.h">
+      <Filter>Core\Dispatch\Ingress</Filter>
+    </ClInclude>
+    <ClInclude Include="NrRecvBuffer.h">
+      <Filter>Core\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="NrResult.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerComponentGraph.h">
+      <Filter>Runtime\Lifecycle</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerGraphBuilder.h">
+      <Filter>Runtime\Lifecycle</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerIoOpControl.h">
+      <Filter>Runtime\IoOperation</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerIoOpInternal.h">
+      <Filter>Runtime\IoOperation</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerIoOpStateHandler.h">
+      <Filter>Runtime\IoOperation</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerLifecycleOrder.h">
+      <Filter>Runtime\Lifecycle</Filter>
+    </ClInclude>
+    <ClInclude Include="NrTypeTraits.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="NrAcceptIoContext.h">
+      <Filter>Transport\Windows\Iocp\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIoContextView.h">
+      <Filter>Transport\IoOperation</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIocpCompletionHandler.h">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIocpCompletionPacket.h">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIocpCompletionPump.h">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIocpIoCompletionDispatcher.h">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIocpIoContextHeader.h">
+      <Filter>Transport\Windows\Iocp\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIocpOverlappedContextFactory.h">
+      <Filter>Transport\Windows\Iocp\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIocpPort.h">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIocpRuntime.h">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIoEvent.h">
+      <Filter>Transport\IoOperation</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIoEventDispatcher.h">
+      <Filter>Transport\IoOperation</Filter>
+    </ClInclude>
+    <ClInclude Include="NrIoOperationType.h">
+      <Filter>Transport\IoOperation</Filter>
+    </ClInclude>
+    <ClInclude Include="NrListener.h">
+      <Filter>Transport\IoOperation</Filter>
+    </ClInclude>
+    <ClInclude Include="NrRecvIoContext.h">
+      <Filter>Transport\Windows\Iocp\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSendIoContext.h">
+      <Filter>Transport\Windows\Iocp\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSocketAddressWin32.h">
+      <Filter>Transport\Windows\Winsock</Filter>
+    </ClInclude>
+    <ClInclude Include="NrWin32Socket.h">
+      <Filter>Transport\Windows\Winsock</Filter>
+    </ClInclude>
+    <ClInclude Include="NrWindows.h">
+      <Filter>Transport\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="NrWinsockRuntime.h">
+      <Filter>Transport\Windows\Winsock</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSession.h">
+      <Filter>Session</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionActorRegistry.h">
+      <Filter>Session\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionActorScheduler.h">
+      <Filter>Session\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionIoActor.h">
+      <Filter>Session\Io</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionIoEvent.h">
+      <Filter>Session\Io</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionIoOperations.h">
+      <Filter>Session\Io</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionRegistry.h">
+      <Filter>Session\Registry</Filter>
+    </ClInclude>
+    <ClInclude Include="NrSessionSendChannelControl.h">
+      <Filter>Session\Send</Filter>
+    </ClInclude>
+    <ClInclude Include="NrToWorldHandoff.h">
+      <Filter>Runtime\ToWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="NrToWorldLifecycleState.h">
+      <Filter>Runtime\ToWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerSubmissionGate.h">
+      <Filter>Runtime\Submission</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerMetrics.h">
+      <Filter>Runtime\Observation</Filter>
+    </ClInclude>
+    <ClInclude Include="NrServerPressureInternal.h">
+      <Filter>Runtime\Observation</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NrClientCommandChannel.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientConnection.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientConnectIoContext.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientControlCompletion.cpp">
+      <Filter>Client\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientIoCompletionDispatcher.cpp">
+      <Filter>Client\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientIoContextOperations.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientIoWorker.cpp">
+      <Filter>Client\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientMemoryPoolConfigFactory.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientTransport.cpp">
+      <Filter>Client\Transport</Filter>
+    </ClCompile>
+    <ClCompile Include="NrClientLifecycleStateMachine.cpp">
+      <Filter>Client\Lifecycle</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Build</Filter>
+    </ClCompile>
+    <ClCompile Include="NrBootstrapPlan.cpp">
+      <Filter>Runtime\Lifecycle</Filter>
+    </ClCompile>
+    <ClCompile Include="NrActor.cpp">
+      <Filter>Core\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="NrActorExecutor.cpp">
+      <Filter>Core\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="NrActorScheduleGate.cpp">
+      <Filter>Core\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="NrDiagnosticEmitter.cpp">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClCompile>
+    <ClCompile Include="NrDebugDiagnosticSink.cpp">
+      <Filter>Runtime\Diagnostics\Sink</Filter>
+    </ClCompile>
+    <ClCompile Include="NrJsonlDiagnosticSink.cpp">
+      <Filter>Runtime\Diagnostics\Sink</Filter>
+    </ClCompile>
+    <ClCompile Include="NrDiagnosticsConfigInternal.cpp">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClCompile>
+    <ClCompile Include="NrDiagnosticsComponent.cpp">
+      <Filter>Runtime\Diagnostics</Filter>
+    </ClCompile>
+    <ClCompile Include="NrIngressRegistry.cpp">
+      <Filter>Core\Dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="NrInputFactory.cpp">
+      <Filter>Core\Dispatch\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="NrMemoryPool.cpp">
+      <Filter>Core\Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="NrMemoryPoolConfigFactory.cpp">
+      <Filter>Core\Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="NrMemoryPoolManager.cpp">
+      <Filter>Core\Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPacketDispatchTable.cpp">
+      <Filter>Core\Dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPacketParser.cpp">
+      <Filter>Core\Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPayload.cpp">
+      <Filter>Core\Dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="NrPayloadRef.cpp">
+      <Filter>Core\Dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="NrQueueIngress.cpp">
+      <Filter>Core\Dispatch\Ingress</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionSendChannelControl.cpp">
+      <Filter>Session\Send</Filter>
+    </ClCompile>
+    <ClCompile Include="NrRecvBuffer.cpp">
+      <Filter>Core\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerComponentGraph.cpp">
+      <Filter>Runtime\Lifecycle</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerGraphBuilder.cpp">
+      <Filter>Runtime\Lifecycle</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerIoOpControl.cpp">
+      <Filter>Runtime\IoOperation</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerLifecycleOrder.cpp">
+      <Filter>Runtime\Lifecycle</Filter>
+    </ClCompile>
+    <ClCompile Include="NrAcceptIoContext.cpp">
+      <Filter>Transport\Windows\Iocp\Context</Filter>
+    </ClCompile>
+    <ClCompile Include="NrIocpCompletionPump.cpp">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClCompile>
+    <ClCompile Include="NrIocpIoCompletionDispatcher.cpp">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClCompile>
+    <ClCompile Include="NrIocpOverlappedContextFactory.cpp">
+      <Filter>Transport\Windows\Iocp\Context</Filter>
+    </ClCompile>
+    <ClCompile Include="NrIocpPort.cpp">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClCompile>
+    <ClCompile Include="NrIocpRuntime.cpp">
+      <Filter>Transport\Windows\Iocp</Filter>
+    </ClCompile>
+    <ClCompile Include="NrIoEventDispatcher.cpp">
+      <Filter>Transport\IoOperation</Filter>
+    </ClCompile>
+    <ClCompile Include="NrListener.cpp">
+      <Filter>Transport\IoOperation</Filter>
+    </ClCompile>
+    <ClCompile Include="NrRecvIoContext.cpp">
+      <Filter>Transport\Windows\Iocp\Context</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSendIoContext.cpp">
+      <Filter>Transport\Windows\Iocp\Context</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSocketAddressWin32.cpp">
+      <Filter>Transport\Windows\Winsock</Filter>
+    </ClCompile>
+    <ClCompile Include="NrWin32Socket.cpp">
+      <Filter>Transport\Windows\Winsock</Filter>
+    </ClCompile>
+    <ClCompile Include="NrWinsockRuntime.cpp">
+      <Filter>Transport\Windows\Winsock</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSession.cpp">
+      <Filter>Session</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionActorRegistry.cpp">
+      <Filter>Session\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionActorScheduler.cpp">
+      <Filter>Session\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionIoActor.cpp">
+      <Filter>Session\Io</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionIoActor.Accept.cpp">
+      <Filter>Session\Io</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionIoActor.Drain.cpp">
+      <Filter>Session\Io</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionIoActor.Recv.cpp">
+      <Filter>Session\Io</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionIoActor.Send.cpp">
+      <Filter>Session\Io</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionIoOperations.cpp">
+      <Filter>Session\Io</Filter>
+    </ClCompile>
+    <ClCompile Include="NrSessionRegistry.cpp">
+      <Filter>Session\Registry</Filter>
+    </ClCompile>
+    <ClCompile Include="NrToWorldHandoff.cpp">
+      <Filter>Runtime\ToWorld</Filter>
+    </ClCompile>
+    <ClCompile Include="NrToWorldLifecycleState.cpp">
+      <Filter>Runtime\ToWorld</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerSubmissionGate.cpp">
+      <Filter>Runtime\Submission</Filter>
+    </ClCompile>
+    <ClCompile Include="NrServerMetrics.cpp">
+      <Filter>Runtime\Observation</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Client">
+      <UniqueIdentifier>{7f551223-ed67-4944-ba44-1c7b05b7a388}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Lifecycle">
+      <UniqueIdentifier>{02cc5b73-f034-48e7-91a9-e4e3495a69c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Transport">
+      <UniqueIdentifier>{6c24f35b-1552-47a4-b38a-11adb3ba2b09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Worker">
+      <UniqueIdentifier>{de675291-919f-4871-a8f1-83abacbe5b35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Build">
+      <UniqueIdentifier>{a29d5bcf-a659-457c-9796-a4bae7d8c253}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{1b4b87f7-ff90-47ae-be77-e569c4e77dce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Actor">
+      <UniqueIdentifier>{43c0cbf5-a4f1-45fa-aeed-e235a92b23d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Buffer">
+      <UniqueIdentifier>{9e32fadb-7d23-4f76-8166-8bd84f4304e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Concurrency">
+      <UniqueIdentifier>{730a8d95-c591-448d-9a83-e8790720ccf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Dispatch">
+      <UniqueIdentifier>{9044ef5a-d8fd-4536-94ff-c33b9530b982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Dispatch\Ingress">
+      <UniqueIdentifier>{a6fa7abe-490b-49f5-bb7e-db6f3dd42d2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Dispatch\Input">
+      <UniqueIdentifier>{b4b6113c-e97c-4d78-8842-f037ed0b46e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Pool">
+      <UniqueIdentifier>{afb76b21-2462-4e15-a9bd-80ffb48e93c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Protocol">
+      <UniqueIdentifier>{cf1b0930-c207-4858-84c1-701bf907b7ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Queue">
+      <UniqueIdentifier>{facb4259-7c6c-4caa-9a14-41e29054c364}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Utils">
+      <UniqueIdentifier>{e3b9de6a-9ca1-4aba-be89-ad3a0a3b862b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime">
+      <UniqueIdentifier>{226d67c8-2c49-46c5-8392-9ebbeaf260f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Lifecycle">
+      <UniqueIdentifier>{f8faa3e4-0bd7-403b-90fe-289ed154f386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\IoOperation">
+      <UniqueIdentifier>{2ebe2d61-baf5-4cdf-ae18-8c032f8d87e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transport">
+      <UniqueIdentifier>{ecbede33-8c85-4a96-80a5-3735478157b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transport\IoOperation">
+      <UniqueIdentifier>{2389c351-480d-4be3-808a-c7505cc9f010}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transport\Windows">
+      <UniqueIdentifier>{bc7e7256-b62a-4cc4-a5e3-b9ee2dc89505}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transport\Windows\Iocp">
+      <UniqueIdentifier>{033a9675-d933-4bcc-84e2-857d0cfa38c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transport\Windows\Iocp\Context">
+      <UniqueIdentifier>{4ea7ff98-3d7b-49d0-8631-94733dd6cc01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transport\Windows\Winsock">
+      <UniqueIdentifier>{2278f191-f7f6-4394-ba61-016752d60539}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Session">
+      <UniqueIdentifier>{5be5a3dd-cb17-47a3-91bd-6c0e53cde291}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Session\Actor">
+      <UniqueIdentifier>{b558f593-7194-43c2-a289-2f8ceabe1b58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Session\Io">
+      <UniqueIdentifier>{0e4f3fb4-2931-43d2-baca-bad2f12e2574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Session\Registry">
+      <UniqueIdentifier>{05d32c64-a41a-460c-91a3-d55976cc4de8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Session\Send">
+      <UniqueIdentifier>{a267ca76-684d-4b87-ad34-23d594802756}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\ToWorld">
+      <UniqueIdentifier>{b1023075-b492-4944-8df6-c2a7d336311e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Submission">
+      <UniqueIdentifier>{194803d8-c54c-4b2e-917c-d1306918c8ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Observation">
+      <UniqueIdentifier>{6475ce45-f5f6-4913-bc36-dd78d4946ed0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Diagnostics">
+      <UniqueIdentifier>{2c74b978-48e8-4808-99df-35af17d472fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Diagnostics\Sink">
+      <UniqueIdentifier>{8c453c1d-4b1a-4c64-b19e-98d8df4d131a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
