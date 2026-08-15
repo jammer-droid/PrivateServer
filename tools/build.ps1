@@ -13,7 +13,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 [string]$repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
-[string]$solutionDirectory = $repositoryRoot.TrimEnd('\') + '\'
+[string]$solutionDirectory = $repositoryRoot.TrimEnd('\') + '/'
 
 function Resolve-MSBuildExecutable {
     $msbuildCommand = Get-Command "msbuild" -ErrorAction SilentlyContinue
