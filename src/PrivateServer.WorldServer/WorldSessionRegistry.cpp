@@ -70,7 +70,7 @@ namespace psnr::world
 
         const SessionKeyToDenseIndexMap::iterator found = sessionKeyToDenseIndex_.find(sessionKey);
         if (found == sessionKeyToDenseIndex_.end() || found->second < joinedSessionCount_ ||
-            entityKeyToSessionKey_.contains(entityKey))
+            sessions_[found->second].role != WorldSessionRole::Connected || entityKeyToSessionKey_.contains(entityKey))
         {
             return false;
         }
@@ -86,7 +86,21 @@ namespace psnr::world
         session.playerId = playerId;
         session.entityKey = entityKey;
         session.displayName = std::move(ownedDisplayName);
+        session.role = WorldSessionRole::Player;
         ++joinedSessionCount_;
+        return true;
+    }
+
+    bool WorldSessionRegistry::TryBindObserver(const WorldSessionKey sessionKey) noexcept
+    {
+        const SessionKeyToDenseIndexMap::const_iterator found = sessionKeyToDenseIndex_.find(sessionKey);
+        if (found == sessionKeyToDenseIndex_.end() || found->second < joinedSessionCount_ ||
+            sessions_[found->second].role != WorldSessionRole::Connected)
+        {
+            return false;
+        }
+
+        sessions_[found->second].role = WorldSessionRole::Observer;
         return true;
     }
 
@@ -132,6 +146,11 @@ namespace psnr::world
     std::span<const WorldSession> WorldSessionRegistry::JoinedSessions() const noexcept
     {
         return std::span<const WorldSession>{sessions_.data(), joinedSessionCount_};
+    }
+
+    std::span<const WorldSession> WorldSessionRegistry::RegisteredSessions() const noexcept
+    {
+        return sessions_;
     }
 
     bool WorldSessionRegistry::Remove(const WorldSessionKey sessionKey)

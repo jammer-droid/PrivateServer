@@ -33,12 +33,14 @@ namespace psnr::world
         SessionRegistered = 0,
         SessionRemoved,
         JoinBaselineSubmitted,
+        ObserverBaselineSubmitted,
         MovementStored,
         ControlApplied,
         TimeSyncSubmitted,
         DuplicateSession,
         SessionNotFound,
         JoinRejected,
+        ObserverRejected,
         PacketRejected,
         TimeSyncRejected,
         RuntimeEventReadFailed,
@@ -263,6 +265,8 @@ namespace psnr::world
                                                                  WorldInboundMode inboundMode) noexcept;
         [[nodiscard]] WorldIngressEventHandleResult HandleJoin(WorldSessionKey sessionKey,
                                                                psnr::runtime::NrByteView payload);
+        [[nodiscard]] WorldIngressEventHandleResult HandleObserve(WorldSessionKey sessionKey,
+                                                                  psnr::runtime::NrByteView payload) noexcept;
         [[nodiscard]] bool RollbackPreparedJoin(WorldSessionKey sessionKey, std::uint32_t playerId,
                                                 const WorldJoinBaseline& baseline, bool gameplayPlayerRegistered,
                                                 WorldJoinFailureStage failureStage) noexcept;
@@ -292,6 +296,7 @@ namespace psnr::world
         [[nodiscard]] bool RecordRoundResults(const WorldGameplayReplicationPlan& plan) noexcept;
         [[nodiscard]] bool FlushGameplayBroadcast() noexcept;
         [[nodiscard]] bool RecordJoinGameplayBaseline(const psnr::runtime::NrSessionSendChannel& channel) noexcept;
+        [[nodiscard]] bool RecordObserverGameplayBaseline(const psnr::runtime::NrSessionSendChannel& channel) noexcept;
 
         WorldSessionRegistry& sessionRegistry_;
         WorldEntityManager& entityManager_;

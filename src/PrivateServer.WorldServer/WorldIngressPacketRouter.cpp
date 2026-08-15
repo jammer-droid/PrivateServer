@@ -95,6 +95,7 @@ namespace psnr::world
         case protocol::C2SPacketType::ControlStateCommand:
             return RouteControlStateCommand(context, currentServerTick, payload, outControlCommand);
         case protocol::C2SPacketType::JoinWorldRequest:
+        case protocol::C2SPacketType::ObserveWorldRequest:
         case protocol::C2SPacketType::WorldTimeSyncRequest:
             return WorldIngressPacketRouteResult::UnsupportedPacketType;
         }
@@ -102,10 +103,12 @@ namespace psnr::world
         return WorldIngressPacketRouteResult::UnknownPacketType;
     }
 
-    WorldIngressPacketRouteResult WorldIngressPacketRouter::Route(
-        const WorldIngressAdmissionContext& context, const std::uint32_t currentServerTick,
-        const std::uint16_t packetType, const std::span<const std::byte> payload,
-        WorldMovementCommandStore& movementCommandStore, WorldControlCommand* const outControlCommand) noexcept
+    WorldIngressPacketRouteResult WorldIngressPacketRouter::Route(const WorldIngressAdmissionContext& context,
+                                                                  const std::uint32_t currentServerTick,
+                                                                  const std::uint16_t packetType,
+                                                                  const std::span<const std::byte> payload,
+                                                                  WorldMovementCommandStore& movementCommandStore,
+                                                                  WorldControlCommand* const outControlCommand) noexcept
     {
         return Route(context, WorldInboundMode::TargetServerTick, currentServerTick, packetType, payload,
                      movementCommandStore, outControlCommand);

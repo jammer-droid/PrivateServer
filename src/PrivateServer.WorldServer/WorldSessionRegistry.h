@@ -12,6 +12,13 @@
 
 namespace psnr::world
 {
+    enum class WorldSessionRole : std::uint8_t
+    {
+        Connected = 0,
+        Player,
+        Observer,
+    };
+
     // Runtime session identity를 World 내부 계약으로 변환한 값이다.
     // Runtime의 NrSessionKey 타입을 World domain interface에 직접 노출하지 않는다.
     struct WorldSessionKey final
@@ -35,10 +42,16 @@ namespace psnr::world
 
         WorldEntityKey entityKey{}; // JoinWorld 이후 초기화
         std::string displayName;
+        WorldSessionRole role = WorldSessionRole::Connected;
 
         [[nodiscard]] bool IsJoined() const noexcept
         {
             return playerId != 0 && entityKey.IsValid();
+        }
+
+        [[nodiscard]] bool IsObserver() const noexcept
+        {
+            return role == WorldSessionRole::Observer;
         }
     };
 
@@ -63,9 +76,11 @@ namespace psnr::world
         [[nodiscard]] bool TryBindPlayer(WorldSessionKey sessionKey, std::uint32_t playerId, WorldEntityKey entityKey);
         [[nodiscard]] bool TryBindPlayer(WorldSessionKey sessionKey, std::uint32_t playerId, WorldEntityKey entityKey,
                                          std::string_view displayName);
+        [[nodiscard]] bool TryBindObserver(WorldSessionKey sessionKey) noexcept;
         [[nodiscard]] bool TryRebindControlledEntity(WorldSessionKey sessionKey, WorldEntityKey entityKey);
         [[nodiscard]] bool TryFind(WorldSessionKey sessionKey, WorldSession* outSession) const;
         [[nodiscard]] std::span<const WorldSession> JoinedSessions() const noexcept;
+        [[nodiscard]] std::span<const WorldSession> RegisteredSessions() const noexcept;
 
         bool Remove(WorldSessionKey sessionKey);
 
@@ -78,8 +93,8 @@ namespace psnr::world
         void SwapDenseSessions(std::size_t leftIndex, std::size_t rightIndex);
         void RemoveDenseSessionAt(std::size_t denseIndex);
 
-        // [0, joinedSessionCount_)는 joined session, 나머지는 connected-only session이다.
-        // registry mutation 전까지만 JoinedSessions()가 반환한 span이 유효하다.
+        // [0, joinedSessionCount_)는 player session, 나머지는 connected 또는 observer session이다.
+        // registry mutation 전까지만 반환한 span이 유효하다.
         std::vector<WorldSession> sessions_;
         SessionKeyToDenseIndexMap sessionKeyToDenseIndex_; // session key - denseIdx
         EntityKeyToSessionKeyMap entityKeyToSessionKey_;   // entity key - session key

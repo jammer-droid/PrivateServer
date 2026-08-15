@@ -35,7 +35,7 @@ namespace psnr::world
         {
             return WorldResult<WorldJoinBaseline>::Failure(WorldErrorCode::NotFound);
         }
-        if (session.IsJoined())
+        if (session.role != WorldSessionRole::Connected)
         {
             return WorldResult<WorldJoinBaseline>::Failure(WorldErrorCode::AlreadyExists);
         }
@@ -144,15 +144,15 @@ namespace psnr::world
     bool WorldJoinIngress::IsValid(const WorldJoinConfig& config) noexcept
     {
         return config.tickRateHz > 0 && config.snapshotIntervalTicks > 0 && config.commandSlackTicks > 0 &&
-               config.channelId > 0 &&
-               std::isfinite(config.arenaMinX) && std::isfinite(config.arenaMinY) && std::isfinite(config.arenaMaxX) &&
-               std::isfinite(config.arenaMaxY) && config.arenaMinX < config.arenaMaxX &&
-               config.arenaMinY < config.arenaMaxY && config.playerArchetypeId > 0 &&
-               std::isfinite(config.playerCircleRadius) && config.playerCircleRadius > 0.0f &&
-               std::isfinite(config.playerMaxMoveSpeed) && config.playerMaxMoveSpeed > 0.0f &&
-               std::isfinite(config.playerSpawnX) && std::isfinite(config.playerSpawnY) &&
-               config.playerSpawnX >= config.arenaMinX && config.playerSpawnX <= config.arenaMaxX &&
-               config.playerSpawnY >= config.arenaMinY && config.playerSpawnY <= config.arenaMaxY &&
+               config.channelId > 0 && std::isfinite(config.arenaMinX) && std::isfinite(config.arenaMinY) &&
+               std::isfinite(config.arenaMaxX) && std::isfinite(config.arenaMaxY) &&
+               config.arenaMinX < config.arenaMaxX && config.arenaMinY < config.arenaMaxY &&
+               config.playerArchetypeId > 0 && std::isfinite(config.playerCircleRadius) &&
+               config.playerCircleRadius > 0.0f && std::isfinite(config.playerMaxMoveSpeed) &&
+               config.playerMaxMoveSpeed > 0.0f && std::isfinite(config.playerSpawnX) &&
+               std::isfinite(config.playerSpawnY) && config.playerSpawnX >= config.arenaMinX &&
+               config.playerSpawnX <= config.arenaMaxX && config.playerSpawnY >= config.arenaMinY &&
+               config.playerSpawnY <= config.arenaMaxY &&
                (!WorldPlayerBody::IsEnabled(config.playerBody) || WorldPlayerBody::IsValidConfig(config.playerBody));
     }
 } // namespace psnr::world

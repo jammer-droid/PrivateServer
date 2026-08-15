@@ -5,6 +5,8 @@
 #include "ControlledEntityRebind.h"
 #include "ControlledEntityState.h"
 #include "EntitySpawn.h"
+#include "ObserverReady.h"
+#include "ObserveWorldRequest.h"
 #include "RoundState.h"
 #include "ScoreState.h"
 #include "WorldGameplayCommitter.h"
@@ -730,7 +732,7 @@ namespace psnr::world
             return report;
         }
         report.suppressedOverviewCount = decision.suppressedOverviewCount;
-        if (!decision.IsDue() || joinedSessions.empty())
+        if (!decision.IsDue())
         {
             return report;
         }
@@ -743,7 +745,7 @@ namespace psnr::world
         try
         {
             std::vector<psnr::runtime::NrSessionSendChannel> channels;
-            channels.reserve(joinedSessions.size());
+            channels.reserve(sessionRegistry_.Size());
             for (const WorldSession& session : joinedSessions)
             {
                 const SessionKeyToSendChannelMap::const_iterator found =
@@ -754,6 +756,25 @@ namespace psnr::world
                     return report;
                 }
                 channels.push_back(found->second);
+            }
+            for (const WorldSession& session : sessionRegistry_.RegisteredSessions())
+            {
+                if (!session.IsObserver())
+                {
+                    continue;
+                }
+                const SessionKeyToSendChannelMap::const_iterator found =
+                    sessionKeyToSendChannel_.find(session.sessionKey);
+                if (found == sessionKeyToSendChannel_.end())
+                {
+                    outboundBatchFailed_ = true;
+                    return report;
+                }
+                channels.push_back(found->second);
+            }
+            if (channels.empty())
+            {
+                return report;
             }
 
             const WorldPhysicsArenaBounds mapBounds{
@@ -1031,6 +1052,10 @@ namespace psnr::world
         {
             return HandleJoin(sessionKey, payload);
         }
+        if (packetType.value == static_cast<std::uint16_t>(protocol::C2SPacketType::ObserveWorldRequest))
+        {
+            return HandleObserve(sessionKey, payload);
+        }
         if (gameplayEnabled_ && gameplayState_.RoundState().phase == WorldRoundPhase::Ended)
         {
             return WorldIngressEventHandleResult::PacketRejected;
@@ -1230,6 +1255,60 @@ namespace psnr::world
             baseline.entityKey,
         });
         return WorldIngressEventHandleResult::JoinBaselineSubmitted;
+    }
+
+    WorldIngressEventHandleResult WorldIngressEventConsumer::HandleObserve(
+        const WorldSessionKey sessionKey, const psnr::runtime::NrByteView payload) noexcept
+    {
+        protocol::v1::ObserveWorldRequest request;
+        if (protocol::v1::ObserveWorldRequest::Decode(std::span<const std::byte>(payload.data, payload.size),
+                                                      &request) != protocol::WorldProtocolError::Success)
+        {
+            ++metrics_.malformedPayloadCount;
+            return RequestProtocolClose(sessionKey, WorldProtocolCloseCause::MalformedPayload);
+        }
+
+        WorldSession session;
+        const SessionKeyToSendChannelMap::const_iterator channelFound = sessionKeyToSendChannel_.find(sessionKey);
+        if (!sessionRegistry_.TryFind(sessionKey, &session) || channelFound == sessionKeyToSendChannel_.end())
+        {
+            return WorldIngressEventHandleResult::SessionNotFound;
+        }
+        if (session.role != WorldSessionRole::Connected)
+        {
+            return WorldIngressEventHandleResult::ObserverRejected;
+        }
+
+        const protocol::v1::ObserverReady ready{
+            currentServerTick_,     config_.join.tickRateHz, config_.join.arenaMinX, config_.join.arenaMinY,
+            config_.join.arenaMaxX, config_.join.arenaMaxY,  config_.join.channelId,
+        };
+        std::array<std::byte, protocol::v1::ObserverReady::Wire::PayloadBytes> readyPayload;
+        if (protocol::v1::ObserverReady::Encode(ready, readyPayload) != protocol::WorldProtocolError::Success ||
+            !RecordObserverGameplayBaseline(channelFound->second) ||
+            SubmitOutbound(channelFound->second,
+                           psnr::core::NrPacketType{
+                               static_cast<std::uint16_t>(protocol::S2CPacketType::ObserverReady),
+                           },
+                           psnr::runtime::NrByteView{
+                               readyPayload.data(),
+                               static_cast<std::uint32_t>(readyPayload.size()),
+                           })
+                .Failed())
+        {
+            outboundBatchFailed_ = true;
+            static_cast<void>(server_.RequestSessionClose(
+                sessionKey.value, psnr::runtime::NrSessionCloseRequestReason::ApplicationPolicy));
+            return WorldIngressEventHandleResult::RuntimeSubmitFailed;
+        }
+
+        if (!sessionRegistry_.TryBindObserver(sessionKey))
+        {
+            static_cast<void>(server_.RequestSessionClose(
+                sessionKey.value, psnr::runtime::NrSessionCloseRequestReason::ApplicationPolicy));
+            return WorldIngressEventHandleResult::ObserverRejected;
+        }
+        return WorldIngressEventHandleResult::ObserverBaselineSubmitted;
     }
 
     bool WorldIngressEventConsumer::RollbackPreparedJoin(const WorldSessionKey sessionKey, const std::uint32_t playerId,
@@ -1530,8 +1609,9 @@ namespace psnr::world
 
         try
         {
+            std::vector<WorldGameplayRoundResultPlan> publications = plan.roundResults;
             std::vector<psnr::runtime::NrSessionSendChannel> channels;
-            channels.reserve(plan.roundResults.size());
+            channels.reserve(plan.roundResults.size() + sessionRegistry_.Size());
             for (const WorldGameplayRoundResultPlan& roundResult : plan.roundResults)
             {
                 const SessionKeyToSendChannelMap::const_iterator found =
@@ -1543,15 +1623,33 @@ namespace psnr::world
                 channels.push_back(found->second);
             }
 
+            protocol::v2::RoundResult observerResult = plan.roundResults.front().roundResult;
+            observerResult.recipientFinalGrowthPoint = 0;
+            for (const WorldSession& session : sessionRegistry_.RegisteredSessions())
+            {
+                if (!session.IsObserver())
+                {
+                    continue;
+                }
+                const SessionKeyToSendChannelMap::const_iterator found =
+                    sessionKeyToSendChannel_.find(session.sessionKey);
+                if (found == sessionKeyToSendChannel_.end())
+                {
+                    return false;
+                }
+                publications.push_back(WorldGameplayRoundResultPlan{session.sessionKey, observerResult});
+                channels.push_back(found->second);
+            }
+
             if (outboundMode_ == WorldOutboundMode::DoubleBuffered && outboundBuffer_ != nullptr)
             {
-                return replicationPublisher_.RecordRoundResults(plan.roundResults, channels, *outboundBuffer_) ==
+                return replicationPublisher_.RecordRoundResults(publications, channels, *outboundBuffer_) ==
                        WorldReplicationRecordResult::Recorded;
             }
 
-            for (std::size_t index = 0; index < plan.roundResults.size(); ++index)
+            for (std::size_t index = 0; index < publications.size(); ++index)
             {
-                const protocol::v2::RoundResult& roundResult = plan.roundResults[index].roundResult;
+                const protocol::v2::RoundResult& roundResult = publications[index].roundResult;
                 const std::size_t payloadBytes =
                     protocol::v2::RoundResult::Wire::CalculatePayloadBytes(roundResult.winnerPlayerIds.size());
                 std::vector<std::byte> payload(payloadBytes);
@@ -1643,6 +1741,29 @@ namespace psnr::world
                     return false;
                 }
             }
+            for (const WorldSession& session : sessionRegistry_.RegisteredSessions())
+            {
+                if (!session.IsObserver())
+                {
+                    continue;
+                }
+                const SessionKeyToSendChannelMap::const_iterator channelFound =
+                    sessionKeyToSendChannel_.find(session.sessionKey);
+                if (channelFound == sessionKeyToSendChannel_.end() ||
+                    SubmitOutbound(channelFound->second,
+                                   psnr::core::NrPacketType{
+                                       static_cast<std::uint16_t>(protocol::S2CPacketType::RoundState),
+                                   },
+                                   psnr::runtime::NrByteView{
+                                       payload.data(),
+                                       static_cast<std::uint32_t>(payload.size()),
+                                   })
+                        .Failed())
+                {
+                    outboundBatchFailed_ = true;
+                    return false;
+                }
+            }
         }
 
         if (!RecordRoundResults(pendingGameplayBroadcast_))
@@ -1701,6 +1822,35 @@ namespace psnr::world
                               psnr::runtime::NrByteView{
                                   roundPayload.data(),
                                   static_cast<std::uint32_t>(roundPayload.size()),
+                              })
+                   .Succeeded();
+    }
+
+    bool WorldIngressEventConsumer::RecordObserverGameplayBaseline(
+        const psnr::runtime::NrSessionSendChannel& channel) noexcept
+    {
+        if (!gameplayEnabled_)
+        {
+            return true;
+        }
+
+        WorldResult<WorldGameplayReplicationPlan> planResult =
+            gameplayReplicationPlanner_.BuildJoinBaseline(currentServerTick_, config_.gameplay, gameplayState_);
+        if (planResult.Failed())
+        {
+            return false;
+        }
+        const WorldGameplayReplicationPlan plan = planResult.TakeValue();
+        std::array<std::byte, protocol::v1::RoundState::Wire::PayloadBytes> payload;
+        return plan.hasRoundState &&
+               protocol::v1::RoundState::Encode(plan.roundState, payload) == protocol::WorldProtocolError::Success &&
+               SubmitOutbound(channel,
+                              psnr::core::NrPacketType{
+                                  static_cast<std::uint16_t>(protocol::S2CPacketType::RoundState),
+                              },
+                              psnr::runtime::NrByteView{
+                                  payload.data(),
+                                  static_cast<std::uint32_t>(payload.size()),
                               })
                    .Succeeded();
     }
@@ -1789,9 +1939,8 @@ namespace psnr::world
                     identitySessions.push_back(session);
                 }
             }
-            WorldResult<WorldReplicationPlan> planResult =
-                replicationPlanner_.Build(serverTick, visibilityDiffs, entityManager_, identitySessions,
-                                          includeV1StateRecords);
+            WorldResult<WorldReplicationPlan> planResult = replicationPlanner_.Build(
+                serverTick, visibilityDiffs, entityManager_, identitySessions, includeV1StateRecords);
             if (planResult.Failed())
             {
                 return WorldAoiReplicationRecordResult::ReplicationPlanFailed;

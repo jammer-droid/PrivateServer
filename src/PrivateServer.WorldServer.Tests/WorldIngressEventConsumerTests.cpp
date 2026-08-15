@@ -7,6 +7,8 @@
 #include "EntityStateBatch.h"
 #include "JoinWorldRequest.h"
 #include "MovementInput.h"
+#include "ObserverReady.h"
+#include "ObserveWorldRequest.h"
 #include "WorldApplicationEventSinkTestDouble.h"
 #include "WorldIngressEventConsumer.h"
 #include "WorldOutboundPublisher.h"
@@ -685,6 +687,7 @@ namespace psnr::world::tests
     TEST(WorldIngressEventConsumerTests, PreservesDurableGameplayOrderBeforeFinalCatchUpSnapshot)
     {
         constexpr psnr::core::NrSessionKey RuntimeSessionKey = 10;
+        constexpr psnr::core::NrSessionKey ObserverSessionKey = 20;
         constexpr WorldGrowthConfig PlayerGrowthConfig{10.0f, 0.25f, 1.0f, 0.01f};
         constexpr WorldPlayerBodyConfig PlayerBodyConfig{PlayerGrowthConfig, 16};
         const WorldIngressEventConsumerConfig gameplayConfig{
@@ -745,6 +748,22 @@ namespace psnr::world::tests
             MakePacketEvent(RuntimeSessionKey, protocol::C2SPacketType::JoinWorldRequest, joinPayload.data(),
                             static_cast<std::uint32_t>(joinPayload.size()));
         ASSERT_EQ(consumer.Handle(joinEvent), WorldIngressEventHandleResult::JoinBaselineSubmitted);
+
+        ASSERT_EQ(consumer.Handle(MakeAcceptedEvent(ObserverSessionKey)),
+                  WorldIngressEventHandleResult::SessionRegistered);
+        std::array<std::byte, protocol::v1::ObserveWorldRequest::Wire::PayloadBytes> observePayload;
+        ASSERT_EQ(protocol::v1::ObserveWorldRequest::Encode(protocol::v1::ObserveWorldRequest{}, observePayload),
+                  protocol::WorldProtocolError::Success);
+        ASSERT_EQ(
+            consumer.Handle(MakePacketEvent(ObserverSessionKey, protocol::C2SPacketType::ObserveWorldRequest,
+                                            observePayload.data(), static_cast<std::uint32_t>(observePayload.size()))),
+            WorldIngressEventHandleResult::ObserverBaselineSubmitted);
+        ASSERT_EQ(sessionRegistry.JoinedSessions().size(), 1u);
+        ASSERT_EQ(sessionRegistry.RegisteredSessions().size(), 2u);
+        WorldSession observerSession;
+        ASSERT_TRUE(sessionRegistry.TryFind(WorldSessionKey{ObserverSessionKey}, &observerSession));
+        EXPECT_TRUE(observerSession.IsObserver());
+        EXPECT_FALSE(observerSession.IsJoined());
         ASSERT_EQ(outboundBuffer->SealWrite(100), WorldOutboundDoubleBufferExchangeResult::Exchanged);
 
         FakeOutboundGateway publishingGateway;
@@ -757,7 +776,15 @@ namespace psnr::world::tests
                                                      static_cast<std::uint16_t>(protocol::S2CPacketType::ScoreState),
                                                      static_cast<std::uint16_t>(protocol::S2CPacketType::RoundState),
                                                      static_cast<std::uint16_t>(protocol::S2CPacketType::WorldReady),
+                                                     static_cast<std::uint16_t>(protocol::S2CPacketType::RoundState),
+                                                     static_cast<std::uint16_t>(protocol::S2CPacketType::ObserverReady),
                                                  }));
+        protocol::v1::ObserverReady observerReady;
+        ASSERT_EQ(protocol::v1::ObserverReady::Decode(publishingGateway.payloads.back(), &observerReady),
+                  protocol::WorldProtocolError::Success);
+        EXPECT_EQ(observerReady.currentServerTick, 100u);
+        EXPECT_EQ(observerReady.tickRateHz, 20u);
+        EXPECT_EQ(observerReady.channelId, 7u);
 
         publishingGateway.packetTypes.clear();
         publishingGateway.payloads.clear();
@@ -777,7 +804,7 @@ namespace psnr::world::tests
         const WorldOverviewPublishReport overviewReport =
             consumer.PublishWorldOverview(100, 102, sessionRegistry.JoinedSessions());
         EXPECT_TRUE(overviewReport.overviewPublished);
-        EXPECT_EQ(overviewReport.recipientCount, 1u);
+        EXPECT_EQ(overviewReport.recipientCount, 2u);
         EXPECT_EQ(overviewReport.chunkCount, 1u);
         EXPECT_EQ(overviewReport.suppressedOverviewCount, 0u);
         const WorldOverviewPublishReport beforeNextOverview =
@@ -813,6 +840,9 @@ namespace psnr::world::tests
         EXPECT_EQ(std::count(publishingGateway.packetTypes.begin(), publishingGateway.packetTypes.end(),
                              controlledStatePacketType),
                   1);
+        EXPECT_EQ(std::count(publishingGateway.packetTypes.begin(), publishingGateway.packetTypes.end(),
+                             roundStatePacketType),
+                  2);
         EXPECT_EQ(gameplayReport.replication.serverTick, 102u);
         EXPECT_EQ(gameplayReport.replication.spawnPacketCount, 1u);
         EXPECT_EQ(gameplayReport.replication.stateBatchPacketCount, 0u);
@@ -880,6 +910,10 @@ namespace psnr::world::tests
         EXPECT_EQ(snapshots[0].headTransform, disconnectingComponents.transform);
         EXPECT_EQ(snapshots[0].bodyTrail, disconnectingComponents.bodyTrail);
         EXPECT_FALSE(entityManager.TryReadComponents(disconnectingEntityHandle, &disconnectingComponents));
+        EXPECT_EQ(sessionRegistry.Size(), 1u);
+
+        closedEvent.sessionKey = ObserverSessionKey;
+        ASSERT_EQ(consumer.Handle(closedEvent), WorldIngressEventHandleResult::SessionRemoved);
         EXPECT_EQ(sessionRegistry.Size(), 0u);
 
         consumer.BeginOutboundTick(103);
@@ -891,6 +925,7 @@ namespace psnr::world::tests
     TEST(WorldIngressEventConsumerTests, PublishesRoundResultOnceAfterEndTickCommit)
     {
         constexpr psnr::core::NrSessionKey RuntimeSessionKey = 10;
+        constexpr psnr::core::NrSessionKey ObserverSessionKey = 30;
         constexpr WorldGrowthConfig PlayerGrowthConfig{10.0f, 0.25f, 1.0f, 0.01f};
         constexpr WorldPlayerBodyConfig PlayerBodyConfig{PlayerGrowthConfig, 16};
         const WorldIngressEventConsumerConfig gameplayConfig{
@@ -949,6 +984,15 @@ namespace psnr::world::tests
         ASSERT_EQ(consumer.Handle(MakePacketEvent(RuntimeSessionKey, protocol::C2SPacketType::JoinWorldRequest,
                                                   joinPayload.data(), static_cast<std::uint32_t>(joinPayload.size()))),
                   WorldIngressEventHandleResult::JoinBaselineSubmitted);
+        ASSERT_EQ(consumer.Handle(MakeAcceptedEvent(ObserverSessionKey)),
+                  WorldIngressEventHandleResult::SessionRegistered);
+        std::array<std::byte, protocol::v1::ObserveWorldRequest::Wire::PayloadBytes> observePayload;
+        ASSERT_EQ(protocol::v1::ObserveWorldRequest::Encode(protocol::v1::ObserveWorldRequest{}, observePayload),
+                  protocol::WorldProtocolError::Success);
+        ASSERT_EQ(
+            consumer.Handle(MakePacketEvent(ObserverSessionKey, protocol::C2SPacketType::ObserveWorldRequest,
+                                            observePayload.data(), static_cast<std::uint32_t>(observePayload.size()))),
+            WorldIngressEventHandleResult::ObserverBaselineSubmitted);
         ASSERT_EQ(outboundBuffer->SealWrite(100), WorldOutboundDoubleBufferExchangeResult::Exchanged);
         FakeOutboundGateway gatewaySink;
         WorldOutboundPublisher outboundPublisher{*outboundBuffer};
@@ -970,15 +1014,18 @@ namespace psnr::world::tests
                   WorldOutboundPublishStopReason::Published);
 
         const std::uint16_t packetType = static_cast<std::uint16_t>(protocol::S2CPacketType::RoundResult);
-        EXPECT_EQ(std::count(gatewaySink.packetTypes.begin(), gatewaySink.packetTypes.end(), packetType), 1);
-        const std::vector<std::uint16_t>::const_iterator found =
-            std::find(gatewaySink.packetTypes.begin(), gatewaySink.packetTypes.end(), packetType);
-        ASSERT_NE(found, gatewaySink.packetTypes.end());
-        const std::size_t resultIndex = static_cast<std::size_t>(found - gatewaySink.packetTypes.begin());
-        protocol::v2::RoundResult roundResult;
-        ASSERT_EQ(protocol::v2::RoundResult::Decode(gatewaySink.payloads[resultIndex], &roundResult),
-                  protocol::WorldProtocolError::Success);
-        EXPECT_EQ(roundResult, (protocol::v2::RoundResult{102, 1, 0, 0, {1}}));
+        EXPECT_EQ(std::count(gatewaySink.packetTypes.begin(), gatewaySink.packetTypes.end(), packetType), 2);
+        for (std::size_t packetIndex = 0; packetIndex < gatewaySink.packetTypes.size(); ++packetIndex)
+        {
+            if (gatewaySink.packetTypes[packetIndex] != packetType)
+            {
+                continue;
+            }
+            protocol::v2::RoundResult roundResult;
+            ASSERT_EQ(protocol::v2::RoundResult::Decode(gatewaySink.payloads[packetIndex], &roundResult),
+                      protocol::WorldProtocolError::Success);
+            EXPECT_EQ(roundResult, (protocol::v2::RoundResult{102, 1, 0, 0, {1}}));
+        }
         EXPECT_EQ(consumer.GameplayState().RoundState().phase, WorldRoundPhase::Ended);
         EXPECT_FALSE(consumer.ShouldProcessSimulation());
 
@@ -1007,7 +1054,7 @@ namespace psnr::world::tests
         closedEvent.endReason = psnr::runtime::NrSessionEndReason::RemoteClosed;
         ASSERT_EQ(consumer.Handle(closedEvent), WorldIngressEventHandleResult::SessionRemoved);
 
-        EXPECT_EQ(sessionRegistry.Size(), 1u);
+        EXPECT_EQ(sessionRegistry.Size(), 2u);
         EXPECT_EQ(entityManager.Size(), 0u);
         EXPECT_EQ(consumer.GameplayState().PlayerCount(), 0u);
         EXPECT_EQ(consumer.GameplayState().RoundState(), (WorldRoundRuntimeState{2, WorldRoundPhase::Waiting, 0, 0}));
@@ -1017,6 +1064,10 @@ namespace psnr::world::tests
         EXPECT_EQ(consumer.GameplayState().ResourceSlots()[0].phase, WorldResourceSlotPhase::Dormant);
 
         closedEvent.sessionKey = LateSessionKey;
+        ASSERT_EQ(consumer.Handle(closedEvent), WorldIngressEventHandleResult::SessionRemoved);
+        EXPECT_EQ(sessionRegistry.Size(), 1u);
+
+        closedEvent.sessionKey = ObserverSessionKey;
         ASSERT_EQ(consumer.Handle(closedEvent), WorldIngressEventHandleResult::SessionRemoved);
         EXPECT_EQ(sessionRegistry.Size(), 0u);
 

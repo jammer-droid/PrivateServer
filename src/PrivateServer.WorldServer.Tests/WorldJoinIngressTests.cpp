@@ -37,8 +37,8 @@ namespace psnr::world::tests
         [[nodiscard]] std::vector<std::byte> MakePayload(const std::string_view displayName = "Player7")
         {
             std::vector<std::byte> payload(protocol::v2::JoinWorldRequest::CalculatePayloadBytes(displayName));
-            const protocol::WorldProtocolError encodeResult =
-                protocol::v2::JoinWorldRequest::Encode(protocol::v2::JoinWorldRequest{std::string{displayName}}, payload);
+            const protocol::WorldProtocolError encodeResult = protocol::v2::JoinWorldRequest::Encode(
+                protocol::v2::JoinWorldRequest{std::string{displayName}}, payload);
             EXPECT_EQ(encodeResult, protocol::WorldProtocolError::Success);
             return payload;
         }
@@ -148,6 +148,22 @@ namespace psnr::world::tests
             sessionRegistry, entityManager, SessionKey, PlayerId, CurrentServerTick, invalidConfig, payload);
         ASSERT_TRUE(result.Failed());
         EXPECT_EQ(result.Error(), WorldErrorCode::InvalidConfig);
+        EXPECT_EQ(entityManager.Size(), 0u);
+    }
+
+    TEST(WorldJoinIngressTests, RejectsObserverRoleBeforeCreatingPlayerEntity)
+    {
+        WorldSessionRegistry sessionRegistry;
+        WorldEntityManager entityManager;
+        ASSERT_TRUE(sessionRegistry.TryRegister(SessionKey));
+        ASSERT_TRUE(sessionRegistry.TryBindObserver(SessionKey));
+
+        const std::vector<std::byte> payload = MakePayload();
+        const WorldResult<WorldJoinBaseline> result = WorldJoinIngress::Prepare(
+            sessionRegistry, entityManager, SessionKey, PlayerId, CurrentServerTick, Config, payload);
+
+        ASSERT_TRUE(result.Failed());
+        EXPECT_EQ(result.Error(), WorldErrorCode::AlreadyExists);
         EXPECT_EQ(entityManager.Size(), 0u);
     }
 

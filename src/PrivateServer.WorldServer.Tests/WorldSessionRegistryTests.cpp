@@ -152,6 +152,33 @@ namespace psnr::world::tests
         EXPECT_EQ(joinedSessions[1].entityKey, FirstEntityKey);
     }
 
+    TEST(WorldSessionRegistryTests, ObserverRemainsOutsideJoinedPlayerPrefix)
+    {
+        WorldSessionRegistry registry;
+        constexpr WorldSessionKey PlayerSessionKey{10};
+        constexpr WorldSessionKey ObserverSessionKey{20};
+        constexpr WorldEntityKey PlayerEntityKey{100, 1};
+        WorldSession observer;
+
+        ASSERT_TRUE(registry.TryRegister(PlayerSessionKey));
+        ASSERT_TRUE(registry.TryRegister(ObserverSessionKey));
+        ASSERT_TRUE(registry.TryBindObserver(ObserverSessionKey));
+        ASSERT_TRUE(registry.TryBindPlayer(PlayerSessionKey, 7, PlayerEntityKey));
+
+        ASSERT_TRUE(registry.TryFind(ObserverSessionKey, &observer));
+        EXPECT_TRUE(observer.IsObserver());
+        EXPECT_FALSE(observer.IsJoined());
+        EXPECT_EQ(observer.playerId, 0u);
+        EXPECT_FALSE(observer.entityKey.IsValid());
+        EXPECT_FALSE(registry.TryBindObserver(ObserverSessionKey));
+        EXPECT_FALSE(registry.TryBindPlayer(ObserverSessionKey, 8, WorldEntityKey{200, 1}));
+
+        const std::span<const WorldSession> joinedSessions = registry.JoinedSessions();
+        ASSERT_EQ(joinedSessions.size(), 1u);
+        EXPECT_EQ(joinedSessions[0].sessionKey, PlayerSessionKey);
+        EXPECT_EQ(registry.RegisteredSessions().size(), 2u);
+    }
+
     TEST(WorldSessionRegistryTests, DenseRemovalKeepsJoinedPrefixAndKeyLookupConsistent)
     {
         WorldSessionRegistry registry;
