@@ -168,6 +168,12 @@ internal static class ServerGameplayPacketDecoder
                 packet = decoded;
                 return error;
             }
+            case ObserverReady.PacketTypeValue:
+            {
+                GameplayProtocolError error = ObserverReady.Decode(payload, out ObserverReady? decoded);
+                packet = decoded;
+                return error;
+            }
             default:
                 return GameplayProtocolError.InvalidEnum;
         }

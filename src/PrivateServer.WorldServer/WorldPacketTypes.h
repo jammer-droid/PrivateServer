@@ -35,6 +35,9 @@ namespace psnr::world::protocol
 
         // Client가 controlled entity의 turn/boost control state 변경을 제출한다.
         ControlStateCommand = 0x0103,
+
+        // Client가 gameplay participant가 아닌 read-only World observer 참가를 요청한다.
+        ObserveWorldRequest = 0x0104,
     };
 
     enum class S2CPacketType : std::uint16_t
@@ -71,6 +74,9 @@ namespace psnr::world::protocol
 
         // Final authoritative round result for one recipient.
         RoundResult = 0x018A,
+
+        // Server가 read-only observer의 Channel/World baseline을 확정한다.
+        ObserverReady = 0x018B,
     };
 
     /*
@@ -83,10 +89,8 @@ namespace psnr::world::protocol
     - 포함되지 않은 type: 다른 lane 규칙을 따르거나 등록되지 않은 packet으로 거절
     - 하지 않는 일: payload version/length/enum/numeric validation과 World command admission
     */
-    inline constexpr std::array<C2SPacketType, 4> C2SWorldIngressPacketTypes = {
-        C2SPacketType::JoinWorldRequest,
-        C2SPacketType::MovementInput,
-        C2SPacketType::WorldTimeSyncRequest,
-        C2SPacketType::ControlStateCommand,
+    inline constexpr std::array<C2SPacketType, 5> C2SWorldIngressPacketTypes = {
+        C2SPacketType::JoinWorldRequest,    C2SPacketType::MovementInput,       C2SPacketType::WorldTimeSyncRequest,
+        C2SPacketType::ControlStateCommand, C2SPacketType::ObserveWorldRequest,
     };
 } // namespace psnr::world::protocol

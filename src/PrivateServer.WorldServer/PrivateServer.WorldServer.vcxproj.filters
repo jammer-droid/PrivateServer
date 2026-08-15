@@ -132,6 +132,12 @@
     <ClInclude Include="JoinWorldRequest.h">
       <Filter>Protocol\C2S</Filter>
     </ClInclude>
+    <ClInclude Include="ObserveWorldRequest.h">
+      <Filter>Protocol\C2S</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverReady.h">
+      <Filter>Protocol\S2C</Filter>
+    </ClInclude>
     <ClInclude Include="ControlStateCommand.h">
       <Filter>Protocol\C2S</Filter>
     </ClInclude>

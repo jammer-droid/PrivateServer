@@ -30,6 +30,7 @@ public sealed class GameplayProtocolV1Tests
         AssertClientPacketType(new JoinWorldRequest(), 0x0100);
         AssertClientPacketType(new MovementInput(1, 1, 0, 0), 0x0101);
         AssertClientPacketType(new WorldTimeSyncRequest(1), 0x0102);
+        AssertClientPacketType(new ObserveWorldRequest(), 0x0104);
 
         Assert.AreEqual(0x0180u, WorldReady.PacketTypeValue);
         Assert.AreEqual(0x0181u, EntitySpawn.PacketTypeValue);
@@ -40,6 +41,7 @@ public sealed class GameplayProtocolV1Tests
         Assert.AreEqual(0x0186u, RoundState.PacketTypeValue);
         Assert.AreEqual(0x0187u, WorldTimeSyncResponse.PacketTypeValue);
         Assert.AreEqual(0x0188u, ControlledEntityRebind.PacketTypeValue);
+        Assert.AreEqual(0x018Bu, ObserverReady.PacketTypeValue);
 
         Type[] serverPacketTypes =
         {
@@ -52,6 +54,7 @@ public sealed class GameplayProtocolV1Tests
             typeof(RoundState),
             typeof(WorldTimeSyncResponse),
             typeof(ControlledEntityRebind),
+            typeof(ObserverReady),
         };
         foreach (Type serverPacketType in serverPacketTypes)
         {
@@ -101,6 +104,30 @@ public sealed class GameplayProtocolV1Tests
             0x0102,
             "010004030201",
             WorldTimeSyncRequest.Decode);
+    }
+
+    [TestMethod]
+    public void ObserverPacketsMatchNativeGoldenBytes()
+    {
+        AssertClientGoldenRoundTrip(
+            new ObserveWorldRequest(),
+            0x0104,
+            "0100",
+            ObserveWorldRequest.Decode);
+
+        ObserverReady ready = new ObserverReady(
+            0x01020304,
+            60,
+            -10.0f,
+            -5.0f,
+            10.0f,
+            5.0f,
+            0x11223344);
+        AssertServerGoldenRoundTrip(
+            ready,
+            "0100040302013C000000000020C10000A0C0000020410000A04044332211",
+            static (packet, output) => packet.Encode(output),
+            ObserverReady.Decode);
     }
 
     [TestMethod]

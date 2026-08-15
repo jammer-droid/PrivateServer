@@ -8,6 +8,8 @@
 #include "EntityStateBatch.h"
 #include "JoinWorldRequest.h"
 #include "MovementInput.h"
+#include "ObserveWorldRequest.h"
+#include "ObserverReady.h"
 #include "RoundState.h"
 #include "RoundResult.h"
 #include "ScoreState.h"
@@ -76,6 +78,7 @@ namespace psnr::world::protocol::tests
         EXPECT_EQ(static_cast<std::uint16_t>(C2SPacketType::MovementInput), 0x0101);
         EXPECT_EQ(static_cast<std::uint16_t>(C2SPacketType::WorldTimeSyncRequest), 0x0102);
         EXPECT_EQ(static_cast<std::uint16_t>(C2SPacketType::ControlStateCommand), 0x0103);
+        EXPECT_EQ(static_cast<std::uint16_t>(C2SPacketType::ObserveWorldRequest), 0x0104);
         EXPECT_EQ(static_cast<std::uint16_t>(S2CPacketType::WorldReady), 0x0180);
         EXPECT_EQ(static_cast<std::uint16_t>(S2CPacketType::EntitySpawn), 0x0181);
         EXPECT_EQ(static_cast<std::uint16_t>(S2CPacketType::ControlledEntityState), 0x0182);
@@ -87,12 +90,14 @@ namespace psnr::world::protocol::tests
         EXPECT_EQ(static_cast<std::uint16_t>(S2CPacketType::ControlledEntityRebind), 0x0188);
         EXPECT_EQ(static_cast<std::uint16_t>(S2CPacketType::WorldOverviewSnapshot), 0x0189);
         EXPECT_EQ(static_cast<std::uint16_t>(S2CPacketType::RoundResult), 0x018A);
+        EXPECT_EQ(static_cast<std::uint16_t>(S2CPacketType::ObserverReady), 0x018B);
 
-        ASSERT_EQ(C2SWorldIngressPacketTypes.size(), 4u);
+        ASSERT_EQ(C2SWorldIngressPacketTypes.size(), 5u);
         EXPECT_EQ(C2SWorldIngressPacketTypes[0], C2SPacketType::JoinWorldRequest);
         EXPECT_EQ(C2SWorldIngressPacketTypes[1], C2SPacketType::MovementInput);
         EXPECT_EQ(C2SWorldIngressPacketTypes[2], C2SPacketType::WorldTimeSyncRequest);
         EXPECT_EQ(C2SWorldIngressPacketTypes[3], C2SPacketType::ControlStateCommand);
+        EXPECT_EQ(C2SWorldIngressPacketTypes[4], C2SPacketType::ObserveWorldRequest);
     }
 
     TEST(WorldProtocolPacketTests, JoinWorldRequestMatchesGoldenBytesAndRejectsMalformedPayload)
@@ -133,8 +138,7 @@ namespace psnr::world::protocol::tests
         v2::JoinWorldRequest decoded;
 
         ExpectGoldenRoundTrip(expected, GoldenPayload);
-        EXPECT_EQ(v2::JoinWorldRequest::Decode(unsupportedVersion, &decoded),
-                  WorldProtocolError::UnsupportedVersion);
+        EXPECT_EQ(v2::JoinWorldRequest::Decode(unsupportedVersion, &decoded), WorldProtocolError::UnsupportedVersion);
         EXPECT_EQ(v2::JoinWorldRequest::Decode(invalidLength, &decoded), WorldProtocolError::InvalidLength);
         EXPECT_EQ(v2::JoinWorldRequest::Decode(invalidCharacter, &decoded), WorldProtocolError::InvalidArgument);
         EXPECT_EQ(v2::JoinWorldRequest::Decode(invalidPunctuation, &decoded), WorldProtocolError::InvalidArgument);
@@ -144,7 +148,10 @@ namespace psnr::world::protocol::tests
         EXPECT_EQ(v2::JoinWorldRequest::CalculatePayloadBytes(std::string(49, 'A')), 0u);
 
         constexpr std::array<std::byte, v2::JoinWorldRequest::Wire::MinimumPayloadBytes> EmptyPayload = {
-            std::byte{0x02}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x02},
+            std::byte{0x00},
+            std::byte{0x00},
+            std::byte{0x00},
         };
         ExpectGoldenRoundTrip(v2::JoinWorldRequest{}, EmptyPayload);
     }
@@ -167,6 +174,33 @@ namespace psnr::world::protocol::tests
         ExpectUnsupportedVersion<v1::MovementInput>(GoldenPayload);
         EXPECT_EQ(v1::MovementInput::Encode(zeroGeneration, output), WorldProtocolError::InvalidNumeric);
         EXPECT_EQ(v1::MovementInput::Encode(reservedAxis, output), WorldProtocolError::InvalidNumeric);
+    }
+
+    TEST(WorldProtocolPacketTests, ObserverPacketsMatchGoldenBytesAndValidateBaseline)
+    {
+        constexpr std::array<std::byte, v1::ObserveWorldRequest::Wire::PayloadBytes> ObserveGoldenPayload = {
+            std::byte{0x01},
+            std::byte{0x00},
+        };
+        constexpr v1::ObserverReady Ready{
+            0x01020304, 60, -10.0f, -5.0f, 10.0f, 5.0f, 0x11223344,
+        };
+        constexpr std::array<std::byte, v1::ObserverReady::Wire::PayloadBytes> ReadyGoldenPayload = {
+            std::byte{0x01}, std::byte{0x00}, std::byte{0x04}, std::byte{0x03}, std::byte{0x02}, std::byte{0x01},
+            std::byte{0x3C}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x20}, std::byte{0xC1}, std::byte{0x00}, std::byte{0x00}, std::byte{0xA0}, std::byte{0xC0},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0x20}, std::byte{0x41}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0xA0}, std::byte{0x40}, std::byte{0x44}, std::byte{0x33}, std::byte{0x22}, std::byte{0x11},
+        };
+        v1::ObserverReady invalidReady = Ready;
+        invalidReady.channelId = 0;
+        std::array<std::byte, v1::ObserverReady::Wire::PayloadBytes> output{};
+
+        ExpectGoldenRoundTrip(v1::ObserveWorldRequest{}, ObserveGoldenPayload);
+        ExpectUnsupportedVersion<v1::ObserveWorldRequest>(ObserveGoldenPayload);
+        ExpectGoldenRoundTrip(Ready, ReadyGoldenPayload);
+        ExpectUnsupportedVersion<v1::ObserverReady>(ReadyGoldenPayload);
+        EXPECT_EQ(v1::ObserverReady::Encode(invalidReady, output), WorldProtocolError::InvalidNumeric);
     }
 
     TEST(WorldProtocolPacketTests, ControlStateCommandMatchesGoldenBytesAndRejectsInvalidFields)
@@ -248,8 +282,7 @@ namespace psnr::world::protocol::tests
     TEST(WorldProtocolPacketTests, WorldReadyV2MatchesGoldenBytesAndValidatesChannelAndDisplayName)
     {
         const v2::WorldReady expected{
-            0x01020304, 0x11121314, 0x21222324, 0x31323334, 60, 3, 2, -10.0f, -5.0f, 10.0f, 5.0f,
-            0x11223344, "Player7",
+            0x01020304, 0x11121314, 0x21222324, 0x31323334, 60, 3, 2, -10.0f, -5.0f, 10.0f, 5.0f, 0x11223344, "Player7",
         };
         constexpr std::array<std::byte, 59> GoldenPayload = {
             std::byte{0x02}, std::byte{0x00}, std::byte{0x04}, std::byte{0x03}, std::byte{0x02}, std::byte{0x01},
@@ -270,21 +303,14 @@ namespace psnr::world::protocol::tests
 
         ExpectGoldenRoundTrip(expected, GoldenPayload);
         EXPECT_EQ(v2::WorldReady::Decode(invalidCharacter, &decoded), WorldProtocolError::InvalidArgument);
-        EXPECT_EQ(v2::WorldReady::Encode(v2::WorldReady{expected.playerId,
-                                                       expected.controlledEntityId,
-                                                       expected.controlledEntityGeneration,
-                                                       expected.currentServerTick,
-                                                       expected.tickRateHz,
-                                                       expected.snapshotIntervalTicks,
-                                                       expected.commandSlackTicks,
-                                                       expected.arenaMinX,
-                                                       expected.arenaMinY,
-                                                       expected.arenaMaxX,
-                                                       expected.arenaMaxY,
-                                                       0,
-                                                       expected.displayName},
-                                        output),
-                  WorldProtocolError::InvalidNumeric);
+        EXPECT_EQ(
+            v2::WorldReady::Encode(v2::WorldReady{expected.playerId, expected.controlledEntityId,
+                                                  expected.controlledEntityGeneration, expected.currentServerTick,
+                                                  expected.tickRateHz, expected.snapshotIntervalTicks,
+                                                  expected.commandSlackTicks, expected.arenaMinX, expected.arenaMinY,
+                                                  expected.arenaMaxX, expected.arenaMaxY, 0, expected.displayName},
+                                   output),
+            WorldProtocolError::InvalidNumeric);
     }
 
     TEST(WorldProtocolPacketTests, WorldReadyNormalizesNegativeZero)
@@ -302,12 +328,7 @@ namespace psnr::world::protocol::tests
     TEST(WorldProtocolPacketTests, ControlledEntityRebindMatchesGoldenBytesAndRequiresChangedKey)
     {
         constexpr v1::ControlledEntityRebind Expected{
-            0x01020304,
-            0x11121314,
-            0x21222324,
-            0x31323334,
-            0x41424344,
-            0x51525354,
+            0x01020304, 0x11121314, 0x21222324, 0x31323334, 0x41424344, 0x51525354,
         };
         constexpr std::array<std::byte, v1::ControlledEntityRebind::Wire::PayloadBytes> GoldenPayload = {
             std::byte{0x01}, std::byte{0x00}, std::byte{0x04}, std::byte{0x03}, std::byte{0x02}, std::byte{0x01},
@@ -427,9 +448,19 @@ namespace psnr::world::protocol::tests
     TEST(WorldProtocolPacketTests, EntityStateBatchV2MatchesGoldenBytesAndKeepsSnakeRecordAtomic)
     {
         const v2::EntityStateBatch expected{
-            0x01020304, 0x11121314, 0, 2,
+            0x01020304,
+            0x11121314,
+            0,
+            2,
             {v2::EntityStateRecord{
-                7, 9, 1.0f, -2.0f, 3.0f, 1.5f, 2, v2::BoostState::On,
+                7,
+                9,
+                1.0f,
+                -2.0f,
+                3.0f,
+                1.5f,
+                2,
+                v2::BoostState::On,
                 {v2::EntityStateBodySample{0.5f, -0.5f}, v2::EntityStateBodySample{4.0f, -4.0f}},
             }},
         };
@@ -465,8 +496,8 @@ namespace psnr::world::protocol::tests
         EXPECT_EQ(v2::EntityStateBatch::Encode(emptyBody, emptyBodyOutput), WorldProtocolError::InvalidNumeric);
 
         std::array<std::byte, GoldenPayload.size()> invalidBodyCount = GoldenPayload;
-        invalidBodyCount[v2::EntityStateBatch::Wire::HeaderBytes +
-                         v2::EntityStateRecord::Wire::BodySampleCountOffset] = std::byte{0x03};
+        invalidBodyCount[v2::EntityStateBatch::Wire::HeaderBytes + v2::EntityStateRecord::Wire::BodySampleCountOffset] =
+            std::byte{0x03};
         v2::EntityStateBatch decoded;
         EXPECT_EQ(v2::EntityStateBatch::Decode(invalidBodyCount, &decoded), WorldProtocolError::InvalidLength);
     }
@@ -573,8 +604,7 @@ namespace psnr::world::protocol::tests
 
         EXPECT_EQ(v2::ControlledEntityState::Encode(invalidEnum, output), WorldProtocolError::InvalidEnum);
         EXPECT_EQ(v2::ControlledEntityState::Encode(invalidNumeric, output), WorldProtocolError::InvalidNumeric);
-        EXPECT_EQ(v2::ControlledEntityState::Encode(invalidBodySample, output),
-                  WorldProtocolError::InvalidNumeric);
+        EXPECT_EQ(v2::ControlledEntityState::Encode(invalidBodySample, output), WorldProtocolError::InvalidNumeric);
         EXPECT_EQ(v2::ControlledEntityState::Encode(emptyBody, emptyBodyOutput), WorldProtocolError::InvalidNumeric);
 
         std::array<std::byte, GoldenPayload.size()> invalidCount = GoldenPayload;
@@ -591,22 +621,35 @@ namespace psnr::world::protocol::tests
     TEST(WorldProtocolPacketTests, WorldOverviewSnapshotV2MatchesGoldenBytesAndValidatesChunk)
     {
         const v2::WorldOverviewSnapshot expected{
-            0x01020304, 0x11121314, 0, 2, -10.0f, -5.0f, 10.0f, 5.0f, 1.0f, 2.0f, 3.0f,
+            0x01020304,
+            0x11121314,
+            0,
+            2,
+            -10.0f,
+            -5.0f,
+            10.0f,
+            5.0f,
+            1.0f,
+            2.0f,
+            3.0f,
             {v2::WorldOverviewPlayer{7, 9, {{1.0f, 2.0f}, {0.0f, 2.0f}}}},
             {v2::WorldOverviewLeaderboardEntry{1, 7, 9}},
         };
         constexpr std::array<std::byte, 82> GoldenPayload = {
-            std::byte{0x02}, std::byte{0x00}, std::byte{0x04}, std::byte{0x03}, std::byte{0x02}, std::byte{0x01}, std::byte{0x14}, std::byte{0x13},
-            std::byte{0x12}, std::byte{0x11}, std::byte{0x00}, std::byte{0x00}, std::byte{0x02}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
-            std::byte{0x20}, std::byte{0xC1}, std::byte{0x00}, std::byte{0x00}, std::byte{0xA0}, std::byte{0xC0}, std::byte{0x00}, std::byte{0x00},
-            std::byte{0x20}, std::byte{0x41}, std::byte{0x00}, std::byte{0x00}, std::byte{0xA0}, std::byte{0x40}, std::byte{0x00}, std::byte{0x00},
-            std::byte{0x80}, std::byte{0x3F}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40}, std::byte{0x00}, std::byte{0x00},
-            std::byte{0x40}, std::byte{0x40}, std::byte{0x01}, std::byte{0x00}, std::byte{0x01}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00},
-            std::byte{0x00}, std::byte{0x00}, std::byte{0x09}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x02}, std::byte{0x00},
-            std::byte{0x00}, std::byte{0x00}, std::byte{0x80}, std::byte{0x3F}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40},
-            std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40},
-            std::byte{0x01}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x09}, std::byte{0x00},
-            std::byte{0x00}, std::byte{0x00},
+            std::byte{0x02}, std::byte{0x00}, std::byte{0x04}, std::byte{0x03}, std::byte{0x02}, std::byte{0x01},
+            std::byte{0x14}, std::byte{0x13}, std::byte{0x12}, std::byte{0x11}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x02}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x20}, std::byte{0xC1},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0xA0}, std::byte{0xC0}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x20}, std::byte{0x41}, std::byte{0x00}, std::byte{0x00}, std::byte{0xA0}, std::byte{0x40},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0x80}, std::byte{0x3F}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x00}, std::byte{0x40}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40}, std::byte{0x40},
+            std::byte{0x01}, std::byte{0x00}, std::byte{0x01}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0x09}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x02}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x80}, std::byte{0x3F},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40},
+            std::byte{0x01}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x09}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
         };
 
         ExpectGoldenRoundTrip(expected, GoldenPayload);
@@ -624,12 +667,18 @@ namespace psnr::world::protocol::tests
     {
         const v2::EntitySpawn expected{
             v1::EntitySpawn{
-                0x01020304, 0x11121314,
-                0x21222324, EntityKind::Player,
-                0x31323334, ShapeKind::Circle,
-                1.5f,       2.0f,
-                -1.0f,      2.0f,
-                0.5f,       -0.5f,
+                0x01020304,
+                0x11121314,
+                0x21222324,
+                EntityKind::Player,
+                0x31323334,
+                ShapeKind::Circle,
+                1.5f,
+                2.0f,
+                -1.0f,
+                2.0f,
+                0.5f,
+                -0.5f,
                 3.0f,
             },
             0x41424344,
@@ -663,23 +712,37 @@ namespace psnr::world::protocol::tests
     TEST(WorldProtocolPacketTests, WorldOverviewSnapshotV3MatchesGoldenBytesAndValidatesDisplayName)
     {
         const v3::WorldOverviewSnapshot expected{
-            0x01020304, 0x11121314, 0, 2, -10.0f, -5.0f, 10.0f, 5.0f, 1.0f, 2.0f, 3.0f,
+            0x01020304,
+            0x11121314,
+            0,
+            2,
+            -10.0f,
+            -5.0f,
+            10.0f,
+            5.0f,
+            1.0f,
+            2.0f,
+            3.0f,
             {v3::WorldOverviewPlayer{7, 9, {{1.0f, 2.0f}, {0.0f, 2.0f}}}},
             {v3::WorldOverviewLeaderboardEntry{1, 7, 9, "Player7"}},
         };
         constexpr std::array<std::byte, 91> GoldenPayload = {
-            std::byte{0x03}, std::byte{0x00}, std::byte{0x04}, std::byte{0x03}, std::byte{0x02}, std::byte{0x01}, std::byte{0x14}, std::byte{0x13},
-            std::byte{0x12}, std::byte{0x11}, std::byte{0x00}, std::byte{0x00}, std::byte{0x02}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
-            std::byte{0x20}, std::byte{0xC1}, std::byte{0x00}, std::byte{0x00}, std::byte{0xA0}, std::byte{0xC0}, std::byte{0x00}, std::byte{0x00},
-            std::byte{0x20}, std::byte{0x41}, std::byte{0x00}, std::byte{0x00}, std::byte{0xA0}, std::byte{0x40}, std::byte{0x00}, std::byte{0x00},
-            std::byte{0x80}, std::byte{0x3F}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40}, std::byte{0x00}, std::byte{0x00},
-            std::byte{0x40}, std::byte{0x40}, std::byte{0x01}, std::byte{0x00}, std::byte{0x01}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00},
-            std::byte{0x00}, std::byte{0x00}, std::byte{0x09}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x02}, std::byte{0x00},
-            std::byte{0x00}, std::byte{0x00}, std::byte{0x80}, std::byte{0x3F}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40},
-            std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40},
-            std::byte{0x01}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x09}, std::byte{0x00},
-            std::byte{0x00}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00}, std::byte{0x50}, std::byte{0x6C}, std::byte{0x61}, std::byte{0x79},
-            std::byte{0x65}, std::byte{0x72}, std::byte{0x37},
+            std::byte{0x03}, std::byte{0x00}, std::byte{0x04}, std::byte{0x03}, std::byte{0x02}, std::byte{0x01},
+            std::byte{0x14}, std::byte{0x13}, std::byte{0x12}, std::byte{0x11}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x02}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x20}, std::byte{0xC1},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0xA0}, std::byte{0xC0}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x20}, std::byte{0x41}, std::byte{0x00}, std::byte{0x00}, std::byte{0xA0}, std::byte{0x40},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0x80}, std::byte{0x3F}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x00}, std::byte{0x40}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40}, std::byte{0x40},
+            std::byte{0x01}, std::byte{0x00}, std::byte{0x01}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0x09}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x02}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x80}, std::byte{0x3F},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x40},
+            std::byte{0x01}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
+            std::byte{0x09}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x07}, std::byte{0x00},
+            std::byte{0x50}, std::byte{0x6C}, std::byte{0x61}, std::byte{0x79}, std::byte{0x65}, std::byte{0x72},
+            std::byte{0x37},
         };
 
         ExpectGoldenRoundTrip(expected, GoldenPayload);
@@ -694,18 +757,13 @@ namespace psnr::world::protocol::tests
         EXPECT_EQ(v3::WorldOverviewSnapshot::Decode(truncatedName, &decoded), WorldProtocolError::InvalidLength);
         std::array<std::byte, GoldenPayload.size()> invalidCharacter = GoldenPayload;
         invalidCharacter[84] = std::byte{0x2D};
-        EXPECT_EQ(v3::WorldOverviewSnapshot::Decode(invalidCharacter, &decoded),
-                  WorldProtocolError::InvalidArgument);
+        EXPECT_EQ(v3::WorldOverviewSnapshot::Decode(invalidCharacter, &decoded), WorldProtocolError::InvalidArgument);
     }
 
     TEST(WorldProtocolPacketTests, RoundResultV2MatchesGoldenBytesAndValidatesWinnerList)
     {
         const v2::RoundResult expected{
-            0x01020304,
-            0x11121314,
-            0x21222324,
-            0x31323334,
-            {0x41424344, 0x51525354},
+            0x01020304, 0x11121314, 0x21222324, 0x31323334, {0x41424344, 0x51525354},
         };
         constexpr std::array<std::byte, 28> GoldenPayload = {
             std::byte{0x02}, std::byte{0x00}, std::byte{0x04}, std::byte{0x03}, std::byte{0x02}, std::byte{0x01},
@@ -717,8 +775,7 @@ namespace psnr::world::protocol::tests
         std::array<std::byte, GoldenPayload.size()> output{};
 
         ExpectGoldenRoundTrip(expected, GoldenPayload);
-        EXPECT_EQ(v2::RoundResult::Wire::CalculatePayloadBytes(expected.winnerPlayerIds.size()),
-                  GoldenPayload.size());
+        EXPECT_EQ(v2::RoundResult::Wire::CalculatePayloadBytes(expected.winnerPlayerIds.size()), GoldenPayload.size());
         EXPECT_EQ(v2::RoundResult::Wire::CalculatePayloadBytes(v2::RoundResult::Wire::MaximumWinnerCount), 8184u);
         EXPECT_EQ(v2::RoundResult::Wire::CalculatePayloadBytes(v2::RoundResult::Wire::MaximumWinnerCount + 1), 0u);
 

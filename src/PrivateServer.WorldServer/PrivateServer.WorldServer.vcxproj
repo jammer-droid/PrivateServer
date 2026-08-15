@@ -184,6 +184,8 @@
     <ClInclude Include="EntitySpawn.h" />
     <ClInclude Include="EntityStateBatch.h" />
     <ClInclude Include="JoinWorldRequest.h" />
+    <ClInclude Include="ObserveWorldRequest.h" />
+    <ClInclude Include="ObserverReady.h" />
     <ClInclude Include="ControlStateCommand.h" />
     <ClInclude Include="MovementInput.h" />
     <ClInclude Include="NrServerWorldEventSource.h" />
