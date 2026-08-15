@@ -1,8 +1,8 @@
 # Authoritative Gameplay와 Round 계약
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
+> Last reviewed: 2026-08-16
 
 ## 핵심 답
 
@@ -39,7 +39,7 @@ Packet field와 version은 [Gameplay Protocol Reference](gameplay-protocol-refer
 
 | State | Mutable owner | Identity / lifetime |
 | --- | --- | --- |
-| Runtime session과 player binding | `WorldSessionRegistry` | Runtime Session Key는 accepted connection의 World-side lifetime을 식별하고, join commit부터 cleanup까지 Player ID·controlled Entity Key·display name binding을 보관 |
+| Runtime session role과 player binding | `WorldSessionRegistry` | Runtime Session Key는 accepted connection의 World-side lifetime을 식별하고, Connected/Player/Observer role과 Player role의 ID·controlled Entity Key·display name binding을 보관 |
 | Player와 resource entity | `WorldEntityManager` | `WorldEntityKey(entityId, generation)`이 entity lifetime을 식별 |
 | Movement/control command | `WorldMovementCommandStore`와 Player control component | session binding과 controlled generation, target tick 또는 input sequence로 admission |
 | Score, lifecycle, round와 resource slot | `WorldGameplayState` | Player ID와 Round ID의 World-owned lifetime |
@@ -47,7 +47,7 @@ Packet field와 version은 [Gameplay Protocol Reference](gameplay-protocol-refer
 | Player collision death fact | Tick processor의 collision death set | physics scene의 player collision query를 resolver가 해당 tick의 death candidate로 정규화 |
 | Client replica와 prediction | Game Client session/presentation | authoritative state의 소비자이며 gameplay authority가 아님 |
 
-Accepted-but-unjoined session도 registry에 존재하지만 Player ID나 controlled entity binding은 없다. Join은 Player ID와 controlled Entity Key를 준비하고 baseline을 기록한 뒤 binding을 commit한다. Baseline append나 commit이 실패하면 준비한 state를 rollback하고 connection close를 요청한다. Join 이후 input은 payload 안의 임의 Player ID가 아니라 Runtime Session binding으로 actor를 찾는다.
+Accepted session은 Connected role로 registry에 존재하지만 Player ID나 controlled entity binding은 없다. Join은 Player ID와 controlled Entity Key를 준비하고 baseline을 기록한 뒤 Player role과 binding을 commit한다. Observe admission은 Player/Entity state 없이 Observer role만 commit한다. 두 admission은 Connected role에서만 가능하므로 한 Runtime Session이 Player와 Observer를 동시에 맡지 않는다. Baseline append나 commit이 실패하면 준비한 state를 rollback하거나 role을 남기지 않고 connection close를 요청한다. Player input은 payload 안의 임의 Player ID가 아니라 Runtime Session binding으로 actor를 찾으며 Observer는 input admission 대상이 아니다.
 
 ## Input admission
 
@@ -139,13 +139,13 @@ World는 `Waiting`에서 joined player 수가 `minimumPlayersToStart`를 충족�
 
 Running tick에서 movement와 gameplay가 진행되며 current round deadline에 도달하면 `Ended`로 전이한다. Deadline tick도 death, boost, pickup과 score를 먼저 commit한 뒤 transition과 `RoundResult`를 계획하므로 final outcome은 end-tick post-commit state를 기준으로 한다. `scoreToWin`은 protocol/config의 score contract metadata지만 현재 구현에서 조기 종료 조건으로 사용하지 않는다. `endedDurationTicks`도 자동 rematch timer로 사용하지 않는다.
 
-Ended에서는 새 join과 일반 gameplay packet을 받지 않고 simulation result를 더 진행하지 않는다. Time-sync request는 Ended gate보다 먼저 처리되므로 응답할 수 있다. 전이 tick에는 `RoundResult`를 현재 joined session별로 한 번 계획한다. Winner는 result 계산 시점에 connected이며 alive인 player 중 가장 높은 growth point를 가진 Player ID 집합이고, 동점은 Player ID 순서로 모두 포함한다. `SpawnPending` player는 winner 후보에서 제외되지만 해당 recipient의 final growth는 결과에 남는다. Eligible player가 없으면 winner list는 비어 있다.
+Ended에서는 새 Player join과 일반 gameplay packet을 받지 않고 simulation result를 더 진행하지 않는다. Time-sync request는 Ended gate보다 먼저 처리되므로 응답할 수 있다. 전이 tick에는 `RoundResult`를 현재 joined Player Session별로 한 번 계획하고, 같은 winner identity를 각 Observer Session에도 recipient final growth `0`으로 보낸다. Winner는 result 계산 시점에 connected이며 alive인 player 중 가장 높은 growth point를 가진 Player ID 집합이고, 동점은 Player ID 순서로 모두 포함한다. Observer는 participant나 winner 후보가 아니다. `SpawnPending` player는 winner 후보에서 제외되지만 해당 Player recipient의 final growth는 결과에 남는다. Eligible player가 없으면 winner list는 비어 있다.
 
 `RoundState`의 single-winner field는 compatibility state이며 공동 winner와 winner 없음까지 포함하는 final outcome은 `RoundResult`가 소유한다. Ended 전이는 별도 Ended `RoundState` broadcast 대신 final result publication으로 표현한다.
 
 ### Reset
 
-시간만으로 새 round를 시작하지 않는다. Ended round의 joined player가 disconnect cleanup으로 모두 제거되면 Round ID를 전진시키고 `Waiting`으로 reset한다. Client는 `RoundResult`를 immutable local result로 확정하고 연결을 정리한 뒤, 사용자가 복귀를 선택할 때 Channel 선택 화면으로 돌아간다.
+시간만으로 새 round를 시작하지 않는다. Ended round의 joined player가 disconnect cleanup으로 모두 제거되면 Round ID를 전진시키고 `Waiting`으로 reset한다. Observer Session은 minimum player, winner와 reset participant count에 포함되지 않는다. Client는 `RoundResult`와 result 수신 시점의 최신 leaderboard snapshot을 local result로 확정하고 연결을 정리한 뒤, 사용자가 복귀를 선택할 때 Channel 선택 화면으로 돌아간다.
 
 ## Commit과 failure 의미
 
@@ -170,6 +170,7 @@ Movement commit 뒤 body sample이나 gameplay 계산이 실패하면 앞서 com
 | growth, boost와 body는 어디서 바꾸는가? | `WorldGrowthSolver`, `WorldBoostCostSolver`, `WorldPlayerBody`와 body sampler/trimmer | [`WorldGrowthSolverTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldGrowthSolverTests.cpp), [`WorldBoostCostSolverTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldBoostCostSolverTests.cpp), [`WorldPlayerBodyTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldPlayerBodyTests.cpp) |
 | resource, death drop과 round rule은 어디서 바꾸는가? | [`WorldGameplayPhase.cpp`](../../src/PrivateServer.WorldServer/WorldGameplayPhase.cpp), [`WorldResourceSpawnPlanner.cpp`](../../src/PrivateServer.WorldServer/WorldResourceSpawnPlanner.cpp), [`WorldRoundResultPlanner.cpp`](../../src/PrivateServer.WorldServer/WorldRoundResultPlanner.cpp) | [`WorldGameplayPhaseTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldGameplayPhaseTests.cpp), [`WorldResourceSpawnPlannerTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldResourceSpawnPlannerTests.cpp), [`WorldRoundResultPlannerTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldRoundResultPlannerTests.cpp) |
 | canonical gameplay/spawn commit과 rebind는 어디서 바꾸는가? | [`WorldGameplayCommitter.cpp`](../../src/PrivateServer.WorldServer/WorldGameplayCommitter.cpp), [`WorldIngressEventConsumer.cpp`](../../src/PrivateServer.WorldServer/WorldIngressEventConsumer.cpp) | [`WorldGameplayCommitterTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldGameplayCommitterTests.cpp), [`WorldPlayerSpawnPlannerTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldPlayerSpawnPlannerTests.cpp), [`WorldGameplayReplicationTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldGameplayReplicationTests.cpp), [`WorldIngressEventConsumerTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldIngressEventConsumerTests.cpp) |
+| Player/Observer role과 result recipient는 어디서 바꾸는가? | [`WorldSessionRegistry.cpp`](../../src/PrivateServer.WorldServer/WorldSessionRegistry.cpp), [`WorldIngressEventConsumer.cpp`](../../src/PrivateServer.WorldServer/WorldIngressEventConsumer.cpp) | [`WorldSessionRegistryTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldSessionRegistryTests.cpp), [`WorldIngressEventConsumerTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldIngressEventConsumerTests.cpp) |
 
 ## 관련 문서
 

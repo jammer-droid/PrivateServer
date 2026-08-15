@@ -1,12 +1,12 @@
 # AOI, Active Area와 Replication 계약
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
+> Last reviewed: 2026-08-16
 
 ## 핵심 답
 
-AOI와 Active Area는 서로 다른 World 경계다. AOI는 각 observer에게 상세 replica를 보낼 entity 집합을 결정하고, Active Area는 Running round에서 player가 생존하거나 spawn할 수 있는 공간을 결정한다.
+AOI와 Active Area는 서로 다른 World 경계다. AOI는 각 Player Session의 AOI Viewpoint에 상세 replica를 보낼 entity 집합을 결정하고, Active Area는 Running round에서 player가 생존하거나 spawn할 수 있는 공간을 결정한다. Read-only Observer Session은 상세 AOI replica 대신 Channel-wide `WorldOverview`를 받는다.
 
 ```text
 authoritative movement / physics / gameplay commit
@@ -36,11 +36,11 @@ Gameplay score, round winner와 resource rule 자체는 별도 gameplay contract
 
 | 경계 | 질문 | 입력 | 결과 | Owner |
 | --- | --- | --- | --- | --- |
-| AOI | 이 observer가 어떤 entity의 상세 replica를 받아야 하는가? | committed entity 위치·shape, observer와 이전 visible set | entered, stayed, left Entity Key | World spatial index와 AOI planner |
+| AOI | 이 Player Session의 AOI Viewpoint가 어떤 entity의 상세 replica를 받아야 하는가? | committed entity 위치·shape, viewpoint와 이전 visible set | entered, stayed, left Entity Key | World spatial index와 AOI planner |
 | Active Area | 현재 round에서 player가 생존·spawn 가능한 공간인가? | Map Bounds, round progress와 player circle/body samples | current circle, boundary death 또는 spawn rejection | World gameplay phase |
 | Map Bounds | Channel World의 고정 좌표 경계는 무엇인가? | Host/World configuration | physics와 overview의 고정 arena | World configuration |
 
-AOI 밖으로 나갔다고 entity가 죽는 것은 아니다. Active Area 밖의 player death도 모든 observer의 AOI query 결과만으로 결정하지 않는다.
+AOI 밖으로 나갔다고 entity가 죽는 것은 아니다. Active Area 밖의 player death도 Player Session의 AOI query 결과만으로 결정하지 않는다.
 
 ## Spatial projection과 index
 
@@ -49,8 +49,8 @@ World는 physics와 gameplay가 commit된 현재 entity state를 [`WorldSpatialP
 [`WorldSpatialIndex`](../../src/PrivateServer.WorldServer/WorldSpatialIndex.cpp)는 current projection으로 uniform grid를 rebuild한다.
 
 - `spatialCellSize`와 `aoiEnterRadius`는 양수여야 하고 `aoiRetainRadius`는 enter radius보다 커야 한다.
-- Candidate cell을 찾은 뒤 최종 visibility는 observer 중심과 target circle 사이의 원형 거리 조건으로 확인한다.
-- Observer 자신의 Entity Key는 결과에서 제외한다.
+- Candidate cell을 찾은 뒤 최종 visibility는 AOI Viewpoint 중심과 target circle 사이의 원형 거리 조건으로 확인한다.
+- AOI Viewpoint 자신의 Entity Key는 결과에서 제외한다.
 - 결과는 World Entity Key 순서로 정렬하고 중복을 제거한다.
 - Invalid proxy나 duplicate key 때문에 rebuild가 실패하면 이전에 commit된 index를 유지한다.
 
@@ -77,7 +77,7 @@ current visible = entered ∪ stayed
 - Entity ID가 같아도 generation이 바뀌면 이전 key는 left, 새 key는 entered다.
 - Authoritative gameplay removal은 visible set에서 먼저 prune한다. 이후 같은 key에 중복 `LeftAoi`를 만들지 않는다.
 - Session lifecycle이 끝나면 해당 session의 visible set을 명시적으로 제거한다. 한 planning call에 recipient가 없다는 이유만으로 이전 session state를 자동 삭제하지 않는다.
-- Duplicate recipient, invalid observer/key 또는 inconsistent input은 계획 전체를 거절하고 이전 committed visible set과 caller output을 유지한다.
+- Duplicate recipient, invalid viewpoint/key 또는 inconsistent input은 계획 전체를 거절하고 이전 committed visible set과 caller output을 유지한다.
 
 AOI planner가 commit한 visible set은 다음 tick의 diff 기준이다. Client가 임의로 distance를 다시 계산해 server visible set을 덮어쓰지 않는다.
 
@@ -188,7 +188,7 @@ Publisher는 World state나 visible set을 변경하지 않는다. 이미 완성
 
 ## 지원 범위와 제약
 
-- AOI는 current single-Host Channel 안의 observer-centric detailed replication이다. Region handoff나 distributed visibility는 포함하지 않는다.
+- AOI는 current single-Host Channel 안의 Player-centered detailed replication이다. Observer Session의 Channel-wide overview, Region handoff나 distributed visibility는 포함하지 않는다.
 - Active Area는 round gameplay boundary이며 Map Bounds나 AOI radius를 대체하지 않는다.
 - Current spatial index는 committed projection을 rebuild하는 uniform-grid 구현이다.
 - Snapshot은 full authoritative state/group이며 delta compression이나 cross-packet entity record 분할을 제공하지 않는다.

@@ -1,8 +1,8 @@
 # World Server
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
+> Last reviewed: 2026-08-16
 
 ## 핵심 답
 
@@ -13,11 +13,13 @@ World Host process 하나는 Channel 하나와 독립 World instance 하나를 �
 ## 현재 제공 범위
 
 - Runtime Session과 World player/entity binding
+- Connected, Player와 read-only Observer의 배타적 session role admission
 - server-authoritative movement와 회전
 - growth point, body trail과 boost cost
 - resource spawn, collision, acquisition과 score
 - Map Bounds와 round 진행에 따른 Active Area
-- observer AOI enter/retain과 entity spawn/state/remove replication
+- Player AOI Viewpoint별 enter/retain과 entity spawn/state/remove replication
+- Observer Session의 Channel-wide World overview와 round state/result publication
 - round waiting/running/ended lifecycle과 RoundResult
 - Channel ID/name을 포함한 authoritative join baseline
 - session-scoped Player Display Name과 disconnect/rollback cleanup
@@ -55,6 +57,8 @@ client Join
 
 Game Client는 RoundResult를 local immutable result로 확정한 뒤 연결을 종료하고 Result 화면을 유지한다. 사용자가 복귀를 선택해야 초기 Channel 선택 화면으로 돌아간다. World는 disconnect와 rollback 경로에서 session binding과 display name을 함께 정리하며, ended round는 마지막 joined player가 정리된 뒤 waiting으로 reset된다. 시간만으로 자동 rematch하지 않는다.
 
+Observer Session은 Player ID나 controlled entity를 만들지 않고 round participant 수, input admission과 AOI detailed replica에 참여하지 않는다. 현재 Channel의 `WorldOverview`와 round state/result만 받아 시각 검증에 사용한다.
+
 ## 관련 구현과 테스트
 
 | 독자 질문 | 관련 구현 | 관련 테스트 |
@@ -62,6 +66,7 @@ Game Client는 RoundResult를 local immutable result로 확정한 뒤 연결을 
 | gameplay 결과를 누가 결정하는가? | `WorldIngressEventConsumer`, `WorldTickProcessor`, `WorldGameplayCommitter` | World gameplay와 public loopback tests |
 | fixed-step과 phase commit 순서는 어디서 유지되는가? | `WorldDoubleBufferedTickCoordinator` | coordinator, tick과 gameplay/physics tests |
 | AOI replica와 display name은 어떤 계약으로 전달되는가? | World protocol과 outbound publisher | C++/C# protocol과 client session tests |
+| Player와 Observer role은 어디서 갈라지는가? | `WorldIngressEventConsumer`, `WorldSessionRegistry` | World ingress, registry와 Game Client observer session tests |
 
 ## 상세 문서
 

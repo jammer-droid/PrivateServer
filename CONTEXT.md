@@ -28,11 +28,15 @@
 - **Channel**: Zone을 확장하기 위한 독립 instance. NetworkRuntime의 send channel과 다른 개념이다.
 - **Channel ID**: 한 World Host가 실행하는 Channel을 식별하는 non-zero identity. Host 실행마다 바뀌는 Run ID나 Channel 내부 Player ID와 다른 값이다.
 - **Channel Directory**: client가 선택할 Channel의 ID, 표시 이름과 endpoint를 제공하는 목록. 현재 local 정적 설정이며 future World Manager가 같은 역할을 대체할 수 있다.
+- **World Session Role**: accepted Runtime Session의 World 참여 상태를 Connected, Player 또는 Observer 중 하나로 구분하는 배타적 권한.
+- **Connected Session**: World에 등록됐지만 아직 Player나 Observer로 admission되지 않은 Runtime Session.
+- **Player Session**: Player ID와 controlled entity를 binding하고 gameplay input과 상세 AOI replication에 참여하는 World Session.
+- **Observer Session**: Player ID, controlled entity와 gameplay input 권한 없이 Channel의 World overview와 round state/result를 읽는 World Session.
 - **Controlled Handoff**: 명시적인 zone/channel 전환. Seamless handoff를 뜻하지 않는다.
 - **AOI**: 각 client가 관측할 nearby entity 집합을 server가 결정하는 경계.
 - **Map Bounds**: Channel World가 사용하는 고정 좌표 경계. Round 중 줄어드는 생존 영역과 구분한다.
 - **Active Area**: Round 진행에 따라 크기가 바뀔 수 있는 server-authoritative 생존 가능 영역. AOI나 Map Bounds와 다른 gameplay 규칙이다.
-- **Observer AOI**: 한 client의 상세 entity replica 집합을 고르는 관측자 중심 공간 경계. Active Area와 독립적이다.
+- **AOI Viewpoint**: Player Session의 controlled entity를 중심으로 상세 entity replica 집합을 고르는 공간 경계. Observer Session이나 Active Area와 다른 개념이다.
 - **World Broadcast**: World Server가 recipient 집합을 계산한 뒤 같은 world event를 여러 runtime session에 보내는 결정.
 - **Gameplay Protocol**: NetworkRuntime transport header와 분리된 game-specific packet type, semantic payload layout과 validation 계약.
 - **World Entity Key**: client replication과 World command correlation에 사용하는 `entity ID + generation` identity. Registry slot이나 인증 token이 아니다.

@@ -1,12 +1,12 @@
 # Main thread session과 presentation lifecycle
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
+> Last reviewed: 2026-08-16
 
 ## 핵심 답
 
-Game Client는 native NetworkRuntime event를 Godot main thread에서 bounded하게 drain한 뒤 `RemoteGameplaySession`의 generation-local model로 옮기고, 그 model의 현재 snapshot을 scene node와 HUD에 반영한다.
+Game Client는 native NetworkRuntime event를 Godot main thread에서 bounded하게 drain한 뒤 `RemoteGameplaySession`의 generation-local model로 옮기고, 그 model의 현재 snapshot을 scene node와 HUD에 반영한다. Session mode는 controlled prediction과 detailed replica를 사용하는 Player, 또는 `WorldOverview`만 표현하는 read-only Observer 중 하나다.
 
 `RemoteGameplayScene`가 production gameplay 진입점이자 Godot object의 lifetime owner다. `RemoteGameplaySession`은 transport, protocol ordering, prediction, replica와 authoritative gameplay state를 소유하지만 Godot node는 소유하지 않는다. 이 분리 때문에 비동기 transport state와 scene tree mutation이 같은 worker에서 경쟁하지 않는다.
 
@@ -80,7 +80,7 @@ Connect, disconnect, shutdown과 send는 [`IRemoteGameplayTransport`](../../src/
 transport event bounded drain
 -> packet decode와 session model 변경
 -> session observation을 flow state에 반영
--> Playing이면 input sample과 controlled prediction/send 진행
+-> Player가 Playing이면 input sample과 controlled prediction/send 진행
 -> remove effect에 필요한 이전 node 위치 보존
 -> controlled/remote presentation snapshot 적용
 -> current snapshot에 없는 node 제거
@@ -101,14 +101,13 @@ transport event bounded drain
 
 ```text
 ChannelSelect
--> PlayerSetup
--> Connecting
--> Joining
--> SpawnPending
--> Playing
-   -> controlled entity 제거: SpawnPending
-   -> matching spawn/rebind: Playing
-   -> RoundResult: Result
+|-- PlayerSetup -> Connecting -> Joining -> SpawnPending -> Playing
+|   |-- controlled entity 제거: SpawnPending
+|   `-- matching spawn/rebind: Playing
+`-- Observer connect -> Joining -> Observing
+
+Playing 또는 Observing
+-> RoundResult: Result
 
 transport/protocol fault
 -> Error
@@ -124,8 +123,8 @@ Result 또는 Error
 Idle
 -> Connecting
 -> AwaitingBaseline
--> AwaitingFirstTimeSync
--> Active
+|-- Player: AwaitingFirstTimeSync -> Active
+`-- Observer: Active
 -> Disconnecting
 -> TransportDisconnected event 소비
 -> Idle
@@ -136,13 +135,15 @@ ordering, decode, prediction 또는 transport failure
 -> Idle with fault detail
 ```
 
-`GameplayFlow`는 session observation을 화면 상태로 투영한다. Session이 `Active`여도 controlled entity가 아직 없거나 재생성 대기 중이면 화면 흐름은 `SpawnPending`을 유지한다. Round result가 local state에 commit되면 flow는 session의 disconnect 진행과 별개로 `Result`를 유지한다.
+`GameplayFlow`는 session observation을 화면 상태로 투영한다. Player Session이 `Active`여도 controlled entity가 아직 없거나 재생성 대기 중이면 화면 흐름은 `SpawnPending`을 유지한다. Observer Session이 `Active`가 되면 controlled entity 조건 없이 `Observing`으로 전환한다. Round result가 local state에 commit되면 flow는 session의 disconnect 진행과 별개로 `Result`를 유지한다.
 
 ## Baseline과 active generation
 
 Connect가 시작되면 session은 이전 round result와 generation-local state를 정리하고 transport connect를 요청한다. 성공한 connect 요청마다 local transport generation을 전진시킨다.
 
-Transport connected event를 받으면 join request를 보내고 baseline을 기다린다. World ready와 baseline entity state를 받은 뒤에도 첫 time sync가 확정되기 전에는 movement를 열지 않는다. Active state에서는 authoritative packet ordering과 entity generation을 확인한 뒤 prediction, replica와 gameplay model을 갱신한다.
+Transport connected event를 받으면 Player mode는 join request, Observer mode는 observe request를 보내고 baseline을 기다린다. Player는 World ready와 baseline entity state를 받은 뒤에도 첫 time sync가 확정되기 전에는 movement를 열지 않는다. Observer는 `RoundState`와 `ObserverReady`를 순서대로 수락하고 expected Channel ID를 확인한 뒤 별도 time sync 없이 Active가 된다.
+
+Player Active state는 authoritative packet ordering과 entity generation을 확인한 뒤 prediction, detailed replica와 gameplay model을 갱신한다. Observer Active state는 complete `WorldOverview` group, `RoundState`와 `RoundResult`만 수락하며 input scheduler나 controlled prediction을 만들지 않는다.
 
 `RemoteReplicaStore`는 Entity ID와 generation을 함께 key로 사용한다. 같은 Entity ID라도 generation이 바뀌면 이전 replica state를 새 entity에 적용하지 않는다. Spawn은 replica metadata와 history를 시작하고, state packet은 해당 generation history를 전진시키며, remove는 matching replica만 정리한다.
 
@@ -160,6 +161,8 @@ Client prediction은 입력 반응을 표현하지만 authoritative ownership을
 
 [`RemoteGameplayScene`](../../src/PrivateServer.GameClient/Gameplay/Presentation/RemoteGameplayScene.cs)은 controlled snapshot으로 local node와 camera를 갱신하고, remote presentation snapshot 집합으로 remote node를 create/update한다. 현재 snapshot에 없는 remote key는 scene dictionary에서 제거하고 node에 `QueueFree`를 요청한다.
 
+Observer mode에서는 [`WorldOverviewPresentation`](../../src/PrivateServer.GameClient/Gameplay/Presentation/WorldOverviewPresentation.cs)이 overview player silhouette와 leaderboard를 그린다. Scene은 Player용 controlled/remote replica node를 비워 두며 gameplay input을 sample하지 않는다. `--observe-channel <id>` launch option은 Channel directory의 동일 ID endpoint를 찾아 이 flow를 자동 시작한다.
+
 Removal effect는 node를 제거하기 전에 위치를 capture한다. 그 뒤 presentation snapshot을 적용하고 stale node를 제거한 다음 one-shot cue를 실행한다. 이 순서 때문에 model에서 이미 제거된 entity도 마지막 화면 위치에서 effect를 표현할 수 있다.
 
 ## Disconnect와 reconnect
@@ -169,7 +172,7 @@ Removal effect는 node를 제거하기 전에 위치를 capture한다. 그 뒤 p
 `TransportDisconnected` event를 consume하면 session은 다음 generation-local state를 정리한다.
 
 - baseline과 player identity staging
-- ready configuration, Channel ID와 display name
+- Player/Observer ready configuration, session mode, Channel ID와 display name
 - time sync와 movement/control scheduler
 - controlled prediction과 replica store
 - authoritative score, round와 world overview
@@ -198,8 +201,9 @@ Godot node의 생성과 `QueueFree`는 scene code가 직접 소유한다. Pure s
 - Entity lifetime은 Entity ID와 generation을 함께 사용한다.
 - Disconnect 요청과 disconnect 완료 event는 서로 다른 시점이다.
 - Generation-local state는 `TransportDisconnected` event를 consume할 때 정리한다.
-- Round result는 Result 화면을 위해 disconnect cleanup보다 오래 살 수 있지만 다음 connect 전에 제거한다.
+- Round result와 result 수신 시점의 최신 leaderboard snapshot은 Result 화면을 위해 disconnect cleanup보다 오래 살 수 있지만 다음 connect 전에 제거한다.
 - Reconnect는 이전 baseline, prediction, replica와 transient cue identity를 재사용하지 않는다.
+- Observer는 controlled identity, first time sync, input send와 detailed replica를 사용하지 않는다.
 
 ## Failure와 recovery
 
@@ -207,6 +211,7 @@ Godot node의 생성과 `QueueFree`는 scene code가 직접 소유한다. Pure s
 | --- | --- |
 | connect operation 실패 | fault detail을 기록하고 새 gameplay generation을 active로 만들지 않음 |
 | WorldReady의 Channel 불일치 | protocol fault와 disconnect 경로로 전환 |
+| ObserverReady의 Channel 불일치 또는 observer-only packet ordering 위반 | protocol fault와 disconnect 경로로 전환 |
 | packet decode 또는 ordering 실패 | session을 faulted로 표시하고 transport disconnect 요청 |
 | receive pressure disconnect | Runtime이 전달한 transport 상태를 fault detail로 보존 |
 | controlled entity 제거 | prediction과 control state를 정리하고 rebind 전까지 spawn pending 유지 |
@@ -221,6 +226,7 @@ Error와 Result에서 자동 reconnect하지 않는다. 사용자가 ChannelSele
 | 독자 질문 | 관련 구현 | 관련 테스트 |
 | --- | --- | --- |
 | 화면 흐름과 session state는 어떻게 분리되는가? | [`GameplayFlow.cs`](../../src/PrivateServer.GameClient/Gameplay/Flow/GameplayFlow.cs), [`RemoteGameplaySessionState.cs`](../../src/PrivateServer.GameClient/Gameplay/Remote/RemoteGameplaySessionState.cs) | [`GameplayFlowTests.cs`](../../src/PrivateServer.GameClient.Tests/GameplayFlowTests.cs) |
+| Observer launch, admission과 overview presentation은 어디서 소유하는가? | [`GameplayLaunchOptions.cs`](../../src/PrivateServer.GameClient/Gameplay/Flow/GameplayLaunchOptions.cs), [`RemoteGameplaySession.cs`](../../src/PrivateServer.GameClient/Gameplay/Remote/RemoteGameplaySession.cs), [`WorldOverviewPresentation.cs`](../../src/PrivateServer.GameClient/Gameplay/Presentation/WorldOverviewPresentation.cs) | [`GameplayLaunchOptionsTests.cs`](../../src/PrivateServer.GameClient.Tests/GameplayLaunchOptionsTests.cs), [`RemoteGameplaySessionTests.cs`](../../src/PrivateServer.GameClient.Tests/RemoteGameplaySessionTests.cs), [`GameplayFlowTests.cs`](../../src/PrivateServer.GameClient.Tests/GameplayFlowTests.cs) |
 | Native payload는 언제 Managed-owned memory가 되는가? | [`NetworkRuntimeClient.cs`](../../src/PrivateServer.NetworkRuntime.Managed/NetworkRuntimeClient.cs), [`SafeHandles.cs`](../../src/PrivateServer.NetworkRuntime.Managed/SafeHandles.cs) | [`Managed Smoke`](../../src/PrivateServer.NetworkRuntime.Managed.Smoke/Program.cs) |
 | Disconnect와 reconnect는 어떤 state를 정리하는가? | [`RemoteGameplaySession.cs`](../../src/PrivateServer.GameClient/Gameplay/Remote/RemoteGameplaySession.cs) | [`RemoteGameplaySessionTests.cs`](../../src/PrivateServer.GameClient.Tests/RemoteGameplaySessionTests.cs) |
 | Replica generation과 snapshot history는 어디서 소유하는가? | [`RemoteReplicaStore.cs`](../../src/PrivateServer.GameClient/Gameplay/Replication/RemoteReplicaStore.cs) | [`RemoteReplicaStoreTests.cs`](../../src/PrivateServer.GameClient.Tests/RemoteReplicaStoreTests.cs) |
@@ -237,6 +243,7 @@ Error와 Result에서 자동 reconnect하지 않는다. 사용자가 ChannelSele
 ## 지원 범위와 제약
 
 - Game Client는 thin presentation client다. Server-authoritative collision, score, round, spawn과 AOI decision을 소유하지 않는다.
+- Observer presentation은 시각 검증용이며 해당 실행에 추가 session과 rendering load를 만든다.
 - Channel directory는 local configuration이며 runtime population discovery나 matchmaking을 제공하지 않는다.
 - Scene node creation, `QueueFree`와 `_ExitTree`는 production Godot code 경로다. Pure session/flow tests는 이 engine lifecycle 자체를 실행하지 않는다.
 - Session dispose는 owned transport와 handle을 회수하지만 application-level graceful disconnect 완료를 보장하지 않는다.

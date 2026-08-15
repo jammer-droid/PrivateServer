@@ -1,8 +1,8 @@
 # Gameplay Protocol Reference
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
+> Last reviewed: 2026-08-16
 
 ## 핵심 답
 
@@ -35,7 +35,7 @@ Packet type은 message의 역할을, semantic payload 첫 field인 `payloadVersi
 - transport frame과 gameplay payload의 책임 분리
 - C2S/S2C packet catalog와 현재 runtime path의 payload version
 - packet별 핵심 field와 identity 의미
-- join, active gameplay, respawn과 result의 ordering contract
+- Player join, Observer admission, active gameplay, respawn과 result의 ordering contract
 - decode, admission과 client application 실패 의미
 - C++ source와 C# mirror를 함께 변경해야 하는 위치
 
@@ -70,6 +70,7 @@ Runtime transport frame
 | `C2SPacketType` | Runtime path version | 핵심 field | World admission 의미 |
 | --- | --- | --- | --- |
 | `JoinWorldRequest` | V2 | 선택적 `displayName` | connected-only Runtime Session에 Player와 controlled entity를 준비하고 baseline 성공 뒤 binding commit |
+| `ObserveWorldRequest` | V1 | payload version만 포함 | connected-only Runtime Session을 Player/Entity binding 없는 read-only Observer로 admission |
 | `MovementInput` | V1 | controlled generation, target server tick, encoded movement axes | joined session의 현재 controlled generation과 tick window를 통과한 최신 movement command 저장 |
 | `WorldTimeSyncRequest` | V1 | probe sequence | joined session에 마지막 완료 server tick을 같은 sequence로 응답 |
 | `ControlStateCommand` | V2 | controlled generation, input sequence, turn state, boost state | 현재 generation과 ordering을 통과한 control component 갱신 |
@@ -81,6 +82,10 @@ Runtime transport frame
 `displayName`은 account identity나 credential이 아니라 현재 Channel 참가 session의 표시값이다. 빈 값은 허용하며, 값이 있으면 [`MaximumPlayerDisplayNameBytes`](../../src/PrivateServer.WorldServer/WorldProtocolWireCodec.h) 범위 안의 영문 대소문자와 숫자만 허용한다. Join은 accepted 상태이지만 아직 joined되지 않은 session에서만 처리하며, 종료된 round에 새 participant를 commit하지 않는다.
 
 V1 codec은 빈 join payload의 이전 layout을 보존하지만 현재 World join ingress와 Game Client는 V2를 사용한다. V2를 V1 의미로 추측해서 decode하지 않는다.
+
+### ObserveWorldRequest V1
+
+Observer admission payload는 현재 version 외의 identity나 gameplay field를 보내지 않는다. World는 Runtime Session Key로 Connected role을 찾고, 현재 `RoundState` baseline과 `ObserverReady`를 제출한 뒤 Observer role을 commit한다. 이미 Player 또는 Observer로 admission된 session의 observe 요청은 거절한다.
 
 ### MovementInput V1
 
@@ -97,6 +102,7 @@ Client는 Runtime Session Key, Player ID나 Entity ID를 payload로 보내지 �
 | `S2CPacketType` | Codec layout | 현재 runtime path | 핵심 field와 의미 |
 | --- | --- | --- | --- |
 | `WorldReady` | V1, V2 | V2 | Player ID, controlled Entity Key, server tick/cadence, command slack, map bounds; V2는 Channel ID와 display name 추가 |
+| `ObserverReady` | V1 | V1 | current server tick, tick rate, map bounds와 authoritative Channel ID; Player/controlled entity identity는 없음 |
 | `EntitySpawn` | V1, V2 | V2 | server tick, Entity Key, kind/archetype, primary shape와 initial kinematic state; V2는 Player identity와 display name 추가 |
 | `ControlledEntityState` | V1, V2 | gameplay V2, non-gameplay fallback V1 | self authoritative state; V2는 control acknowledgement, head/body, diameter, growth와 boost state 제공 |
 | `EntityStateBatch` | V1, V2 | gameplay V2, compact fallback V1 | V1은 remote kinematic record batch, V2는 snapshot group으로 나뉠 수 있는 whole-body record batch |
@@ -128,9 +134,9 @@ Wire entity identity는 `entityId + generation`인 World Entity Key다. 같은 E
 
 ### Overview와 final result
 
-`WorldOverviewSnapshot`은 detailed AOI replica와 다른 전역 요약 경계다. 같은 `overviewId`의 chunk가 map bounds, Active Area와 group metadata에 합의해야 하며 Client는 group 전체가 완성된 뒤 overview를 교체한다. V3 leaderboard entry는 display name을 함께 전달한다.
+`WorldOverviewSnapshot`은 detailed AOI replica와 다른 전역 요약 경계다. 같은 `overviewId`의 chunk가 map bounds, Active Area와 group metadata에 합의해야 하며 Client는 group 전체가 완성된 뒤 overview를 교체한다. V3 leaderboard entry는 display name을 함께 전달한다. Player Session과 Observer Session이 같은 summary를 받을 수 있지만 Observer는 detailed AOI packet을 소비하지 않는다.
 
-`RoundState` V1의 winner field는 single-winner compatibility state다. 공동 winner와 winner 없음까지 포함한 최종 outcome은 `RoundResult` V2가 소유한다. Winner list는 Player ID의 안정된 순서이며 Client는 유효한 result를 immutable local state에 commit한 뒤 현재 World connection의 disconnect를 요청한다.
+`RoundState` V1의 winner field는 single-winner compatibility state다. 공동 winner와 winner 없음까지 포함한 최종 outcome은 `RoundResult` V2가 소유한다. Winner list는 Player ID의 안정된 순서다. Player recipient는 자신의 final growth를 받고 Observer recipient는 해당 값을 `0`으로 받으며 local recipient Player ID를 갖지 않는다. Client는 유효한 result와 수신 시점의 최신 leaderboard snapshot을 local state에 commit한 뒤 현재 World connection의 disconnect를 요청한다.
 
 ## Ordering contract
 
@@ -151,6 +157,23 @@ TransportConnected
 - Client는 expected Channel ID와 `WorldReady` V2의 authoritative Channel ID가 다르면 protocol fault로 처리한다.
 - `WorldReady` 이후 authoritative state가 first time-sync response보다 먼저 도착할 수 있다. Client는 state를 처리할 수 있지만 required sync가 끝나기 전 movement/control 전송은 열지 않는다.
 - Join preparation, baseline append 또는 binding commit 중 하나라도 실패하면 World는 준비 state를 rollback하고 connection close를 요청한다.
+
+### Observer baseline
+
+```text
+TransportConnected
+-> ObserveWorldRequest V1
+-> RoundState baseline (gameplay mode)
+-> ObserverReady V1
+-> Active / Observing
+-> complete WorldOverviewSnapshot V3 groups
+```
+
+- Observer admission은 Connected role에서만 가능하며 Player ID, controlled Entity Key나 display name을 binding하지 않는다. Gameplay가 활성화된 실행에서는 현재 `RoundState`를 baseline으로 먼저 보낸다.
+- `ObserverReady`는 observer baseline의 마지막 record이며 Client는 expected Channel ID와 authoritative Channel ID를 확인한다.
+- Observer는 first time sync와 movement/control gate를 사용하지 않는다.
+- Active Observer는 `WorldOverviewSnapshot`, `RoundState`, `RoundResult`만 수락하며 detailed AOI/self-state packet은 ordering fault다.
+- Baseline submit 또는 role binding이 실패하면 World는 connection close를 요청하고 성공한 Observer로 취급하지 않는다.
 
 ### Active replication
 
@@ -182,7 +205,7 @@ Rebind의 Player ID와 이전 key는 current binding과 일치해야 하고, 새
 | --- | --- | --- |
 | Runtime frame | transport length/version/flags와 registered packet route | gameplay payload를 World command로 해석하지 않음 |
 | World codec | exact layout, payload version, known enum, finite/range value | output DTO를 성공한 값처럼 commit하지 않음 |
-| World admission | session joined state, controlled generation, tick/sequence ordering | stale/late input은 drop, malformed payload는 protocol close 요청, policy violation은 reject 또는 close |
+| World admission | session role, controlled generation, tick/sequence ordering | stale/late input은 drop, malformed payload는 protocol close 요청, role/policy violation은 reject 또는 close |
 | World planning/encode | recipient, stable ordering, chunk/record invariant | partial authoritative batch를 성공한 publish처럼 계속 진행하지 않음 |
 | Client decoder | packet type/version, layout, enum과 numeric value | gameplay/session state를 변경하지 않음 |
 | Client session | baseline, generation, group과 lifecycle ordering | stale state는 무시할 수 있고 impossible ordering은 fault와 disconnect 요청으로 전환 |
@@ -195,7 +218,7 @@ Unknown packet type을 새 packet 의미로 추측하지 않는다. Version을 �
 | --- | --- | --- | --- |
 | Packet type 추가 | [`WorldPacketTypes.h`](../../src/PrivateServer.WorldServer/WorldPacketTypes.h), 필요하면 Runtime WorldIngress catalog | `GameplayProtocol` packet type constant와 server/client dispatcher | [`WorldProtocolTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldProtocolTests.cpp), Game Client version별 protocol tests |
 | Packet field 또는 version 추가 | 해당 [`WorldServer packet header`](../../src/PrivateServer.WorldServer/)의 version namespace와 `Wire`/codec | 대응 [`Gameplay/Protocol`](../../src/PrivateServer.GameClient/Gameplay/Protocol/) value와 codec | C++/C# golden bytes, invalid length/version/enum/numeric cases |
-| C2S admission 변경 | `WorldJoinIngress`, `WorldTimeSyncIngress`, `WorldMovementCommandAdmission`, `WorldControlCommandAdmission`과 [`WorldIngressPacketRouter.cpp`](../../src/PrivateServer.WorldServer/WorldIngressPacketRouter.cpp) | Client packet creation과 send gate | World ingress/admission tests와 RemoteGameplaySession tests |
+| C2S admission 변경 | `WorldJoinIngress`, `WorldIngressEventConsumer::HandleObserve`, `WorldTimeSyncIngress`, `WorldMovementCommandAdmission`, `WorldControlCommandAdmission`과 [`WorldIngressPacketRouter.cpp`](../../src/PrivateServer.WorldServer/WorldIngressPacketRouter.cpp) | Client packet creation, mode와 send gate | World ingress/admission tests와 RemoteGameplaySession tests |
 | S2C ordering 변경 | World join, replication/gameplay planner와 publisher | [`ServerGameplayPacketDecoder.cs`](../../src/PrivateServer.GameClient/Gameplay/Protocol/V1/ServerGameplayPacketDecoder.cs), [`RemoteGameplaySession.cs`](../../src/PrivateServer.GameClient/Gameplay/Remote/RemoteGameplaySession.cs) | World replication/public loopback와 Client session/group tests |
 
 Wire 변경은 C++ encode/decode만 수정해서 끝나지 않는다. C# mirror, version dispatch, golden bytes, invalid input과 session ordering contract를 같은 변경 단위에서 확인해야 한다.

@@ -1,12 +1,12 @@
 # 프로젝트 Source Map
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
+> Last reviewed: 2026-08-16
 
 ## 핵심 답
 
-Private Server의 제품 실행 경계는 Channel 하나를 소유하는 `PrivateServer.WorldServer.Host`와 이를 시각화하는 Godot `PrivateServer.GameClient`다. Host는 public NetworkRuntime, World Server와 application logging을 조립하고, Game Client는 Managed/C ABI adapter를 통해 native client Runtime을 사용한다.
+Private Server의 제품 실행 경계는 Channel 하나를 소유하는 `PrivateServer.WorldServer.Host`와 이를 Player 또는 read-only Observer mode로 시각화하는 Godot `PrivateServer.GameClient`다. Host는 public NetworkRuntime, World Server와 application logging을 조립하고, Game Client는 Managed/C ABI adapter를 통해 native client Runtime을 사용한다.
 
 ```text
 Server
@@ -56,11 +56,11 @@ GameClient (Godot C#)
 | Project | 산출물 | 책임 | 주요 의존 |
 | --- | --- | --- | --- |
 | [`PrivateServer.WorldServer.Host`](../src/PrivateServer.WorldServer.Host/) | executable | Channel configuration, Runtime·World·worker 조립, process startup/shutdown | WorldServer, public NetworkRuntime, ApplicationLogging |
-| [`PrivateServer.WorldServer`](../src/PrivateServer.WorldServer/) | static library | authoritative gameplay, entity/session binding, fixed-step simulation, AOI와 replication | public NetworkRuntime integration boundary, project에 직접 compile되는 vendored Box2D C source |
+| [`PrivateServer.WorldServer`](../src/PrivateServer.WorldServer/) | static library | session role admission, authoritative gameplay, entity/session binding, fixed-step simulation, AOI와 replication | public NetworkRuntime integration boundary, project에 직접 compile되는 vendored Box2D C source |
 | [`PrivateServer.NetworkRuntime`](../src/PrivateServer.NetworkRuntime/) | DLL과 import library | server/client public shell, event, capability, status와 snapshot | NetworkRuntime.Internal |
 | [`PrivateServer.NetworkRuntime.Internal`](../src/PrivateServer.NetworkRuntime.Internal/) | static library | IOCP, Winsock, listener, session actor, framing, queue·pool과 diagnostics 구현 | Windows networking/runtime |
 | [`PrivateServer.ApplicationLogging`](../src/PrivateServer.ApplicationLogging/) | static library | process 공통 structured application logging | vendored spdlog와 nlohmann/json package |
-| [`PrivateServer.GameClient`](../src/PrivateServer.GameClient/) | Godot C# application | Channel flow, remote session model, prediction, replica와 presentation | NetworkRuntime.Managed |
+| [`PrivateServer.GameClient`](../src/PrivateServer.GameClient/) | Godot C# application | Channel flow, Player/Observer session model, prediction, replica와 overview presentation | NetworkRuntime.Managed |
 
 `PrivateServer.WorldServer`는 별도 실행 process가 아니다. Host에 link된 뒤 Host-owned World instance를 구성한다. 반대로 `PrivateServer.NetworkRuntime`은 DLL public boundary이며, 제품 consumer는 `PrivateServer.NetworkRuntime.Internal`을 직접 사용하지 않는다.
 
@@ -126,7 +126,7 @@ NetworkRuntime transport frame
 ```
 
 - [`WorldPacketTypes.h`](../src/PrivateServer.WorldServer/WorldPacketTypes.h)는 C2S/S2C packet catalog와 WorldIngress routing catalog를 소유한다.
-- 각 [`World protocol header`](../src/PrivateServer.WorldServer/)는 versioned packet value, wire offset, payload 크기, encode/decode와 field validation을 소유한다.
+- 각 [`World protocol header`](../src/PrivateServer.WorldServer/)는 `ObserveWorldRequest`/`ObserverReady`를 포함한 versioned packet value, wire offset, payload 크기, encode/decode와 field validation을 소유한다.
 - [`WorldProtocolWireCodec.h`](../src/PrivateServer.WorldServer/WorldProtocolWireCodec.h)는 fixed-width little-endian primitive만 제공한다.
 - [`WorldIngressPacketRouter.cpp`](../src/PrivateServer.WorldServer/WorldIngressPacketRouter.cpp)는 packet type과 semantic decoder/admission 경계를 연결한다.
 - [`Gameplay/Protocol`](../src/PrivateServer.GameClient/Gameplay/Protocol/)은 Client가 소비하는 C# wire mirror다.
@@ -141,14 +141,14 @@ NetworkRuntime은 gameplay payload field를 해석하지 않는다. World protoc
 | Server lifecycle 또는 public config | [`NrServer.h`](../src/PrivateServer.NetworkRuntime/NrServer.h), [`NrServer.cpp`](../src/PrivateServer.NetworkRuntime/NrServer.cpp) | public/internal DLL seam과 Host startup/shutdown | [`NrServerLifecycleTests.cpp`](../src/PrivateServer.NetworkRuntime.PublicTests/NrServerLifecycleTests.cpp) |
 | Accept/recv/send 또는 pending I/O | [`PrivateServer.NetworkRuntime.Internal`](../src/PrivateServer.NetworkRuntime.Internal/)의 `NrListener`, `NrSessionIoActor`와 I/O context | actor mailbox single-consumer, pending I/O와 close/drain lifetime | [`PrivateServer.NetworkRuntime.InternalTests`](../src/PrivateServer.NetworkRuntime.InternalTests/)의 대응 `Nr*Tests.cpp` |
 | Framing, recv buffer, queue 또는 memory pool | Internal의 `NrPacketParser`, `NrRecvBuffer`, `NrBoundedMpscQueue`, `NrMemoryPool` | transport frame과 allocation/lifetime invariant | 각 이름에 대응하는 InternalTests |
-| World로 들어오는 session/gameplay event | [`WorldIngressEventConsumer.cpp`](../src/PrivateServer.WorldServer/WorldIngressEventConsumer.cpp), [`WorldIngressPacketRouter.cpp`](../src/PrivateServer.WorldServer/WorldIngressPacketRouter.cpp) | Runtime event lifetime, session binding과 command admission | [`WorldIngressEventConsumerTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldIngressEventConsumerTests.cpp), [`WorldIngressPacketRouterTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldIngressPacketRouterTests.cpp) |
+| World로 들어오는 session/gameplay event | [`WorldIngressEventConsumer.cpp`](../src/PrivateServer.WorldServer/WorldIngressEventConsumer.cpp), [`WorldIngressPacketRouter.cpp`](../src/PrivateServer.WorldServer/WorldIngressPacketRouter.cpp) | Runtime event lifetime, Player/Observer role, session binding과 command admission | [`WorldIngressEventConsumerTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldIngressEventConsumerTests.cpp), [`WorldSessionRegistryTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldSessionRegistryTests.cpp), [`WorldIngressPacketRouterTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldIngressPacketRouterTests.cpp) |
 | Gameplay packet 또는 wire field | [`WorldPacketTypes.h`](../src/PrivateServer.WorldServer/WorldPacketTypes.h)와 해당 C++ packet header | C# protocol mirror, packet ordering과 version compatibility | [`WorldProtocolTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldProtocolTests.cpp)와 version별 Game Client protocol tests |
 | Fixed-step movement·physics·gameplay rule | [`WorldDoubleBufferedTickCoordinator.h`](../src/PrivateServer.WorldServer/WorldDoubleBufferedTickCoordinator.h)와 해당 phase/solver | immutable tick input, typed result와 Coordinator-owned commit | [`WorldDoubleBufferedTickCoordinatorTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldDoubleBufferedTickCoordinatorTests.cpp)와 대응 phase/solver tests |
 | Entity lifetime, AOI 또는 replication | World entity registry, spatial index, `WorldAoiPlanner`와 replication planner | Entity Key generation, visible set과 recipient ownership | [`WorldAoiPlannerTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldAoiPlannerTests.cpp)와 replication tests |
 | World outbound 제출 | [`WorldOutboundPublisher.h`](../src/PrivateServer.WorldServer/WorldOutboundPublisher.h) | sealed outbound slot, `NrGateway` admission과 record ordering | Publisher, outbound buffer와 [`WorldPublicLoopbackTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldPublicLoopbackTests.cpp) |
 | Host composition, Channel 또는 실행 설정 | [`WorldServerHostRunner.cpp`](../src/PrivateServer.WorldServer.Host/WorldServerHostRunner.cpp), [`WorldServerHostConfig.cpp`](../src/PrivateServer.WorldServer.Host/WorldServerHostConfig.cpp) | config validation, worker startup/rollback과 shutdown ordering | Host config와 World worker startup/shutdown tests |
 | Native Client 또는 adapter ABI | [`NrClient.h`](../src/PrivateServer.NetworkRuntime/NrClient.h), [`psnr_cabi.h`](../src/PrivateServer.NetworkRuntime.CAbi/psnr_cabi.h), [`NetworkRuntimeClient.cs`](../src/PrivateServer.NetworkRuntime.Managed/NetworkRuntimeClient.cs) | opaque handle, event payload copy와 dispose lifetime | Runtime PublicTests와 [`Managed Smoke`](../src/PrivateServer.NetworkRuntime.Managed.Smoke/Program.cs) |
-| Client session, prediction 또는 presentation | [`RemoteGameplaySession.cs`](../src/PrivateServer.GameClient/Gameplay/Remote/RemoteGameplaySession.cs), [`RemoteGameplayScene.cs`](../src/PrivateServer.GameClient/Gameplay/Presentation/RemoteGameplayScene.cs) | transport generation, main-thread mutation과 authoritative reconciliation | [`PrivateServer.GameClient.Tests`](../src/PrivateServer.GameClient.Tests/)의 대응 session/prediction/presentation tests |
+| Client session, prediction 또는 presentation | [`RemoteGameplaySession.cs`](../src/PrivateServer.GameClient/Gameplay/Remote/RemoteGameplaySession.cs), [`RemoteGameplayScene.cs`](../src/PrivateServer.GameClient/Gameplay/Presentation/RemoteGameplayScene.cs), [`WorldOverviewPresentation.cs`](../src/PrivateServer.GameClient/Gameplay/Presentation/WorldOverviewPresentation.cs) | Player/Observer mode, transport generation, main-thread mutation과 authoritative reconciliation | [`PrivateServer.GameClient.Tests`](../src/PrivateServer.GameClient.Tests/)의 대응 launch option/session/prediction/presentation tests |
 | Application log schema 또는 sink | [`ApplicationLogger.h`](../src/PrivateServer.ApplicationLogging/ApplicationLogger.h), Host의 `WorldApplicationLogAdapter` | producer context, formatting, fanout과 output lifetime | [`ApplicationLoggerTests.cpp`](../src/PrivateServer.ApplicationLogging.Tests/ApplicationLoggerTests.cpp)와 대응 logging tests |
 
 World 실행 ownership과 phase 순서는 [World Server 실행 ownership과 fixed-step pipeline](world-server/runtime-ownership-and-tick-pipeline.md), Client main-thread mutation과 teardown은 [Main thread session과 presentation lifecycle](game-client/main-thread-session-and-presentation-lifecycle.md), 전체 연결 흐름은 [End-to-end 게임 사이클](end-to-end-game-cycle.md)에서 이어서 확인할 수 있다.
@@ -159,6 +159,7 @@ World 실행 ownership과 phase 순서는 [World Server 실행 ownership과 fixe
 - Game Client의 local Channel 목록은 [`channels.local.json`](../src/PrivateServer.GameClient/Config/channels.local.json)이며 server config path나 live discovery를 포함하지 않는다.
 - [`tools/build.ps1`](../tools/build.ps1)은 일상적인 Server/Client build entrypoint다.
 - [`tools/run-world-host.ps1`](../tools/run-world-host.ps1)과 [`tools/run-world-fleet.ps1`](../tools/run-world-fleet.ps1)은 단일 Host와 local multi-Channel 실행 entrypoint다.
+- [`tools/run-world-host-benchmark-fleet.ps1`](../tools/run-world-host-benchmark-fleet.ps1)의 `-LaunchObservers`는 두 Channel workload를 Godot Observer 창으로 시각 검증하는 비정규 benchmark capture entrypoint다.
 - 필요한 toolchain, command, output 위치와 문제 해결은 [`tools/README.md`](../tools/README.md)가 소유한다.
 
 Configuration 값은 Host composition에서 검증한 뒤 Runtime config와 World-owned config로 나뉜다. Game Client의 Channel directory는 접속에 필요한 Channel ID, 표시 이름과 endpoint만 소유하며 server의 internal configuration을 복제하지 않는다.

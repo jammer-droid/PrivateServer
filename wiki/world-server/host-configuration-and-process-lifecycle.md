@@ -1,8 +1,8 @@
 # World Host 설정과 Process Lifecycle
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
+> Last reviewed: 2026-08-16
 
 ## 핵심 답
 
@@ -153,10 +153,11 @@ Application logging과 Runtime diagnostics는 서로 다른 output owner다. `Wo
 | --- | --- | --- |
 | single Host 실행 | [`tools/run-world-host.ps1`](../../tools/run-world-host.ps1) | Host executable과 startup에서 Host가 검증하는 config 한 개 |
 | local multi-Channel 실행 | [`tools/run-world-fleet.ps1`](../../tools/run-world-fleet.ps1) | fleet manifest가 참조하는 개별 Host config 집합 |
+| benchmark fleet와 Observer 시각 검증 | [`tools/run-world-host-benchmark-fleet.ps1`](../../tools/run-world-host-benchmark-fleet.ps1) | 독립 benchmark config 두 개와 선택적 Godot Observer process |
 | build와 실행 환경 확인 | [`tools/README.md`](../../tools/README.md) | Windows/Visual Studio toolchain, output과 troubleshooting |
 | Client Channel 목록 | [`channels.local.json`](../../src/PrivateServer.GameClient/Config/channels.local.json) | Channel ID/name과 endpoint; Host internal config와 분리 |
 
-Local fleet parent는 child process 시작/stop을 조정하지만 listener, Runtime Session, World registry와 round state는 각 Host가 독립적으로 소유한다. 현재 local Host/fleet script의 cleanup은 `Stop-Process`를 사용하므로 controller-managed child-control handshake나 graceful drain을 검증하는 entrypoint가 아니다.
+Local fleet parent는 child process 시작/stop을 조정하지만 listener, Runtime Session, World registry와 round state는 각 Host가 독립적으로 소유한다. 현재 local Host/fleet script의 cleanup은 `Stop-Process`를 사용하므로 controller-managed child-control handshake나 graceful drain을 검증하는 entrypoint가 아니다. Benchmark fleet의 `-LaunchObservers`는 촬영·시각 검증용 Godot process와 read-only session을 추가하므로 해당 실행 artifact를 canonical 성능 비교에 사용하지 않는다.
 
 ## 변경 위치와 contract tests
 
@@ -167,7 +168,7 @@ Local fleet parent는 child process 시작/stop을 조정하지만 listener, Run
 | Runtime mapping이나 World graph를 바꾸는가? | [`WorldServerHostRunner.cpp`](../../src/PrivateServer.WorldServer.Host/WorldServerHostRunner.cpp), `WorldExecutionStorage`, worker startup/shutdown | Host config tests, worker startup/shutdown tests와 public loopback tests |
 | stop source와 drain ordering을 바꾸는가? | `WorldServerHostStopSignal`, child-control worker, [`WorldWorkerShutdown.h`](../../src/PrivateServer.WorldServer/WorldWorkerShutdown.h) | [`WorldServerHostStopSignalTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldServerHostStopSignalTests.cpp), child-control와 shutdown tests |
 | log schema나 application event mapping을 바꾸는가? | [`WorldServerHostLog.cpp`](../../src/PrivateServer.WorldServer.Host/WorldServerHostLog.cpp), [`WorldApplicationLogAdapter.cpp`](../../src/PrivateServer.WorldServer.Host/WorldApplicationLogAdapter.cpp), ApplicationLogging public boundary | [`WorldServerHostLogTests.cpp`](../../src/PrivateServer.WorldServer.Tests/WorldServerHostLogTests.cpp), ApplicationLogging tests |
-| single/fleet launcher behavior를 바꾸는가? | [`tools/run-world-host.ps1`](../../tools/run-world-host.ps1), [`tools/run-world-fleet.ps1`](../../tools/run-world-fleet.ps1), fleet manifest | script validation과 Host command-line/config contracts |
+| single/fleet launcher behavior를 바꾸는가? | [`tools/run-world-host.ps1`](../../tools/run-world-host.ps1), [`tools/run-world-fleet.ps1`](../../tools/run-world-fleet.ps1), [`tools/run-world-host-benchmark-fleet.ps1`](../../tools/run-world-host-benchmark-fleet.ps1), fleet manifest | script validation과 Host command-line/config contracts |
 
 ## 관련 문서
 

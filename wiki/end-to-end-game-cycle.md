@@ -1,23 +1,21 @@
 # End-to-end 게임 사이클
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
+> Last reviewed: 2026-08-16
 
 ## 핵심 답
 
-Private Server의 한 게임 사이클은 local Channel 선택에서 시작해 native connection, transactional World join, fixed-step authoritative simulation, AOI replication과 thin-client presentation을 거쳐 RoundResult와 session cleanup으로 끝난다.
+Private Server의 한 게임 사이클은 local Channel 선택에서 시작해 native connection과 World session role admission을 거친다. Player Session은 transactional join, fixed-step authoritative simulation과 AOI replication에 참여하고, Observer Session은 Channel-wide overview를 read-only로 표현한다. 두 경로 모두 RoundResult와 session cleanup으로 끝난다.
 
 ```text
 Local Channel Directory
--> Channel 선택과 일회성 profile 입력
+-> Channel 선택
 -> native transport connect
--> JoinWorldRequest
--> World baseline과 WorldReady
--> first time sync
--> Playing과 client prediction
+-> Player: JoinWorldRequest / WorldReady / first time sync / Playing
+   또는 Observer: ObserveWorldRequest / ObserverReady / Observing
 -> World authoritative fixed-step commit
--> AOI와 controlled state replication
+-> Player AOI·controlled state / Observer WorldOverview
 -> RoundResult
 -> client local result commit과 disconnect
 -> World session/entity cleanup
@@ -36,6 +34,7 @@ Client prediction은 화면 반응을 만들지만 gameplay 결과를 결정하�
 - Baseline이 끝나고 movement가 열리는 경계는 무엇인가?
 - Input이 authoritative state와 AOI-scoped replication으로 바뀌는 순서는 무엇인가?
 - RoundResult 뒤 client와 World는 무엇을 정리하며 다음 연결은 언제 시작되는가?
+- Player와 Observer admission, authority와 replication 경계는 어떻게 다른가?
 
 다음 내용은 subsystem 문서의 책임이다.
 
@@ -52,11 +51,12 @@ Client prediction은 화면 반응을 만들지만 gameplay 결과를 결정하�
 | --- | --- | --- |
 | Channel ID | 선택한 Host/World gameplay instance | Host configuration으로 고정, Client가 WorldReady에서 확인 |
 | Runtime Session Key | TCP connection | NetworkRuntime accept에서 생성, connection close에서 회수 |
-| Player ID | Channel 안의 joined participant | World join commit에서 binding, SessionClosed에서 해제 |
-| World Entity Key | entity ID와 generation | World entity spawn에서 생성, remove/cleanup에서 회수 |
+| World Session Role | Connected, Player 또는 Observer 중 하나인 participation 권한 | SessionAccepted에서 Connected, 성공한 join/observe admission에서 확정 |
+| Player ID | Channel 안의 joined participant | Player join commit에서만 binding, SessionClosed에서 해제 |
+| World Entity Key | entity ID와 generation | Player/entity spawn에서 생성, remove/cleanup에서 회수 |
 | Transport Generation | Client의 local connection attempt generation | connect마다 전진, disconnect에서 generation-local state 정리 |
 
-`SessionAccepted`만 받은 World session은 아직 joined player가 아니다. `JoinWorldRequest`가 검증되고 baseline outbound가 준비된 뒤에야 Runtime Session Key, Player ID와 controlled World Entity Key의 binding을 commit한다.
+`SessionAccepted`만 받은 World session은 Connected role이며 아직 Player나 Observer가 아니다. `JoinWorldRequest`가 검증되고 baseline outbound가 준비된 뒤에야 Player ID와 controlled World Entity Key를 binding한다. `ObserveWorldRequest`는 같은 Connected 상태에서만 Observer role을 확정하지만 Player/Entity binding을 만들지 않는다.
 
 ## Channel 선택과 transport 연결
 
@@ -64,9 +64,15 @@ Client prediction은 화면 반응을 만들지만 gameplay 결과를 결정하�
 
 사용자가 Channel과 선택적 display name을 확정하면 scene은 endpoint와 expected Channel ID를 [`RemoteGameplaySession::Connect`](../src/PrivateServer.GameClient/Gameplay/Remote/RemoteGameplaySession.cs)에 전달한다.
 
-새 connection은 이전 generation의 ready state, time sync, prediction, replica와 protocol staging을 재사용하지 않는다. Native Runtime이 transport connected event를 게시하고 Godot main thread가 이를 drain하면 Client가 `JoinWorldRequest`를 보낸다.
+새 connection은 이전 generation의 ready state, time sync, prediction, replica와 protocol staging을 재사용하지 않는다. Native Runtime이 transport connected event를 게시하고 Godot main thread가 이를 drain하면 Player mode는 `JoinWorldRequest`, Observer mode는 `ObserveWorldRequest`를 보낸다.
 
 Server 쪽 NetworkRuntime은 accepted socket에 Runtime Session Key를 부여하고 `SessionAccepted` owning event를 World에 전달한다. World는 send capability를 가진 connected-only session을 등록하지만 이 단계에서는 Player나 Entity를 만들었다고 보지 않는다.
+
+## Observer admission과 read-only path
+
+Observer mode는 Connected-only session과 `ObserveWorldRequest` payload version을 검증한다. World는 현재 tick/cadence, arena bounds와 Channel ID를 가진 `ObserverReady`를 준비하고, gameplay가 활성화된 경우 현재 `RoundState` baseline을 먼저 기록한 뒤 Observer role을 commit한다. Baseline submit이 실패하면 session close를 요청하며 성공한 observer로 남기지 않는다.
+
+Client는 expected Channel ID와 `ObserverReady`를 검증한 뒤 first time sync 없이 `Active`/`Observing`으로 전환한다. Observer Session은 movement/control packet을 보내거나 controlled prediction, detailed AOI replica를 만들지 않는다. World가 Player Session에도 보내는 `WorldOverview`의 완성된 chunk group을 받아 전체 player silhouette, leaderboard와 Active Area를 표현한다.
 
 ## Join prepare, baseline과 commit
 
@@ -136,13 +142,13 @@ lifecycle와 command state 확정
 
 ## AOI와 outbound replication
 
-Authoritative entity state가 commit되면 World는 spatial projection과 index를 갱신한다. Observer session별로 AOI enter/retain query를 수행하고 이전 visible set과 비교해 entered, stayed와 left set을 만든다.
+Authoritative entity state가 commit되면 World는 spatial projection과 index를 갱신한다. Player Session의 AOI Viewpoint별로 enter/retain query를 수행하고 이전 visible set과 비교해 entered, stayed와 left set을 만든다.
 
 - Entered entity는 spawn과 필요한 baseline state를 받는다.
 - Stayed entity는 AOI-scoped state snapshot을 받는다.
 - Left 또는 removed entity는 reason을 가진 remove packet을 받는다.
 - Controlled entity의 authoritative state는 owner session에 별도 self-state로 전달한다.
-- World overview는 HUD와 minimap에 필요한 요약 경계를 제공한다.
+- World overview는 Player HUD/minimap과 Observer의 Channel-wide presentation에 필요한 요약 경계를 제공한다.
 
 World가 recipient와 semantic payload를 결정하고 outbound A/B slot을 seal한다. Publisher는 record 순서를 유지해 `NrGateway`에 제출하며, NetworkRuntime이 frame ownership과 per-session socket send를 담당한다.
 
@@ -160,7 +166,7 @@ Waiting round는 필요한 joined participant가 준비되면 Running으로 전�
 
 현재 round 종료 조건은 configured deadline이다. Score target에 도달해도 deadline 전에 round를 끝내지 않는다. Ended commit이 발생하면 World는 연결돼 있고 alive인 player 중 가장 높은 growth 값을 가진 player를 winner로 계획하며, 같은 값이면 공동 winner를 유지한다.
 
-Recipient별 `RoundResult`는 outbound record로 기록되고 Publisher를 거쳐 Client에 전달된다. Result packet은 server tick, round identity, recipient 결과와 winner identity를 포함하는 authoritative outcome이다.
+Player recipient별 `RoundResult`와 recipient final growth가 없는 Observer용 result는 outbound record로 기록되고 Publisher를 거쳐 Client에 전달된다. Result packet은 server tick, round identity, recipient 결과와 winner identity를 포함하는 authoritative outcome이다. Client는 result 수신 시점의 최신 leaderboard snapshot을 보존해 winner Player ID를 display name으로 표현하고, 이름이 없으면 Player ID label로 fallback한다.
 
 ## Result, disconnect와 다음 연결
 
@@ -172,8 +178,8 @@ World는 `SessionClosed`를 consume하면서 다음 state를 회수한다.
 
 - Runtime send capability와 AOI visible set
 - movement/control command state
-- session-player-entity binding과 display name
-- player gameplay state와 owned entity
+- role에 따른 session-player-entity binding과 display name
+- Player Session의 gameplay state와 owned entity; Observer Session은 이 state를 소유하지 않음
 
 Ended round는 시간 경과만으로 자동 rematch하지 않는다. Joined player가 모두 cleanup되면 World가 Waiting으로 reset한다.
 
@@ -185,6 +191,7 @@ ChannelSelect 복귀도 자동이 아니다. 사용자가 Result 화면에서 re
 | --- | --- |
 | connect 또는 transport setup 실패 | Client fault를 보존하고 join request를 만들지 않음 |
 | join validation 또는 outbound prepare 실패 | World가 준비 state를 rollback하고 session close 요청 |
+| observer payload/baseline/admission 실패 | Observer role을 commit하지 않고 reject 또는 session close 요청 |
 | expected Channel과 WorldReady Channel 불일치 | Client protocol fault와 disconnect 요청 |
 | first time sync 전 input | Client movement/control gate에서 제출하지 않음 |
 | stale entity generation command/state | Current entity state를 변경하지 않고 reject 또는 ignore |
@@ -198,6 +205,7 @@ ChannelSelect 복귀도 자동이 아니다. 사용자가 Result 화면에서 re
 | 독자 질문 | 관련 구현 | 관련 테스트 |
 | --- | --- | --- |
 | Channel 선택과 화면 흐름은 어디서 시작되는가? | [`GameplayChannelDirectory.cs`](../src/PrivateServer.GameClient/Gameplay/Flow/GameplayChannelDirectory.cs), [`RemoteGameplayScene.cs`](../src/PrivateServer.GameClient/Gameplay/Presentation/RemoteGameplayScene.cs) | [`GameplayChannelDirectoryTests.cs`](../src/PrivateServer.GameClient.Tests/GameplayChannelDirectoryTests.cs), [`GameplayFlowTests.cs`](../src/PrivateServer.GameClient.Tests/GameplayFlowTests.cs) |
+| Observer admission과 read-only overview는 어디서 갈라지는가? | [`WorldIngressEventConsumer.cpp`](../src/PrivateServer.WorldServer/WorldIngressEventConsumer.cpp), [`RemoteGameplaySession.cs`](../src/PrivateServer.GameClient/Gameplay/Remote/RemoteGameplaySession.cs), [`WorldOverviewPresentation.cs`](../src/PrivateServer.GameClient/Gameplay/Presentation/WorldOverviewPresentation.cs) | [`WorldIngressEventConsumerTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldIngressEventConsumerTests.cpp), [`RemoteGameplaySessionTests.cs`](../src/PrivateServer.GameClient.Tests/RemoteGameplaySessionTests.cs), [`GameplayFlowTests.cs`](../src/PrivateServer.GameClient.Tests/GameplayFlowTests.cs) |
 | Join baseline과 binding은 어떤 경계에서 commit되는가? | [`WorldJoinIngress.cpp`](../src/PrivateServer.WorldServer/WorldJoinIngress.cpp), [`WorldIngressEventConsumer.cpp`](../src/PrivateServer.WorldServer/WorldIngressEventConsumer.cpp) | [`WorldIngressEventConsumerTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldIngressEventConsumerTests.cpp), [`WorldGameplayReplicationTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldGameplayReplicationTests.cpp) |
 | Public Runtime을 거친 실제 join/input/state path는 무엇인가? | NetworkRuntime public API와 World ingress/outbound adapter | [`WorldPublicLoopbackTests.cpp`](../src/PrivateServer.WorldServer.Tests/WorldPublicLoopbackTests.cpp) |
 | Input은 어디서 authoritative tick state가 되는가? | [`WorldMovementCommandAdmission.cpp`](../src/PrivateServer.WorldServer/WorldMovementCommandAdmission.cpp), [`WorldControlCommandAdmission.cpp`](../src/PrivateServer.WorldServer/WorldControlCommandAdmission.cpp), [`WorldDoubleBufferedTickCoordinator.h`](../src/PrivateServer.WorldServer/WorldDoubleBufferedTickCoordinator.h) | World ingress, movement와 physics tests |

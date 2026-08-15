@@ -7,10 +7,12 @@ Windows IOCP 기반 MMO-lite 서버 아키텍처를 구현하고 검증하는 C+
 - `PrivateServer.NetworkRuntime`: IOCP 기반 public networking runtime DLL
 - `PrivateServer.WorldServer`: authoritative World simulation과 gameplay static library
 - `PrivateServer.WorldServer.Host`: Channel 하나와 독립 World instance 하나를 소유하는 process Host
-- `PrivateServer.GameClient`: 서버 동작을 시각화하고 검증하는 Godot C# client
+- `PrivateServer.GameClient`: Player와 read-only Observer mode로 서버 동작을 시각화하고 검증하는 Godot C# client
 - `PrivateServer.NetworkRuntime.Benchmark`: lifecycle, 부하와 성능 artifact를 생성하는 controller
 
 World Host process 하나는 Channel 하나를 소유한다. 로컬 환경에서는 서로 다른 endpoint의 Host를 여러 개 실행하고, Game Client에서 채널과 일회성 닉네임을 선택해 접속할 수 있다.
+
+Observer mode는 Player ID, controlled entity와 input authority 없이 Channel-wide `WorldOverview`와 round 결과를 표현한다. Benchmark fleet의 `-LaunchObservers`는 두 Channel을 Godot 창으로 함께 확인하는 촬영·시각 검증 entrypoint이며, 추가 session과 rendering 부하가 생기므로 canonical 성능 비교에는 사용하지 않는다.
 
 ## 시작하기
 
