@@ -70,7 +70,7 @@ Observer Session은 Player ID나 controlled entity를 만들지 않고 round par
 
 ## 상세 문서
 
-- [World Server 실행 ownership과 fixed-step pipeline](runtime-ownership-and-tick-pipeline.md): Host lifetime, Pump·Coordinator·Publisher 권한, A/B buffer, 단계별 commit과 shutdown 순서
+- [World Server 실행 ownership과 fixed-step pipeline](runtime-ownership-and-tick-pipeline.md): Host lifetime, Pump·Coordinator·Publisher 권한, ingress A/B와 outbound slot, 단계별 commit과 shutdown 순서
 - [World Host 설정과 Process Lifecycle](host-configuration-and-process-lifecycle.md): strict JSON schema, config 전달 방향, composition, stop/drain, logging과 local 실행 entrypoint
 - [Gameplay Protocol Reference](gameplay-protocol-reference.md): C2S/S2C packet catalog, version·identity·ordering·validation과 C++/C# 변경 위치
 - [Authoritative Gameplay와 Round 계약](authoritative-gameplay-and-round-contract.md): input admission, movement·physics·growth·resource·death·respawn·round 결과와 commit 경계

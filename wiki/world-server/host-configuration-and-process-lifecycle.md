@@ -1,27 +1,24 @@
 # World Host 설정과 Process Lifecycle
 
 > Document status: Reviewed
-> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
-> Last reviewed: 2026-08-16
+> Baseline: 0f1fa513762b40bd03a8f5b4203c61d2bb597cd8
+> Last reviewed: 2026-09-05
 
 ## 핵심 답
 
 `PrivateServer.WorldServer.Host`는 Channel 하나의 configuration과 process lifetime을 소유하는 composition root다. Host는 JSON config를 strict schema로 읽고 검증한 뒤 NetworkRuntime, World simulation, replication과 gameplay config로 분해한다. 그 다음 logging과 stop control을 먼저 준비하고 Runtime과 World worker graph를 시작한다.
 
-```text
-command line
--> Host config load / exact-schema parse / cross-field validation
--> normalized effective config와 application logging 준비
--> stop signal과 controller-owned control 연결
--> NrServer create / start / Gateway acquire
--> World storage, registries, adapters와 workers 조립
--> Publisher -> Pump -> Coordinator start
--> serving / health observation
--> stop request 또는 worker failure
--> World output drain / terminal ingress / Runtime shutdown
--> diagnostic owner와 control worker join
--> logger flush / process exit
+```mermaid
+flowchart TD
+    Config["Command line + Host JSON"] --> Validate["Strict schema 검증<br/>effective config 확정"]
+    Validate --> Owners["Logging / stop control 준비"]
+    Owners --> Runtime["NrServer 시작<br/>Gateway 획득"]
+    Runtime --> World["World graph 조립<br/>Publisher → Pump → Coordinator 시작"]
+    World --> Serving["Channel serving<br/>Host가 stop과 worker health 관찰"]
+    Serving -->|"stop 요청 또는 worker failure"| Shutdown["Output drain → terminal ingress<br/>Runtime 종료 → owner 회수"]
 ```
+
+화살표는 **한 Host process의 준비·실행·종료 순서**다. Config를 검증한 뒤 owner를 생성하고, 종료할 때는 worker가 참조하는 storage와 logger보다 worker 실행을 먼저 끝낸다.
 
 Host process 하나는 하나의 Channel ID/name, listener endpoint와 독립 World state를 가진다. Local fleet 도구는 여러 Host process를 실행할 뿐 이 state를 하나의 World로 합치지 않는다.
 
@@ -36,7 +33,7 @@ Host process 하나는 하나의 Channel ID/name, listener endpoint와 독립 Wo
 - single Host와 local fleet의 실행 entrypoint
 - Host 동작을 변경할 때 시작할 source와 contract tests
 
-Worker 내부 A/B buffer와 tick handoff는 [World Server 실행 ownership과 fixed-step pipeline](runtime-ownership-and-tick-pipeline.md), gameplay rule은 [Authoritative Gameplay와 Round 계약](authoritative-gameplay-and-round-contract.md)이 담당한다. 이 문서는 benchmark 결과나 특정 workload의 운영 수치를 제공하지 않는다.
+Worker 내부 buffer와 tick handoff는 [World Server 실행 ownership과 fixed-step pipeline](runtime-ownership-and-tick-pipeline.md), gameplay rule은 [Authoritative Gameplay와 Round 계약](authoritative-gameplay-and-round-contract.md)이 담당한다. 이 문서는 benchmark 결과나 특정 workload의 운영 수치를 제공하지 않는다.
 
 ## Command line contract
 
@@ -97,8 +94,8 @@ Logger와 borrowed World log handle은 Runner가 만드는 Runtime/World owner�
 Runner는 config를 public `NrServerConfig`로 매핑해 `NrServer`를 create/start하고 server-bound `NrGateway`를 얻는다. 이후 다음 World graph를 조립한다.
 
 ```text
-WorldExecutionStorage
-|-- ingress / outbound double buffers
+Host RunWorld scope
+|-- WorldExecutionStorage: ingress A/B / outbound Triple slot storage
 |-- event source and Runtime integration adapter
 |-- session registry, entity manager and movement command store
 |-- ingress consumer-owned gameplay state
@@ -119,18 +116,27 @@ Host가 serving을 끝내는 source는 다음과 같다.
 
 Stop source가 달라도 World와 Runtime의 lifetime 회수는 [`WorldWorkerShutdown`](../../src/PrivateServer.WorldServer/WorldWorkerShutdown.h)이 소유한다.
 
-```text
-새 gameplay/output 생성 중단
--> 마지막 sealed outbound drain과 Publisher join
--> Pump / Coordinator terminal mode
--> NrServer stop request와 shutdown
--> remaining SessionAccepted / SessionClosed terminal consume
--> Pump / Coordinator join
--> diagnostic writer close/join
--> controller-managed child completion 통지와 join
--> terminal application record와 point-in-time logging health enqueue
--> ApplicationLogger destruction에서 accepted record drain / flush
+```mermaid
+sequenceDiagram
+    participant Host as Host shutdown
+    participant World as World workers
+    participant Runtime as NetworkRuntime
+    participant Output as Diagnostics / control / logger
+    Host->>World: 새 gameplay/output 생성 중단
+    Host->>World: sealed outbound drain + Publisher join
+    Host->>World: Pump / Coordinator를 terminal mode로 전환
+    par Runtime 종료
+        Host->>Runtime: RequestStop + Shutdown
+    and 남은 lifecycle 소비
+        Runtime-->>World: SessionAccepted / SessionClosed
+        World->>World: terminal consume, gameplay packet 폐기
+    end
+    Host->>World: Pump / Coordinator join
+    Host->>Output: diagnostic writer와 child control 마감 / join
+    Host->>Output: terminal record 게시 → logger drain / flush
 ```
+
+화살표는 **종료 호출과 lifecycle 전달**, `par` 영역은 **Runtime 종료와 terminal ingress cleanup의 중첩**을 뜻한다. 마지막 outbound를 제출한 뒤 Runtime admission을 닫아 World output의 제출 순서를 지킨다.
 
 Terminal ingress는 session lifecycle cleanup만 수행하고 packet을 새 gameplay input으로 적용하지 않는다. 한 shutdown 단계가 실패해도 가능한 worker join과 owner cleanup은 계속 시도하며 process result가 완료 여부를 반영한다.
 

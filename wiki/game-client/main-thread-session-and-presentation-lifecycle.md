@@ -1,8 +1,8 @@
 # Main thread session과 presentation lifecycle
 
 > Document status: Reviewed
-> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
-> Last reviewed: 2026-08-16
+> Baseline: 0f1fa513762b40bd03a8f5b4203c61d2bb597cd8
+> Last reviewed: 2026-09-05
 
 ## 핵심 답
 
@@ -10,15 +10,17 @@ Game Client는 native NetworkRuntime event를 Godot main thread에서 bounded하
 
 `RemoteGameplayScene`가 production gameplay 진입점이자 Godot object의 lifetime owner다. `RemoteGameplaySession`은 transport, protocol ordering, prediction, replica와 authoritative gameplay state를 소유하지만 Godot node는 소유하지 않는다. 이 분리 때문에 비동기 transport state와 scene tree mutation이 같은 worker에서 경쟁하지 않는다.
 
-```text
-native NrClient event
--> C ABI event handle
--> Managed owning event와 payload
--> gameplay transport event
--> RemoteGameplaySession model mutation
--> prediction / replica presentation snapshot
--> RemoteGameplayScene node, effect, HUD 갱신
+```mermaid
+flowchart TB
+    Native["Native NrClient event<br/>C ABI handle"] -->|"payload copy"| Managed["Managed owning event"]
+    Managed -->|"main-thread drain"| Session["RemoteGameplaySession<br/>protocol / generation"]
+    Session -->|"Player"| Player["Prediction + detailed replica"]
+    Session -->|"Observer"| Observer["Read-only World overview"]
+    Player -->|"presentation snapshot"| Scene["RemoteGameplayScene<br/>node / effect / HUD"]
+    Observer -->|"presentation snapshot"| Scene
 ```
+
+화살표는 **event의 소유권 전환과 화면 데이터 흐름**이다. Native payload를 복사한 뒤 native event handle을 회수하고, session model과 Godot node는 main thread에서 순서대로 갱신한다. Observer 경로는 input과 controlled prediction을 만들지 않는다.
 
 Disconnect 요청만으로 generation-local state를 즉시 지우지 않는다. Main thread가 `TransportDisconnected` event를 소비할 때 transport generation에 속한 ready state, prediction, replica, score와 protocol assembler를 정리한다. Reconnect는 같은 transport wrapper를 다시 사용할 수 있어도 새로운 gameplay generation이다.
 
@@ -99,23 +101,21 @@ transport event bounded drain
 
 ### 사용자 화면 흐름
 
-```text
-ChannelSelect
-|-- PlayerSetup -> Connecting -> Joining -> SpawnPending -> Playing
-|   |-- controlled entity 제거: SpawnPending
-|   `-- matching spawn/rebind: Playing
-`-- Observer connect -> Joining -> Observing
-
-Playing 또는 Observing
--> RoundResult: Result
-
-transport/protocol fault
--> Error
-
-Result 또는 Error
--> 명시적 사용자 선택
--> ChannelSelect 또는 Exiting
+```mermaid
+flowchart TD
+    Select["ChannelSelect"] -->|"Player setup / connect / join"| Spawn["SpawnPending"]
+    Spawn -->|"controlled entity 준비"| Playing["Playing"]
+    Playing -->|"controlled entity 제거"| Spawn
+    Select -->|"Observer connect / observe"| Observing["Observing"]
+    Playing -->|"RoundResult"| Result["Result 유지<br/>disconnect cleanup 진행"]
+    Observing -->|"RoundResult"| Result
+    Error["Error<br/>transport / protocol fault"] -->|"사용자 복귀 선택"| Select
+    Result -->|"사용자 복귀 선택"| Select
+    Result -->|"사용자 종료 선택"| Exit["Exiting"]
+    Error -->|"사용자 종료 선택"| Exit
 ```
+
+화살표는 **대표적인 사용자 화면 전이**다. 연결과 admission의 중간 화면은 라벨로 묶었으며 각 transport/protocol 단계의 failure는 `Error`로 연결된다. `Result` 보존과 transport cleanup은 별개이므로 disconnect가 끝나도 자동으로 Channel 선택 화면으로 돌아가지 않는다.
 
 ### Session state
 

@@ -1,8 +1,8 @@
 # Private Server 시스템 아키텍처
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: 0f1fa513762b40bd03a8f5b4203c61d2bb597cd8
+> Last reviewed: 2026-09-05
 
 ## 핵심 답
 
@@ -10,19 +10,19 @@ Private Server는 Windows-native NetworkRuntime, Channel별 World Host, server-a
 
 서버의 실행 프로세스는 `PrivateServer.WorldServer.Host`다. `PrivateServer.WorldServer`는 별도 서버 프로세스가 아니라 Host에 link되는 static library이며, Host가 Channel configuration, NetworkRuntime server, World state와 worker lifetime을 조립한다.
 
-```text
-WorldServer.Host.exe
-|-- WorldServer.lib
-|-- NetworkRuntime.dll
-|   `-- NetworkRuntime.Internal.lib
-`-- ApplicationLogging.lib
-
-Godot GameClient
-`-- NetworkRuntime.Managed
-    `-- P/Invoke
-        `-- NetworkRuntime.CAbi.dll
-            `-- NetworkRuntime.dll
+```mermaid
+flowchart TD
+    Host["WorldServer.Host.exe"] -->|"static link"| World["WorldServer.lib"]
+    Host -->|"static link"| Log["ApplicationLogging.lib"]
+    Host -->|"public API"| Runtime["NetworkRuntime.dll"]
+    World -->|"public API"| Runtime
+    Runtime -->|"static link · DLL 내부 구현"| Internal["NetworkRuntime.Internal.lib"]
+    Client["Godot GameClient"] -->|"project reference"| Managed["NetworkRuntime.Managed"]
+    Managed -->|"P/Invoke"| CABI["NetworkRuntime.CAbi.dll"]
+    CABI -->|"public client API"| Runtime
 ```
+
+화살표는 소비자에서 의존 대상으로 향한다. 이 그림은 build/API 의존 관계이며 `.lib`를 실행 프로세스로 나타내지 않는다. 서버와 Client가 사용하는 Runtime DLL도 서로 다른 process 안에서 동작한다.
 
 Runtime은 transport와 connection lifetime을, World는 authoritative gameplay와 recipient 결정을, Client는 local prediction과 presentation을 소유한다. 어떤 계층도 다른 계층의 mutable state를 직접 공유하지 않는다.
 
@@ -39,7 +39,7 @@ Runtime은 transport와 connection lifetime을, World는 authoritative gameplay�
 다음 내용은 subsystem 문서의 책임이다.
 
 - Session Actor 내부의 pending I/O와 close/drain state
-- World fixed-step phase와 A/B buffer ownership의 세부 순서
+- World fixed-step phase와 buffer ownership의 세부 순서
 - Game Client의 disconnect/reconnect와 Godot node lifecycle
 - capacity와 성능 결과
 
@@ -57,7 +57,7 @@ Runtime은 transport와 connection lifetime을, World는 authoritative gameplay�
 
 `PrivateServer.NetworkRuntime` DLL은 internal static library를 숨기고 staged public header를 제공한다. `WorldServer`와 Host는 IOCP, actor registry나 `OVERLAPPED` type에 직접 의존하지 않고 `NrServer`, `NrToWorldEvent`, `NrGateway`와 send-channel capability를 사용한다.
 
-`WorldServer` project가 static library라는 점은 중요하다. `World instance`는 Host가 조립한 registry, entity manager, gameplay state, A/B storage와 worker의 논리적 집합이며, 별도 process나 하나의 global `World` object를 뜻하지 않는다.
+`WorldServer` project가 static library라는 점은 중요하다. `World instance`는 Host가 조립한 registry, entity manager, gameplay state, buffer storage와 worker의 논리적 집합이며, 별도 process나 하나의 global `World` object를 뜻하지 않는다.
 
 ### Client adapter chain
 
@@ -75,23 +75,18 @@ Root solution은 Runtime, C ABI, Managed adapter와 smoke, World, Host, native t
 
 서버의 정상 request/response 경로는 다음과 같다.
 
-```text
-TCP connection
--> NetworkRuntime listener와 IOCP
--> Runtime Session Actor
--> frame parse
--> owning NrToWorldEvent
--> World Ingress Pump
--> ingress A/B slot seal
--> World Coordinator
--> lifecycle, input과 authoritative fixed-step phase commit
--> AOI와 replication plan
--> outbound A/B slot seal
--> World Outbound Publisher
--> NrGateway
--> Runtime Session send path
--> TCP connection
+```mermaid
+flowchart TD
+    Peer["Client TCP connection"] --> IO["IOCP · Session Actor<br/>recv · frame parse"]
+    IO -->|"owning NrToWorldEvent"| Pump["Ingress Pump"]
+    Pump -->|"입력 A/B buffer 인계"| World["World Coordinator<br/>lifecycle · input · simulation commit"]
+    World --> Plan["AOI · recipient · replication plan"]
+    Plan -->|"sealed outbound batch 인계"| Publisher["Outbound Publisher"]
+    Publisher -->|"NrGateway submit"| Send["Runtime send<br/>framing · per-session I/O"]
+    Send --> Peer
 ```
+
+화살표는 데이터 전달 순서다. Ingress A/B 역할과 outbound slot은 writer가 준비하는 영역과 reader가 소비하는 영역을 분리한다. Pump와 Publisher는 canonical World state를 변경하지 않는다.
 
 ### NetworkRuntime
 
@@ -140,7 +135,7 @@ Startup의 큰 순서는 다음과 같다.
 1. Host configuration에서 Channel과 Runtime/World 설정을 읽는다.
 2. `NrServer` graph를 만들고 listener를 시작한다.
 3. Server-bound `NrGateway`를 발급받는다.
-4. World A/B storage, registry, gameplay state와 adapter를 만든다.
+4. World buffer storage, registry, gameplay state와 adapter를 만든다.
 5. Publisher, Pump와 Coordinator worker를 시작한다.
 6. Host main thread가 stop condition과 runtime state를 관찰한다.
 

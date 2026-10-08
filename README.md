@@ -31,6 +31,7 @@ Observer mode는 Player ID, controlled entity와 input authority 없이 Channel-
 
 ## 문서 진입점
 
+- [그림으로 보는 프로젝트 개요](wiki/visual-overview.md): 실행 구조, 게임 사이클, 상태 전달과 ToolKit 안내
 - [Wiki](wiki/README.md): 전체 구조와 subsystem별 주요 source navigation
 - [프로젝트 source map](wiki/project-source-map.md): 구현, 테스트, 설정과 도구 위치
 - [ADR](docs/adr/): 주요 기술 결정
