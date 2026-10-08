@@ -1,8 +1,8 @@
 # NetworkRuntime Public DLL 경계
 
 > Document status: Reviewed
-> Baseline: 1508dacf340e52cb4ec67e7e7a60d05755510553
-> Last reviewed: 2026-08-12
+> Baseline: 0f1fa513762b40bd03a8f5b4203c61d2bb597cd8
+> Last reviewed: 2026-09-05
 
 ## 핵심 답
 
@@ -36,35 +36,17 @@ NetworkRuntime 내부에는 Win32 handle, `OVERLAPPED`, socket, actor mailbox, p
 
 ## Building block과 의존 방향
 
-```text
-World Server / Native Client
-PublicTests / Native Smoke
-             |
-             | staged public headers + DLL/import library
-             v
-PrivateServer.NetworkRuntime.dll
-  |-- server-facing: NrServer, NrToWorldEvent, NrGateway,
-  |                  NrSessionSendChannel, NrServerSnapshot
-  |-- client-facing: NrClient, NrClientEvent, NrClientSnapshot
-  |-- shared values: NrStatus, NrSessionKey, NrPacketType,
-  |                  NrByteView, config와 reason enum
-  |
-  | static link; 제품 소비자에게 export하지 않음
-  v
-PrivateServer.NetworkRuntime.Internal.lib
-  |-- IOCP / Winsock / listener / pending IO
-  |-- session actor / registry / lifecycle
-  |-- framing / parser / payload / queue / pool
-  `-- diagnostics implementation
-
-Managed Client
-      |
-      v
-PrivateServer.NetworkRuntime.CAbi.dll
-      |
-      v
-PrivateServer.NetworkRuntime.dll
+```mermaid
+flowchart TB
+    Consumer["World Server / Native Client"] -->|"public headers + import library"| Dll["NetworkRuntime.dll<br/>NrServer / NrClient"]
+    Managed["Managed Client"] -->|"Managed adapter"| Cabi["CAbi.dll<br/>opaque handle"]
+    Cabi -->|"public API"| Dll
+    Dll -->|"static link"| Internal["Internal.lib<br/>IOCP / actor / parser / buffer"]
+    PublicTests["PublicTests"] -->|"제품과 같은 public 경계"| Dll
+    InternalTests["InternalTests"] -->|"직접 link"| Internal
 ```
+
+화살표는 **소비자에서 의존 대상으로 향하는 build/API 의존**이다. `Internal.lib`의 object code는 DLL에 결합되며, 별도로 실행되는 service가 아니다. 제품 사용 경계와 내부 검증 경계를 분리해 IOCP 구현을 바꿔도 World·Client가 같은 public 계약을 사용하도록 한다.
 
 PublicTests, Native Smoke와 C ABI adapter는 generated SDK include root인 `build/include/PrivateServer/NetworkRuntime/`를 사용한다. 이들은 `PrivateServer.NetworkRuntime.Internal` include root를 받지 않는다. 반대로 DLL project는 public wrapper를 구현하기 위해 `Internal.lib`를 link한다.
 

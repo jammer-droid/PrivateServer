@@ -1,27 +1,44 @@
 # End-to-end 게임 사이클
 
 > Document status: Reviewed
-> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
-> Last reviewed: 2026-08-16
+> Baseline: 0f1fa513762b40bd03a8f5b4203c61d2bb597cd8
+> Last reviewed: 2026-09-05
 
 ## 핵심 답
 
 Private Server의 한 게임 사이클은 local Channel 선택에서 시작해 native connection과 World session role admission을 거친다. Player Session은 transactional join, fixed-step authoritative simulation과 AOI replication에 참여하고, Observer Session은 Channel-wide overview를 read-only로 표현한다. 두 경로 모두 RoundResult와 session cleanup으로 끝난다.
 
-```text
-Local Channel Directory
--> Channel 선택
--> native transport connect
--> Player: JoinWorldRequest / WorldReady / first time sync / Playing
-   또는 Observer: ObserveWorldRequest / ObserverReady / Observing
--> World authoritative fixed-step commit
--> Player AOI·controlled state / Observer WorldOverview
--> RoundResult
--> client local result commit과 disconnect
--> World session/entity cleanup
--> 사용자의 복귀 선택
--> ChannelSelect
+```mermaid
+sequenceDiagram
+    actor User as 사용자
+    participant Client as Godot Client
+    participant Runtime as NetworkRuntime
+    participant World as World
+    User->>Client: Channel과 참여 방식 선택
+    Client->>Runtime: TCP connect
+    Runtime->>World: SessionAccepted
+    Note over World: Connected role 등록
+    alt Player
+        Client->>World: JoinWorldRequest (Runtime 경유)
+        World-->>Client: baseline → WorldReady
+        Client->>World: 첫 time-sync 요청
+        World-->>Client: time-sync 응답
+        Note over Client: Playing · 입력과 prediction 시작
+    else Observer
+        Client->>World: ObserveWorldRequest (Runtime 경유)
+        World-->>Client: ObserverReady · round baseline
+        Note over Client: Observing · read-only overview
+    end
+    World-->>Client: authoritative state / overview
+    World-->>Client: RoundResult
+    Note over Client: 결과 화면용 local result 보존
+    Client->>Runtime: disconnect
+    Runtime->>World: SessionClosed
+    Note over World: role별 session state 정리
+    User->>Client: 결과 화면에서 ChannelSelect 복귀 선택
 ```
+
+화살표는 논리적 메시지와 사용자 동작 순서다. Client↔World packet은 모두 Runtime을 통과하며, 그림에서는 반복되는 transport hop을 생략했다. Baseline 준비와 role commit의 세부 경계는 아래에서 설명한다.
 
 Client prediction은 화면 반응을 만들지만 gameplay 결과를 결정하지 않는다. Join, movement, resource, score, death, respawn, AOI, round와 winner는 World가 commit하고 Client는 authoritative packet을 local state와 presentation으로 투영한다.
 
@@ -39,7 +56,7 @@ Client prediction은 화면 반응을 만들지만 gameplay 결과를 결정하�
 다음 내용은 subsystem 문서의 책임이다.
 
 - IOCP completion과 pending I/O context의 내부 수명
-- World A/B buffer와 phase commit의 전체 구현 순서
+- World buffer와 phase commit의 전체 구현 순서
 - Client node와 transient effect의 세부 presentation lifecycle
 - capacity와 성능 결과
 
@@ -116,7 +133,7 @@ Godot input
 -> TCP
 -> Runtime Session Actor recv와 frame parse
 -> NrToWorldEvent
--> World Ingress Pump와 sealed ingress
+-> World Ingress Pump와 tick 경계의 ingress role swap
 -> World ingress command admission
 -> Coordinator-owned authoritative tick
 ```
@@ -150,7 +167,7 @@ Authoritative entity state가 commit되면 World는 spatial projection과 index�
 - Controlled entity의 authoritative state는 owner session에 별도 self-state로 전달한다.
 - World overview는 Player HUD/minimap과 Observer의 Channel-wide presentation에 필요한 요약 경계를 제공한다.
 
-World가 recipient와 semantic payload를 결정하고 outbound A/B slot을 seal한다. Publisher는 record 순서를 유지해 `NrGateway`에 제출하며, NetworkRuntime이 frame ownership과 per-session socket send를 담당한다.
+World가 recipient와 semantic payload를 결정하고 outbound write slot을 seal한다. Publisher는 record 순서를 유지해 `NrGateway`에 제출하며, NetworkRuntime이 frame ownership과 per-session socket send를 담당한다.
 
 Client는 native event payload를 Managed-owned memory로 바꾼 뒤 Godot main thread에서 drain한다. Controlled state는 prediction correction에, remote state는 replica history에, score/round/overview는 authoritative client model에 반영한 다음 scene, HUD와 effect를 갱신한다.
 

@@ -1,10 +1,12 @@
 # Private Server Wiki
 
 > Document status: Reviewed
-> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
-> Last reviewed: 2026-08-16
+> Baseline: 0f1fa513762b40bd03a8f5b4203c61d2bb597cd8
+> Last reviewed: 2026-09-05
 
 이 Wiki는 Private Server의 현재 구조, interface, ownership, lifetime와 runtime behavior를 설명한다. 처음 보는 개발자나 에이전트는 이 페이지에서 전체 경계를 확인하고, 독자 질문에 맞는 문서와 구현 source로 이동할 수 있다.
+
+**처음 읽는다면 [그림으로 보는 프로젝트 개요](visual-overview.md)에서 시작한다.** 실행 구조 → 게임 사이클 → 상태 전달 순서로 훑은 뒤, 관심 있는 경계의 상세 문서로 이동할 수 있다. 별도 프로젝트인 [PrivateServerToolKit](toolkit/README.md)도 이 Wiki에서 함께 설명한다.
 
 ## 현재 프로젝트 기준선
 
@@ -51,6 +53,7 @@ wiki/
 |-- end-to-end-game-cycle.md
 |-- project-source-map.md
 |-- system-architecture.md
+|-- visual-overview.md
 |-- network-runtime/
 |   |-- README.md
 |   |-- public-runtime-boundary.md
@@ -62,22 +65,28 @@ wiki/
 |   |-- gameplay-protocol-reference.md
 |   |-- authoritative-gameplay-and-round-contract.md
 |   `-- aoi-active-area-and-replication.md
-`-- game-client/
+|-- game-client/
+|   |-- README.md
+|   `-- main-thread-session-and-presentation-lifecycle.md
+`-- toolkit/
     |-- README.md
-    `-- main-thread-session-and-presentation-lifecycle.md
+    |-- packet-code-generation.md
+    `-- service-host-and-execution.md
 ```
 
 ## 독자 질문별 시작점
 
 | 알고 싶은 내용 | 시작 문서 |
 | --- | --- |
+| 그림부터 보고 전체 프로젝트를 설명하려면 어디서 시작하는가? | [시각 개요](visual-overview.md) |
+| ToolKit의 코드 생성과 요청 실행 도구는 무엇을 분리하는가? | [PrivateServerToolKit](toolkit/README.md) |
 | 실행 process, library와 dependency는 어떻게 연결되는가? | [전체 시스템 아키텍처](system-architecture.md) |
 | 어떤 변경을 어느 source·API·test에서 시작해야 하는가? | [프로젝트 Source Map](project-source-map.md) |
 | 접속부터 RoundResult와 cleanup까지 어떻게 이어지는가? | [End-to-end 게임 사이클](end-to-end-game-cycle.md) |
 | Player와 read-only Observer session은 admission과 replication이 어떻게 다른가? | [Gameplay Protocol Reference](world-server/gameplay-protocol-reference.md) |
 | IOCP Runtime의 public contract와 내부 구현 경계는 무엇인가? | [NetworkRuntime](network-runtime/README.md) |
 | Host config는 어디서 Runtime·World graph가 되고 process는 어떻게 정지하는가? | [World Host 설정과 Process Lifecycle](world-server/host-configuration-and-process-lifecycle.md) |
-| authoritative fixed-step owner와 A/B worker pipeline은 무엇인가? | [World Server 실행 ownership과 fixed-step pipeline](world-server/runtime-ownership-and-tick-pipeline.md) |
+| authoritative fixed-step owner와 buffer 기반 worker pipeline은 무엇인가? | [World Server 실행 ownership과 fixed-step pipeline](world-server/runtime-ownership-and-tick-pipeline.md) |
 | gameplay packet type, wire field와 version은 어디서 바꾸는가? | [Gameplay Protocol Reference](world-server/gameplay-protocol-reference.md) |
 | movement, resource, death, respawn과 round rule은 무엇인가? | [Authoritative Gameplay와 Round 계약](world-server/authoritative-gameplay-and-round-contract.md) |
 | Active Area, AOI와 recipient별 replication은 어떻게 다른가? | [AOI, Active Area와 Replication 계약](world-server/aoi-active-area-and-replication.md) |

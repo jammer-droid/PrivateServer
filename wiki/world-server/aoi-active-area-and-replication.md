@@ -1,22 +1,26 @@
 # AOI, Active Area와 Replication 계약
 
 > Document status: Reviewed
-> Baseline: c0bd3a8e5f1861c6dc1321381b6c58ca7a374030
-> Last reviewed: 2026-08-16
+> Baseline: 0f1fa513762b40bd03a8f5b4203c61d2bb597cd8
+> Last reviewed: 2026-09-05
 
 ## 핵심 답
 
 AOI와 Active Area는 서로 다른 World 경계다. AOI는 각 Player Session의 AOI Viewpoint에 상세 replica를 보낼 entity 집합을 결정하고, Active Area는 Running round에서 player가 생존하거나 spawn할 수 있는 공간을 결정한다. Read-only Observer Session은 상세 AOI replica 대신 Channel-wide `WorldOverview`를 받는다.
 
-```text
-authoritative movement / physics / gameplay commit
--> current entity state를 spatial proxy로 투영
--> AOI enter / retain query와 visible-set diff
--> durable remove / spawn 계획
--> snapshot cadence의 self / remote state 계획
--> outbound record seal
--> NrGateway submit
+```mermaid
+flowchart TD
+    State["Committed World state"] --> Spatial["Spatial projection<br/>현재 entity 위치와 shape"]
+    Spatial --> Aoi["Player별 AOI<br/>enter / retain / visible-set diff"]
+    Aoi --> Detail["상세 replica 계획<br/>remove → spawn → state"]
+    State --> Overview["Channel-wide overview<br/>player silhouette / leaderboard"]
+    Detail --> Batch["Recipient와 payload 확정<br/>outbound seal → NrGateway"]
+    Overview --> Batch
+    Batch --> Player["Player Client<br/>상세 replica + overview"]
+    Batch --> Observer["Observer Client<br/>overview · round만 관측"]
 ```
+
+화살표는 **World state에서 recipient별 표현 데이터로 이동하는 흐름**이다. Player는 AOI 상세 replica와 overview를 함께 받고, Observer는 상세 replica를 만들지 않는다. Active Area는 gameplay 생존 경계이며 overview에도 포함된다. AOI 밖으로 나갔다는 이유만으로 World entity가 제거되는 것은 아니다.
 
 World가 visibility와 recipient를 결정하고 Client는 `EntitySpawn`, `EntityRemove`와 snapshot group을 generation-aware replica state에 적용한다. NetworkRuntime은 AOI를 계산하지 않고 이미 결정된 recipient에게 frame을 전달한다.
 

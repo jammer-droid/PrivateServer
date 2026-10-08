@@ -1,8 +1,8 @@
 # Session Actor ownership과 I/O lifetime
 
 > Document status: Reviewed
-> Baseline: d69af93f1b8a614da325fef08b6c68919fbbd694
-> Last reviewed: 2026-08-10
+> Baseline: 0f1fa513762b40bd03a8f5b4203c61d2bb597cd8
+> Last reviewed: 2026-09-05
 
 ## 핵심 답
 
@@ -10,24 +10,17 @@ NetworkRuntime은 연결마다 `NrSessionIoActor`를 두고 socket, receive buff
 
 객체 수명과 실행 권한은 다음처럼 나뉜다.
 
-```text
-NrServer
--> server component graph
-   -> actor registry
-      -> session actor
-         -> session / socket / receive buffer
-         -> pending recv context lease
-         -> pending send context lease + owning payload
-         -> accept-recv mailbox / send mailbox
-         -> send-channel control
-
-IOCP completion
--> I/O event dispatcher
--> actor mailbox admission
--> ready queue
--> actor executor
--> single actor drain owner
+```mermaid
+flowchart TB
+    Io["IOCP completion"] -->|"event 변환"| Mailbox["Session mailbox"]
+    Mailbox -->|"실행 예약"| Executor["Schedule gate + executor"]
+    Executor -->|"단일 drain 권한"| Actor["Session actor"]
+    Registry["Actor registry"] -.->|"객체 수명 소유"| Actor
+    Actor -.->|"소유"| Session["Socket / recv buffer"]
+    Actor -.->|"completion까지 보유"| Pending["Pending I/O context<br/>OVERLAPPED + payload"]
 ```
+
+실선은 **completion의 처리 흐름**, 점선은 **객체와 자원의 수명 소유**다. 여러 IOCP worker가 completion을 받아도 같은 session의 mutable state는 drain 권한을 얻은 실행자만 변경한다.
 
 Registry가 actor 객체의 lifetime owner이고, actor lease는 executor가 사용하는 동안 registry 삭제를 막는다. Actor는 pending I/O context lease를 session 안에 보관하므로 `OVERLAPPED`와 전송 payload가 completion 처리 전에 사라지지 않는다.
 
@@ -128,16 +121,18 @@ Send queue admission pressure, posting 실패, zero-byte completion, foreign com
 
 Close는 socket 파괴와 actor 삭제를 즉시 같은 operation으로 수행하지 않는다. [`NrSessionIoActor::RecordCloseRequested`](../../src/PrivateServer.NetworkRuntime.Internal/NrSessionIoActor.cpp)는 첫 close reason을 보존하고 다음 전이를 시작한다.
 
-```text
-close requested
--> send channel closed: 새 Gateway submit 거절
--> socket close: pending native I/O가 completion 경로로 돌아오게 함
--> SessionClosed를 To-World handoff에 한 번 게시
--> 새 recv/send posting 중단
--> matching late completion으로 pending context 정리
--> pending recv/send가 없으면 close ready
--> active actor lease가 사라지면 registry entry 제거 가능
+```mermaid
+flowchart TD
+    Close["Close 요청<br/>첫 reason 보존"] --> Gate["Send admission 차단<br/>socket close / 새 I/O 중단"]
+    Gate --> Closed["SessionClosed 게시"]
+    Closed --> Pending{"Pending I/O가 남았는가?"}
+    Pending -->|"예"| Late["Matching late completion<br/>context 정리만 수행"]
+    Late --> Pending
+    Pending -->|"아니요"| Ready["Close ready"]
+    Ready -->|"active actor lease도 없음"| Remove["Registry에서 actor 회수"]
 ```
+
+화살표는 **일반 session close의 진행 조건**이다. `SessionClosed`가 게시된 시점과 native I/O 자원을 모두 회수한 시점은 다르다. 전체 server graph shutdown의 worker join·최종 정리는 다음 절의 별도 경로를 따른다.
 
 Context identity가 맞지 않는 completion은 현재 pending context를 임의로 해제하지 않는다. Actor invariant 위반으로 close를 요청하고 containment 경로를 유지한다.
 
